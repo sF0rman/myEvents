@@ -11,9 +11,50 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <EditText
+            android:id="@+id/create_user_firstname"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/hint_first_name"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/create_user_firstname_error"
+            style="@style/ErrorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="16dp" />
 
         <EditText
-            android:id="@+id/create_user_name"
+            android:id="@+id/create_user_surname"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/hint_surname"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/create_user_surname_error"
+            style="@style/ErrorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="16dp" />
+
+        <EditText
+            android:id="@+id/create_user_username"
             style="@style/InputField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +66,7 @@
             android:inputType="textPersonName" />
 
         <TextView
-            android:id="@+id/create_user_name_error"
+            android:id="@+id/create_user_username_error"
             style="@style/ErrorText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -33,12 +33,16 @@ public class CreateUserActivity extends AppCompatActivity {
     public static final String TAG = "CreateUserActivity";
 
     // UI
-    private EditText name;
+    private EditText firstname;
+    private EditText surname;
+    private EditText username;
     private EditText email;
     private EditText password;
     private EditText passwordRepeat;
     private CheckBox terms;
-    private TextView nameError;
+    private TextView usernameError;
+    private TextView firstnameError;
+    private TextView surnameError;
     private TextView emailError;
     private TextView passwordError;
     private TextView passwordRepeatError;
@@ -62,12 +66,16 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void initUI(){
-        name = findViewById(R.id.create_user_name);
+        firstname = findViewById(R.id.create_user_firstname);
+        surname = findViewById(R.id.create_user_surname);
+        username = findViewById(R.id.create_user_username);
         email = findViewById(R.id.create_user_email);
         password = findViewById(R.id.create_user_password);
         passwordRepeat = findViewById(R.id.create_user_repeat_password);
         terms = findViewById(R.id.create_user_terms_checkbox);
-        nameError = findViewById(R.id.create_user_name_error);
+        firstnameError = findViewById(R.id.create_user_firstname_error);
+        surnameError = findViewById(R.id.create_user_surname_error);
+        usernameError = findViewById(R.id.create_user_username_error);
         emailError = findViewById(R.id.create_user_email_error);
         passwordError = findViewById(R.id.create_user_password_error);
         passwordRepeatError = findViewById(R.id.create_user_repeat_password_error);
@@ -94,7 +102,9 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void clearErrors(){
-        nameError.setText("");
+        firstnameError.setText("");
+        surnameError.setText("");
+        usernameError.setText("");
         emailError.setText("");
         passwordError.setText("");
         passwordRepeatError.setText("");
@@ -105,29 +115,42 @@ public class CreateUserActivity extends AppCompatActivity {
         clearErrors();
 
         Log.d(TAG, "onCreateUser: Started user creation");
-        String n = name.getText().toString();
+        String f = firstname.getText().toString();
+        String s = surname.getText().toString();
+        String u = username.getText().toString();
         String e = email.getText().toString();
         String pw = password.getText().toString();
         String pw2 = passwordRepeat.getText().toString();
 
-        if(isValidInput(n, e, pw, pw2)){
+        if(isValidInput(f, s, u, e, pw, pw2)){
             Log.d(TAG, "onCreateUser: Input ok");
-            createAccount(n, e, pw);
+            createAccount(s, f, u, e, pw);
         }
     }
 
 
-    private boolean isValidInput(String n, String e, String pw, String pw2){
+    private boolean isValidInput(String firstname, String surname, String username,
+                                 String email, String password, String password2){
         boolean isOk = true;
 
-        if(!isValidEmail(e)){
+        if(firstname.length() < 2){
+            Log.e(TAG, "isValidInput: Firstname too short");
+            firstnameError.setText(R.string.error_invalid_input);
+            isOk = false;
+        }
+        if(surname.length() < 2){
+            Log.e(TAG, "isValidInput: Surname too short");
+            surnameError.setText(R.string.error_invalid_input);
+            isOk = false;
+        }
+        if(!isValidEmail(email)){
             Log.e(TAG, "isValidInput: Email not valid");
             emailError.setText(R.string.error_invalid_email);
             isOk = false;
         }
-        if(n.length() < 2){
+        if(username.length() < 2){
             Log.e(TAG, "isValidInput: Name too short");
-            nameError.setText(R.string.error_invalid_input);
+            usernameError.setText(R.string.error_invalid_input);
             isOk = false;
         }
         if(!terms.isChecked()){
@@ -135,13 +158,13 @@ public class CreateUserActivity extends AppCompatActivity {
             termsError.setText(R.string.error_terms_not_checked);
             isOk = false;
         }
-        if(pw.length() < 5){
+        if(password.length() < 5){
             Log.e(TAG, "isValidInput: Password too short");
             passwordError.setText(R.string.error_invalid_password);
             isOk = false;
         }
-        if(!pw.equals(pw2)){
-            Log.e(TAG, "isValidInput: Passwords don't match---" + "PW:" + pw + pw2);
+        if(!password.equals(password2)){
+            Log.e(TAG, "isValidInput: Passwords don't match---");
             passwordRepeatError.setText(R.string.error_password_dont_match);
             isOk = false;
         }
@@ -154,7 +177,8 @@ public class CreateUserActivity extends AppCompatActivity {
             return e.matches(regex);
     }
 
-    private void createAccount(final String n, final String e, final String pw){
+    private void createAccount(final String f, final String s, final String u, final String e,
+                               final String pw){
         mAuth.createUserWithEmailAndPassword(e, pw)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -164,9 +188,9 @@ public class CreateUserActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            updateUserName(user, n);
+                            updateUserName(user, u);
                             sendEmail(user);
-                            populateDatabase(user, n, e);
+                            populateDatabase(user, f, s, u, e);
 
                             initUserData(user);
 
@@ -205,12 +229,15 @@ public class CreateUserActivity extends AppCompatActivity {
                 });
     }
 
-    private void populateDatabase(final FirebaseUser currentUser, final String n, final String e){
+    private void populateDatabase(final FirebaseUser currentUser, final String f,
+                                  final String s, final String u, final String e){
         // Add user to Firestore database (for use with friends/contacts)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> user = new HashMap<>();
-        user.put(Keys.NAME_KEY, n.trim());
+        user.put(Keys.FIRSTNAME_KEY, f.trim());
+        user.put(Keys.SURNAME_KEY, s.trim());
+        user.put(Keys.USERNAME_KEY, u.trim());
         user.put(Keys.EMAIL_KEY, e);
 
         db.collection("user").document(e).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
