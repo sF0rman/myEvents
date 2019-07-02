@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_blue"
-    android:theme="@style/AppTheme">
+    android:theme="@style/Theme.AppCompat.Light">
 
     <ImageView
         android:id="@+id/login_logo"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="120dp"
         android:layout_marginTop="24dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_icon"
@@ -57,6 +57,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:onClick="onLogin"
         android:text="@string/hint_login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +71,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:onClick="onForgotPassword"
         android:text="@string/btn_forgot"
         app:layout_constraintBottom_toTopOf="@+id/login_btn_create_account"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +90,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/login_text_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_btn_login" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

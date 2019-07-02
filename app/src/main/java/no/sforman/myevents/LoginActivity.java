@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
@@ -13,7 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,13 +30,11 @@ public class LoginActivity extends AppCompatActivity {
     // UI
     private EditText emailInput;
     private EditText passwordInput;
-    private Button loginBtn;
-    private Button forgotPasswordBtn;
-    private Button createUserBtn;
+    private TextView errorMessage;
 
     //FireBase
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
 
     @Override
@@ -56,9 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     private void initUI(){
         emailInput = findViewById(R.id.login_input_email);
         passwordInput = findViewById(R.id.login_input_password);
-        loginBtn = findViewById(R.id.login_btn_login);
-        forgotPasswordBtn = findViewById(R.id.login_btn_forgot_password);
-        createUserBtn = findViewById(R.id.login_btn_create_account);
+        errorMessage = findViewById(R.id.login_text_error);
     }
 
     public boolean isOnline() {
@@ -70,15 +72,63 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initFirebase(){
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        updateUserData(currentUser);
     }
 
+    private void updateUserData(FirebaseUser user){
+        if(user != null){
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+    }
 
     // Handle buttons
 
     public void onLogin(View v){
+        errorMessage.setText("");
+        String e = emailInput.getText().toString();
+        String p = passwordInput.getText().toString();
+        if(isValidEmail(e) && inputPassword(p)){
+            login(e, p);
+        } else {
+            errorMessage.setText(R.string.error_incorrect_password);
+        }
+    }
 
+
+    private boolean isValidEmail(String e){
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return e.matches(regex);
+    }
+
+    private boolean inputPassword(String p){
+        if(p.length() > 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void login(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUserData(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            errorMessage.setText(R.string.error_incorrect_password);
+                        }
+
+                    }
+                });
     }
 
     public void onCreateUser(View v){
@@ -87,6 +137,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onForgotPassword(View v){
+
+        String emailAddress = emailInput.getText().toString();
+        updateUserData(null);
+        mAuth.sendPasswordResetEmail(emailAddress)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                        }
+                    }
+                });
 
     }
 
