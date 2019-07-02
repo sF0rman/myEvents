@@ -28,6 +28,7 @@
         android:ems="10"
         android:hint="@string/hint_email"
         android:inputType="textEmailAddress"
+        android:autofillHints="email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_logo" />
@@ -42,6 +43,7 @@
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/hint_password"
+        android:autofillHints="password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

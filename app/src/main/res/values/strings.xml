@@ -62,9 +62,6 @@
     <string name="nav_events">Events</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Notification -->
-    <string name="not_channel_name"></string>
-    <string name="not_channel_description"></string>
 
     <!-- Errors -->
     <string name="error_invalid_email">Email address is invalid</string>

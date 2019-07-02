@@ -12,22 +12,22 @@
     <style name="InputField" parent="TextAppearance.AppCompat">
         <!-- Customize your theme here. -->
         <item name="android:background">@drawable/input_light</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="PrimaryButton" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_orange</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="SecondaryButtons" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_light</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="AppButtons" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_blue</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>
