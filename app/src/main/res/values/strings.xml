@@ -1,0 +1,110 @@
+<resources>
+
+    <!-- Titles -->
+    <string name="app_name">myEvents</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="title_groups">Groups</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_events">Events</string>
+    <string name="title_create_event">Create event</string>
+    <string name="title_edit_event">Edit event</string>
+
+    <!-- Notification Channels -->
+    <string name="channel_event">event</string>
+    <string name="channel_invite">invite</string>
+    <string name="channel_friend">friend</string>
+
+
+    <!-- Hints -->
+    <string name="hint_login">Login</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_first_name">First name</string>
+    <string name="hint_surname">Surname</string>
+    <string name="hint_display_name">Display name</string>
+    <string name="hint_repeat_password">Repeat password</string>
+    <string name="hint_terms">By clicking this, you agree to all terms and conditions.</string>
+    <string name="hint_event_name">Event name</string>
+    <string name="hint_description">Write your event description here!</string>
+    <string name="hint_start_date">Start date</string>
+    <string name="hint_end_date">End date</string>
+    <string name="hint_start_time">Start time</string>
+    <string name="hint_end_time">End time</string>
+    <string name="hint_isOnline">Is this an online event?</string>
+    <string name="hint_user_created">User has been successfully created!</string>
+    <string name="hint_location">Location</string>
+    <string name="hint_time">Time</string>
+    <string name="hint_reminder">Add a reminder</string>
+    <string name="hint_set_reminder">Set reminder</string>
+
+    <!-- Temp -->
+    <string name="temp_hosted_by">Hosted by: John Smith</string>
+    <string name="temp_event_name">Super Event</string>
+    <string name="temp_start_time">01.01.2019 20:30</string>
+    <string name="temp_invited_by">You have been invited by John Smith</string>
+
+    <!-- Buttons -->
+    <string name="btn_forgot">Forgot password</string>
+    <string name="btn_create_account">Create account</string>
+    <string name="btn_create_event">Create Event</string>
+    <string name="btn_logout">Log out</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_accept">Accept</string>
+    <string name="btn_decline">Decline</string>
+
+    <!-- Navigation -->
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+    <string name="nav_groups">Groups</string>
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_events">Events</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Notification -->
+    <string name="not_channel_name"></string>
+    <string name="not_channel_description"></string>
+
+    <!-- Errors -->
+    <string name="error_invalid_email">Email address is invalid</string>
+    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_incorrect_password">Email and password don\'t match</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_password_dont_match">Passwords don\'t match</string>
+    <string name="error_invalid_input">Input too short</string>
+    <string name="error_terms_not_checked">You must accept terms to use app.</string>
+    <string name="error_no_location">Event needs a location or to be set as Online</string>
+    <string name="error_event_early">Selected date has already passed.</string>
+    <string name="error_event_end_early">Event cannot end before it starts.</string>
+    <string name="error_nothing_here">There\'s nothing here!</string>
+    <string name="error_no_reminder">You have chosen a reminder, but haven\'t set a time.</string>
+    <string name="error_reminder_early">Reminder can\'t be set after event start time</string>
+    <string name="error_no_internet">You\'re not connected to the internet. ezEvents requires internet access to work.</string>
+    <string name="error_not_ready">Sorry, contacts are not yet ready. Please come back later.</string>
+
+
+    <!-- Messages -->
+    <string name="msg_event_online">Online event</string>
+    <string name="msg_friends_request">Pending friend requests</string>
+    <string name="msg_friends">Contacts</string>
+    <string name="msg_friends_pending">Invitations sent</string>
+    <string name="msg_test_notification_channels">Click each button to test the notification channels:</string>
+    <string name="msg_invited">Invites</string>
+    <string name="msg_requests">Friends</string>
+    <string name="msg_reminder">Reminder</string>
+    <string name="msg_not_set">Not set</string>
+    <string name="msg_email_not_verified">You email hasn\'t been verified. Click here to resend verification email!</string>
+    <string name="msg_password_recovery_sent">A message has been sent to your email with instructions to reset your password.</string>
+
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis nisi, fermentum finibus porttitor ac, bibendum ut lacus. Nulla rutrum velit eu semper lobortis. Suspendisse non porta risus. Sed lectus tellus, gravida in efficitur quis, volutpat eget nulla. Nullam ornare sodales nibh, ut consequat sapien rutrum sit amet</string>
+
+    <!-- AutoStrings from templates -->
+
+    <string name="title_activity_your">YourActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+</resources>
