@@ -25,7 +25,7 @@
     <string name="hint_surname">Surname</string>
     <string name="hint_display_name">Display name</string>
     <string name="hint_repeat_password">Repeat password</string>
-    <string name="hint_terms">By clicking this, you agree to all terms and conditions.</string>
+    <string name="hint_terms">I have read and agree to terms and conditions.</string>
     <string name="hint_event_name">Event name</string>
     <string name="hint_description">Write your event description here!</string>
     <string name="hint_start_date">Start date</string>
