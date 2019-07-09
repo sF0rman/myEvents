@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initUI();
         initNavigation();
 
+
         if(isOnline()){
             initFirebase();
             initUserData();
@@ -67,11 +68,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new ContactFragment());
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
-        } else if(savedInstanceState == null){
+        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "settings"){
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new SettingsFragment());
+            navView.setCheckedItem(R.id.nav_events);
+            Log.d(TAG, "onCreate: intent-redirected to settings.");
+        } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new EventsFragment());
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: Normal load to events page.");
         }
+
+        onNavigationItemSelected(navView.getCheckedItem());
 
     }
 
@@ -96,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initUI(){
         intent = getIntent();
+
         drawer = findViewById(R.id.main_drawer);
         content = findViewById(R.id.main_content_container);
         navView = findViewById(R.id.navigation_view);
@@ -127,6 +135,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    @Override
+    public void onBackPressed(){
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+            finish();
+        }
+    }
 
     // Navigation Listener
     @Override
@@ -134,12 +151,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()){
             case R.id.nav_events:
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new EventsFragment()).commit();
+                Log.d(TAG, "onNavigationItemSelected: Events loaded");
                 break;
             case R.id.nav_contacts:
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new ContactFragment()).commit();
+                Log.d(TAG, "onNavigationItemSelected: Contacts loaded");
                 break;
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new SettingsFragment()).commit();
+                Log.d(TAG, "onNavigationItemSelected: Settings loaded");
                 break;
             case R.id.nav_logout:
                 signOut();
@@ -147,5 +167,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void onAddEvent(View v){
+        Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
+        startActivity(i);
     }
 }

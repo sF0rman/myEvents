@@ -124,7 +124,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
         if(isValidInput(f, s, u, e, pw, pw2)){
             Log.d(TAG, "onCreateUser: Input ok");
-            createAccount(s, f, u, e, pw);
+            createAccount(f, s, u, e, pw);
         }
     }
 
