@@ -1,6 +1,7 @@
 package no.sforman.myevents;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,71 +19,66 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    public static final String MAPVIEW_BUNDLE_KEY = "AIzaSyAd4Kb9h9IJ4qiqhHiZQgYQUMbucyHKqzM";
+    public static final String TAG = "MapFragment";
 
-    private MapView mMapView;
+
+    private String mapKey;
+    private MapView mapView;
     private GoogleMap gMap;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mMapView = view.findViewById(R.id.mapView);
+        mapView = view.findViewById(R.id.mapView);
         initMap(savedInstanceState);
 
         return view;
-
     }
 
     public void initMap(Bundle savedInstanceState){
-        // *** IMPORTANT ***
-        // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
-        // objects or sub-Bundles.
+        mapKey = getString(R.string.events_maps_key);
+        Log.d(TAG, "initMap: got key: " + mapKey);
         Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        if(savedInstanceState != null){
+            mapViewBundle = savedInstanceState.getBundle(mapKey);
         }
 
-        mMapView.onCreate(mapViewBundle);
-
-        mMapView.getMapAsync(this);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
     }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+        Bundle mapViewBundle = outState.getBundle(mapKey);
         if (mapViewBundle == null) {
             mapViewBundle = new Bundle();
-            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+            outState.putBundle(mapKey, mapViewBundle);
         }
 
-        mMapView.onSaveInstanceState(mapViewBundle);
+        mapView.onSaveInstanceState(mapViewBundle);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+        mapView.onResume();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mMapView.onStart();
+        mapView.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mMapView.onStop();
+        mapView.onStop();
     }
 
     @Override
@@ -92,20 +88,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onPause() {
-        mMapView.onPause();
+        mapView.onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mMapView.onDestroy();
+        mapView.onDestroy();
         super.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
+        mapView.onLowMemory();
     }
 
     public void setLocationMarker(LatLng loc){
@@ -113,5 +109,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         gMap.addMarker(new MarkerOptions().position(loc).title("Marker"));
         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 10.0f));
     }
-
 }
