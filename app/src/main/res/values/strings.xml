@@ -37,7 +37,8 @@
     <string name="hint_location">Location</string>
     <string name="hint_time">Time</string>
     <string name="hint_reminder">Add a reminder</string>
-    <string name="hint_set_reminder">Set reminder</string>
+    <string name="hint_set_reminder_date">Set reminder date</string>
+    <string name="hint_set_reminder_time">Set reminder time</string>
 
     <!-- Temp -->
     <string name="temp_hosted_by">Hosted by: John Smith</string>
