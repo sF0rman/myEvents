@@ -14,6 +14,9 @@
     <string name="channel_event">event</string>
     <string name="channel_invite">invite</string>
     <string name="channel_friend">friend</string>
+    <string name="channel_event_description">Notifications for events</string>
+    <string name="channel_invite_description">Notifications for event invitations</string>
+    <string name="channel_friend_description">Notifications for friend requests</string>
 
 
     <!-- Hints -->

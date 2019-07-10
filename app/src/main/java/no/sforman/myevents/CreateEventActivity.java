@@ -17,20 +17,34 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreateEventActivity extends AppCompatActivity {
 
     public static final String TAG = "CreateEventActivity";
+    public static final String NAME_KEY = "name";
+    public static final String DESCRIPTION_KEY = "description";
+    public static final String START_KEY = "start";
+    public static final String END_KEY = "end";
+    public static final String GEOPONT_KEY = "geopoint";
+    public static final String LOCATION_KEY = "location";
+    public static final String ADDRESS_KEY = "address";
+    public static final String ONLINE_KEY = "isOnline";
+    public static final String REMINDER_KEY = "reminderkey";
 
     //UI
     MapFragment mapFragment;
@@ -61,7 +75,7 @@ public class CreateEventActivity extends AppCompatActivity {
     String eventName;
     String eventDescription;
     String eventLocation;
-    Boolean event_isOnline;
+    String eventAddress;
     Calendar reminderCal = Calendar.getInstance();
     Calendar startCal = Calendar.getInstance();
     Calendar endCal = Calendar.getInstance();
@@ -155,7 +169,8 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public void findLocation(View v){
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
+                Place.Field.LAT_LNG, Place.Field.ADDRESS);
 
         Intent i = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY, fields)
@@ -173,7 +188,8 @@ public class CreateEventActivity extends AppCompatActivity {
                 placeLatLng = place.getLatLng();
                 eventGeoPoint = new GeoPoint(placeLatLng.latitude, placeLatLng.longitude);
                 eventLocation = place.getName();
-                location.setText(eventLocation);
+                eventAddress = place.getAddress();
+                location.setText(eventAddress);
 
                 if(mapFragment != null){
                     mapFragment.setLocationMarker(placeLatLng);
@@ -186,7 +202,7 @@ public class CreateEventActivity extends AppCompatActivity {
         Log.d(TAG, "onSubmitEvent: Submit clicked");
 
         if(validInput()){
-
+            createEvent();
         }
     }
 
@@ -325,6 +341,49 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         });
         timePicker.show(getSupportFragmentManager(), "TimePicker");
+    }
+
+
+    public void createEvent(){
+        Log.d(TAG, "createEvent: Started");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        final int rid = (int) today.getTimeInMillis();
+        Map<String, Object> event = new HashMap<>();
+        event.put(NAME_KEY, eventName);
+        event.put(DESCRIPTION_KEY, eventDescription);
+        event.put(START_KEY, startCal);
+        event.put(END_KEY, endCal);
+        event.put(ONLINE_KEY, isOnline.isChecked());
+        if(!isOnline.isChecked()){
+            event.put(ADDRESS_KEY, eventAddress);
+            event.put(LOCATION_KEY, eventLocation);
+            event.put(GEOPONT_KEY, eventGeoPoint);
+        } else {
+            event.put(GEOPONT_KEY, "Event Online");
+            event.put(ADDRESS_KEY, "none");
+            event.put(LOCATION_KEY, "none");
+        }
+        event.put(REMINDER_KEY, rid);
+
+        db.collection("event").add(event).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
+                if(hasReminder.isChecked()){
+                    makeReminder(rid);
+                }
+                Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
+
+    }
+
+    public void makeReminder(int key){
+        Log.d(TAG, "makeReminder: Started");
+
+
     }
 
 }
