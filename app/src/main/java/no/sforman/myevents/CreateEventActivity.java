@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -18,14 +19,19 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -73,7 +79,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Calendar reminderCal = Calendar.getInstance();
     Calendar startCal = Calendar.getInstance();
     Calendar endCal = Calendar.getInstance();
-
+    GeoPoint eventGeoPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +170,14 @@ public class CreateEventActivity extends AppCompatActivity {
         PlacesClient pClient = Places.createClient(this);
     }
 
+    public void findLocation(View v){
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+
+        Intent i = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.OVERLAY, fields)
+                .build(this);
+        startActivityForResult(i, AUTOCOMPLETE_REQUEST_CODE);
+    }
 
 
     @Override
@@ -172,8 +186,14 @@ public class CreateEventActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "onActivityResult: Place" + place.getName() + ", " + place.getLatLng());
-
                 placeLatLng = place.getLatLng();
+                eventGeoPoint = new GeoPoint(placeLatLng.latitude, placeLatLng.longitude);
+                eventLocation = place.getName();
+                location.setText(eventLocation);
+
+                if(mapFragment != null){
+                    mapFragment.setLocationMarker(placeLatLng);
+                }
             }
         }
     }
