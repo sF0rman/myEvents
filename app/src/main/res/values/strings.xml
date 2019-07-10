@@ -77,7 +77,8 @@
     <string name="error_event_end_early">Event cannot end before it starts.</string>
     <string name="error_nothing_here">There\'s nothing here!</string>
     <string name="error_no_reminder">You have chosen a reminder, but haven\'t set a time.</string>
-    <string name="error_reminder_early">Reminder can\'t be set after event start time</string>
+    <string name="error_reminder_late">Reminder can\'t be set after event start time</string>
+    <string name="error_reminder_early">Reminder can\'t be set before current time.</string>
     <string name="error_no_internet">You\'re not connected to the internet. ezEvents requires internet access to work.</string>
     <string name="error_not_ready">Sorry, contacts are not yet ready. Please come back later.</string>
 

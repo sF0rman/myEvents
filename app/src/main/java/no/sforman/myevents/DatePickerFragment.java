@@ -35,7 +35,7 @@ public class DatePickerFragment extends DialogFragment
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         if(dListener != null){
-            dListener.onDateChosen(year, month+1, day);
+            dListener.onDateChosen(year, month, day);
         }
     }
 

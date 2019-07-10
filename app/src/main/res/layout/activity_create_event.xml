@@ -35,6 +35,7 @@
 
         <TextView
             android:id="@+id/create_event_name_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -61,16 +62,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/create_event_name_error" />
 
-        <TextView
-            android:id="@+id/create_event_startdate_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/create_event_starttime_error"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_startdate_text" />
-
         <EditText
             android:id="@+id/create_event_starttime_text"
             style="@style/InputField"
@@ -88,16 +79,6 @@
             app:layout_constraintStart_toEndOf="@+id/create_event_startdate_text"
             app:layout_constraintTop_toBottomOf="@+id/create_event_name_error" />
 
-        <TextView
-            android:id="@+id/create_event_starttime_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/create_event_startdate_error"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_starttime_text" />
-
         <EditText
             android:id="@+id/create_event_enddate_text"
             style="@style/InputField"
@@ -113,15 +94,16 @@
             android:onClick="setDateTime"
             app:layout_constraintEnd_toStartOf="@+id/create_event_endtime_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_startdate_error" />
+            app:layout_constraintTop_toBottomOf="@+id/create_event_startdate_text" />
 
         <TextView
-            android:id="@+id/create_event_enddate_error"
+            android:id="@+id/create_event_time_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/create_event_endtime_error"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/create_event_enddate_text" />
 
@@ -140,17 +122,7 @@
             android:onClick="setDateTime"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/create_event_enddate_text"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_starttime_error" />
-
-        <TextView
-            android:id="@+id/create_event_endtime_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/create_event_enddate_error"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_endtime_text" />
+            app:layout_constraintTop_toBottomOf="@+id/create_event_starttime_text" />
 
         <CheckBox
             android:id="@+id/create_event_add_reminder"
@@ -162,7 +134,7 @@
             android:text="@string/hint_reminder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_event_enddate_error" />
+            app:layout_constraintTop_toBottomOf="@+id/create_event_time_error" />
 
 
         <CheckBox
@@ -180,6 +152,7 @@
 
         <TextView
             android:id="@+id/create_event_is_online_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -198,10 +171,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:hint="@string/hint_location"
-            android:onClick="findLocation"
             android:clickable="true"
             android:focusable="false"
+            android:hint="@string/hint_location"
+            android:onClick="findLocation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -224,6 +197,7 @@
 
         <TextView
             android:id="@+id/create_event_description_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -251,6 +225,7 @@
 
         <TextView
             android:id="@+id/create_event_location_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -299,6 +274,7 @@
 
         <TextView
             android:id="@+id/create_event_reminder_time_error"
+            style="@style/ErrorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -307,8 +283,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/create_event_reminder_time" />
-
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

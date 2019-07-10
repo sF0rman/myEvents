@@ -1,12 +1,9 @@
 package no.sforman.myevents;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -19,18 +16,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -54,10 +47,7 @@ public class CreateEventActivity extends AppCompatActivity {
     CheckBox hasReminder;
     TextView nameError;
     TextView descriptionError;
-    TextView startDateError;
-    TextView startTimeError;
-    TextView endDateError;
-    TextView endTimeError;
+    TextView timeError;
     TextView locationError;
     TextView reminderError;
     TextView isOnlineError;
@@ -70,15 +60,12 @@ public class CreateEventActivity extends AppCompatActivity {
     //Event variables
     String eventName;
     String eventDescription;
-    String eventStartDate;
-    String eventStartTime;
-    String eventEndDate;
-    String eventEndTime;
     String eventLocation;
     Boolean event_isOnline;
     Calendar reminderCal = Calendar.getInstance();
     Calendar startCal = Calendar.getInstance();
     Calendar endCal = Calendar.getInstance();
+    Calendar today = Calendar.getInstance();
     GeoPoint eventGeoPoint;
 
     @Override
@@ -123,10 +110,7 @@ public class CreateEventActivity extends AppCompatActivity {
         hasReminder = findViewById(R.id.create_event_add_reminder);
 
         nameError = findViewById(R.id.create_event_name_error);
-        startDateError = findViewById(R.id.create_event_startdate_error);
-        startTimeError = findViewById(R.id.create_event_starttime_error);
-        endDateError = findViewById(R.id.create_event_enddate_error);
-        endTimeError = findViewById(R.id.create_event_endtime_error);
+        timeError = findViewById(R.id.create_event_time_error);
         reminderError = findViewById(R.id.create_event_reminder_time_error);
         isOnlineError = findViewById(R.id.create_event_is_online_error);
         locationError = findViewById(R.id.create_event_location_error);
@@ -200,6 +184,75 @@ public class CreateEventActivity extends AppCompatActivity {
 
     public void onSubmitEvent(View v){
         Log.d(TAG, "onSubmitEvent: Submit clicked");
+
+        if(validInput()){
+
+        }
+    }
+
+    public boolean validInput(){
+        clearErrors();
+        eventName = name.getText().toString();
+        eventDescription = description.getText().toString();
+        Boolean isOk = true;
+
+        if(eventName.length() < 2){
+            nameError.setText(getString(R.string.error_invalid_input));
+            isOk = false;
+            Log.e(TAG, "validInput: Name not long enough");
+        }
+        if(startCal.after(endCal)){
+            timeError.setText(R.string.error_event_end_early);
+            isOk = false;
+            Log.e(TAG, "validInput: Event ends before it starts");
+        }
+
+        if(startCal.before(today)){
+            timeError.setText(R.string.error_event_early);
+            isOk = false;
+            Log.e(TAG, "validInput: Event starts before today");
+        }
+
+        if(!isOnline.isChecked()){
+            if(eventGeoPoint == null){
+                locationError.setText(getString(R.string.error_no_location));
+                isOk = false;
+                Log.e(TAG, "validInput: No location set");
+            }
+        }
+
+        if(eventDescription.length() < 5){
+            descriptionError.setText(R.string.error_invalid_input);
+            isOk = false;
+            Log.e(TAG, "validInput: Description too short");
+        }
+
+        if(hasReminder.isChecked()){
+            if(reminderDate.getText().toString().matches("")) {
+                reminderError.setText(R.string.error_no_reminder);
+                isOk = false;
+                Log.e(TAG, "validInput: No reminder set");
+            } else if (reminderCal.before(today)){
+                reminderError.setText(R.string.error_reminder_early);
+                isOk = false;
+                Log.e(TAG, "validInput: Reminder too early " + reminderCal.toString());
+            }  else if(reminderCal.after(startCal)){
+                reminderError.setText(R.string.error_reminder_late);
+                isOk = false;
+                Log.e(TAG, "validInput: Reminder too late");
+            }
+        }
+
+        return isOk;
+    }
+
+    public void clearErrors(){
+        nameError.setText("");
+        descriptionError.setText("");
+        timeError.setText("");
+        locationError.setText("");
+        reminderError.setText("");
+        isOnlineError.setText("");
     }
 
     public void setDateTime(View v){
@@ -236,7 +289,7 @@ public class CreateEventActivity extends AppCompatActivity {
         ((DatePickerFragment) datePicker).setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
             @Override
             public void onDateChosen(int year, int month, int day) {
-                text.setText(String.format("%02d/%02d/%04d", day, month, year));
+                text.setText(String.format("%02d/%02d/%04d", day, month+1, year));
                 cal.set(year, month, day);
 
                 if(text == startDate){
@@ -266,7 +319,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     endCal.add(Calendar.HOUR_OF_DAY, 2);
                     Log.d(TAG, "onTimeChosen: " + startCal.toString());
                     Log.d(TAG, "onTimeChosen: "+ endCal.toString());
-                    endDate.setText(String.format("%02d/%02d/%04d", endCal.get(Calendar.DATE), endCal.get(Calendar.MONTH), endCal.get(Calendar.YEAR)));
+                    endDate.setText(String.format("%02d/%02d/%04d", endCal.get(Calendar.DATE), endCal.get(Calendar.MONTH+1), endCal.get(Calendar.YEAR)));
                     endTime.setText(String.format("%02d:%02d", endCal.get(Calendar.HOUR_OF_DAY), endCal.get(Calendar.MINUTE)));
                 }
             }
