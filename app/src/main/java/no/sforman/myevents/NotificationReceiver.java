@@ -14,6 +14,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     public static final String TAG = "NotificationReciever";
 
     private String id;
+    private String reminder;
     private String name;
     private String msg;
     private String nChannel;
@@ -21,16 +22,21 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        id = (String) intent.getStringExtra("notificationid");
+        id = (String) intent.getStringExtra("id");
+        reminder = (String) intent.getStringExtra("reminder");
         name = (String) intent.getStringExtra("name");
         msg = (String) intent.getStringExtra("message");
         nChannel = (String) intent.getStringExtra("channel");
 
         Intent notificationIntent = new Intent(context, EventActivity.class);
         notificationIntent.putExtra("id", id);
+        notificationIntent.putExtra("reminder", reminder);
         Log.d(TAG, "onReceive: Got ID" + id);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(context,
+                (int) System.currentTimeMillis(),
+                notificationIntent,
+                0);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         
@@ -39,7 +45,10 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .setContentTitle(name)
                 .setContentText(msg)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(contentIntent)
                 .setAutoCancel(true);
+
+        notificationManager.notify(0, builder.build());
 
     }
 }

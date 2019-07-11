@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -27,6 +29,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -81,6 +85,10 @@ public class CreateEventActivity extends AppCompatActivity {
     Calendar endCal = Calendar.getInstance();
     Calendar today = Calendar.getInstance();
     GeoPoint eventGeoPoint;
+
+    DateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy");
+    DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    DateFormat dateTimeFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -305,8 +313,9 @@ public class CreateEventActivity extends AppCompatActivity {
         ((DatePickerFragment) datePicker).setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
             @Override
             public void onDateChosen(int year, int month, int day) {
-                text.setText(String.format("%02d/%02d/%04d", day, month+1, year));
+                //text.setText(String.format("%02d/%02d/%04d", day, month+1, year));
                 cal.set(year, month, day);
+                text.setText(dateFormat.format(cal.getTime()));
 
                 if(text == startDate){
                     showTimePickerDialog(startTime, startCal);
@@ -326,17 +335,20 @@ public class CreateEventActivity extends AppCompatActivity {
         ((TimePickerFragment) timePicker).setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
             @Override
             public void onTimeChosen(int hour, int min) {
-                text.setText(String.format("%02d:%02d", hour, min));
+                //text.setText(String.format("%02d:%02d", hour, min));
                 cal.set(Calendar.HOUR_OF_DAY, hour);
                 cal.set(Calendar.MINUTE, min);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                text.setText(timeFormat.format(cal.getTime()));
 
                 if(text == startTime){
                     endCal = startCal;
                     endCal.add(Calendar.HOUR_OF_DAY, 2);
                     Log.d(TAG, "onTimeChosen: " + startCal.toString());
                     Log.d(TAG, "onTimeChosen: "+ endCal.toString());
-                    endDate.setText(String.format("%02d/%02d/%04d", endCal.get(Calendar.DATE), endCal.get(Calendar.MONTH+1), endCal.get(Calendar.YEAR)));
-                    endTime.setText(String.format("%02d:%02d", endCal.get(Calendar.HOUR_OF_DAY), endCal.get(Calendar.MINUTE)));
+                    endDate.setText(dateFormat.format(endCal.getTime()));
+                    endTime.setText(timeFormat.format(endCal.getTime()));
                 }
             }
         });
@@ -371,7 +383,8 @@ public class CreateEventActivity extends AppCompatActivity {
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
                 if(hasReminder.isChecked()){
-                    makeReminder(rid);
+                    String id = documentReference.getId();
+                    makeReminder(id, rid);
                 }
                 Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
                 startActivity(i);
@@ -380,9 +393,27 @@ public class CreateEventActivity extends AppCompatActivity {
 
     }
 
-    public void makeReminder(int key){
+    public void makeReminder(String event, int reminder){
         Log.d(TAG, "makeReminder: Started");
 
+        Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
+        i.putExtra("id", event);
+        i.putExtra("reminder", reminder);
+        i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(startCal.getTime()));
+        i.putExtra("name", eventName);
+        i.putExtra("channel", "event");
+
+        PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
+                getApplicationContext(),
+                reminder, i,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCal.getTimeInMillis(), nIntent);
+
+        Log.d(TAG, "makeReminder: reminder set for " + reminderCal.getTime());
+        Log.d(TAG, "makeReminder: reminderID: " + reminder);
 
     }
 
