@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -25,6 +26,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -75,6 +78,10 @@ public class CreateEventActivity extends AppCompatActivity {
     String placeName;
     LatLng placeLatLng;
 
+    // Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
     //Event variables
     String eventName;
     String eventDescription;
@@ -105,7 +112,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     }
 
-    public boolean isOnline() {
+        public boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -114,7 +121,8 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void initFirebase(){
-
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
     }
 
     private void initUI(){
@@ -356,44 +364,57 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
 
+
     public void createEvent(){
-        Log.d(TAG, "createEvent: Started");
+        Log.d(TAG, "createEventObject: Started");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        final int rid = (int) today.getTimeInMillis();
-        Map<String, Object> event = new HashMap<>();
-        event.put(NAME_KEY, eventName);
-        event.put(DESCRIPTION_KEY, eventDescription);
-        event.put(START_KEY, startCal);
-        event.put(END_KEY, endCal);
-        event.put(ONLINE_KEY, isOnline.isChecked());
-        if(!isOnline.isChecked()){
-            event.put(ADDRESS_KEY, eventAddress);
-            event.put(LOCATION_KEY, eventLocation);
-            event.put(GEOPONT_KEY, eventGeoPoint);
+        final Event event;
+        final long rid = (long) today.getTimeInMillis();
+        if(isOnline.isChecked()){
+            event = new Event(eventName,
+                    currentUser.getEmail(),
+                    eventDescription,
+                    startCal,
+                    endCal,
+                    0,
+                    0,
+                    "none",
+                    "none",
+                    true,
+                    rid);
         } else {
-            event.put(GEOPONT_KEY, "Event Online");
-            event.put(ADDRESS_KEY, "none");
-            event.put(LOCATION_KEY, "none");
+            event = new Event(eventName,
+                    currentUser.getEmail(),
+                    eventDescription,
+                    startCal,
+                    endCal,
+                    eventGeoPoint.getLatitude(),
+                    eventGeoPoint.getLongitude(),
+                    eventLocation,
+                    eventAddress,
+                    false,
+                    rid);
         }
-        event.put(REMINDER_KEY, rid);
+
 
         db.collection("event").add(event).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
+                String id = documentReference.getId();
+                event.addID(id);
                 if(hasReminder.isChecked()){
-                    String id = documentReference.getId();
                     makeReminder(id, rid);
                 }
                 Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
+                i.putExtra("new_event", event);
                 startActivity(i);
             }
         });
-
     }
 
-    public void makeReminder(String event, int reminder){
+    public void makeReminder(String event, long reminder){
         Log.d(TAG, "makeReminder: Started");
 
         Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
@@ -405,7 +426,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
                 getApplicationContext(),
-                reminder, i,
+                (int)reminder, i,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
 
