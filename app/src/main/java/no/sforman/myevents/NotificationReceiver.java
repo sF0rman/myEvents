@@ -22,14 +22,14 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        id = (String) intent.getStringExtra("id");
+        id = (String) intent.getStringExtra("eventId");
         reminder = (String) intent.getStringExtra("reminder");
         name = (String) intent.getStringExtra("name");
         msg = (String) intent.getStringExtra("message");
         nChannel = (String) intent.getStringExtra("channel");
 
         Intent notificationIntent = new Intent(context, EventActivity.class);
-        notificationIntent.putExtra("id", id);
+        notificationIntent.putExtra("eventId", id);
         notificationIntent.putExtra("reminder", reminder);
         Log.d(TAG, "onReceive: Got ID" + id);
 

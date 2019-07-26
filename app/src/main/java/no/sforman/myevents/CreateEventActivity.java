@@ -144,14 +144,10 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
-                    mapFragment.getView().setVisibility(View.GONE);
-                    onlineImg.setVisibility(View.VISIBLE);
                     reminderDate.setVisibility(View.VISIBLE);
                     reminderTime.setVisibility(View.VISIBLE);
                     reminderError.setVisibility(View.VISIBLE);
                 } else {
-                    mapFragment.getView().setVisibility(View.VISIBLE);
-                    onlineImg.setVisibility(View.GONE);
                     reminderDate.setVisibility(View.GONE);
                     reminderTime.setVisibility(View.GONE);
                     reminderError.setVisibility(View.GONE);
@@ -163,10 +159,13 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
-
+                    mapFragment.getView().setVisibility(View.GONE);
+                    onlineImg.setVisibility(View.VISIBLE);
                     location.setVisibility(View.GONE);
                     locationError.setVisibility(View.GONE);
                 } else {
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    onlineImg.setVisibility(View.GONE);
                     location.setVisibility(View.VISIBLE);
                     locationError.setVisibility(View.VISIBLE);
                 }
@@ -407,7 +406,6 @@ public class CreateEventActivity extends AppCompatActivity {
                     makeReminder(id, rid);
                 }
                 Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
-                i.putExtra("new_event", event);
                 startActivity(i);
             }
         });
@@ -417,7 +415,7 @@ public class CreateEventActivity extends AppCompatActivity {
         Log.d(TAG, "makeReminder: Started");
 
         Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
-        i.putExtra("id", event);
+        i.putExtra("eventId", event);
         i.putExtra("reminder", reminder);
         i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(startCal.getTime()));
         i.putExtra("name", eventName);

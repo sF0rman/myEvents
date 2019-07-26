@@ -133,7 +133,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onForgotPassword(View v){
-
         String emailAddress = emailInput.getText().toString();
         updateUserData(null);
         mAuth.sendPasswordResetEmail(emailAddress)
