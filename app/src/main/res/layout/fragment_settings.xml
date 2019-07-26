@@ -7,6 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="12px"
         android:orientation="vertical">
 
 
@@ -27,7 +28,9 @@
                     android:text="@string/title_notifications" />
 
                 <Button
+                    android:id="@+id/settings_notification_settings"
                     style="@style/PrimaryButton"
+                    android:onClick="notificationSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -41,6 +44,8 @@
                     android:weightSum="3">
 
                     <Button
+                        android:id="@+id/settings_event_channel"
+                        android:onClick="testChannelEvent"
                         style="@style/SecondaryButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -49,6 +54,8 @@
                         android:text="@string/btn_events" />
 
                     <Button
+                        android:id="@+id/settings_invite_channel"
+                        android:onClick="testChannelInvite"
                         style="@style/SecondaryButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -57,6 +64,8 @@
                         android:text="@string/btn_invites" />
 
                     <Button
+                        android:onClick="testChannelFriends"
+                        android:id="@+id/settings_friend_channel"
                         style="@style/SecondaryButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -93,7 +102,7 @@
                     android:text="@string/title_user" />
 
                 <EditText
-                    android:id="@+id/settings_first_name"
+                    android:id="@+id/settings_firstname"
                     style="@style/InputField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -101,7 +110,7 @@
                     android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/settings_first_name_error"
+                    android:id="@+id/settings_firstname_error"
                     style="@style/ErrorText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -186,6 +195,7 @@
                     android:visibility="gone" />
 
                 <Button
+                    android:onClick="editUser"
                     android:id="@+id/settings_edit_user"
                     style="@style/SecondaryButtons"
                     android:layout_width="match_parent"
@@ -193,6 +203,8 @@
                     android:text="@string/btn_edit_user" />
 
                 <Button
+                    android:onClick="changePassword"
+                    android:id="@+id/settings_change_password"
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -204,22 +216,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:visibility="gone"
                     android:weightSum="2">
 
                     <Button
+                        android:onClick="cancelChange"
+                        android:id="@+id/settings_user_cancel"
                         style="@style/SecondaryButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/btn_cancel" />
+                        android:text="@string/btn_cancel"
+                        android:visibility="gone"/>
 
                     <Button
+                        android:onClick="acceptChange"
+                        android:id="@+id/settings_user_accept"
                         style="@style/PrimaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/btn_accept" />
+                        android:text="@string/btn_accept"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
 
@@ -245,18 +262,21 @@
                     android:text="@string/title_privacy" />
 
                 <Button
+                    android:onClick="getAllData"
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_show_all_data" />
 
                 <Button
+                    android:onClick="deleteAllEvents"
                     style="@style/SecondaryButtons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_delete_all_events" />
 
                 <Button
+                    android:onClick="deleteAccount"
                     style="@style/SecondaryButtons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

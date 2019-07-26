@@ -27,7 +27,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 class EventsFragment extends Fragment {
 
@@ -138,5 +137,6 @@ class EventsFragment extends Fragment {
         fab = layout.findViewById(R.id.event_add_event_fab);
 
     }
+
 
 }

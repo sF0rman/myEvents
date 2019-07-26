@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -12,6 +14,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +48,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Firestore
     private FirebaseFirestore db;
 
+    // Fragments
+    EventsFragment eventsFragment;
+    SettingsFragment settingsFragment;
+    ContactFragment contactFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +73,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Don't reload fragment if device is rotated.
         if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "contacts"){
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new ContactFragment());
+            contactFragment = new ContactFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
         } else if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "settings"){
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new SettingsFragment());
+            settingsFragment = new SettingsFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: intent-redirected to settings.");
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new EventsFragment());
+            eventsFragment = new EventsFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: Normal load to events page.");
         }
@@ -150,15 +161,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.nav_events:
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new EventsFragment()).commit();
+                eventsFragment = new EventsFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Events loaded");
                 break;
             case R.id.nav_contacts:
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new ContactFragment()).commit();
+                contactFragment = new ContactFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Contacts loaded");
                 break;
             case R.id.nav_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, new SettingsFragment()).commit();
+                settingsFragment = new SettingsFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Settings loaded");
                 break;
             case R.id.nav_logout:
@@ -172,5 +186,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onAddEvent(View v){
         Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
         startActivity(i);
+    }
+
+    public void notificationSettings(View v){
+        Log.d(TAG, "notificationSettings: Opening notification settings...");
+        Intent i = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        i.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+        startActivity(i);
+    }
+
+    public void testChannelEvent(View v){
+        NotificationCompat.Builder eventBuild = new NotificationCompat.Builder(this, getString(R.string.channel_event))
+                .setSmallIcon(R.drawable.ic_icon)
+                .setContentTitle(getString(R.string.msg_event))
+                .setContentText(getString(R.string.msg_event_channel_working))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+        sendNotification(eventBuild);
+        Log.d(TAG, "testChannelEvent: testing event channel");
+    }
+
+    public void testChannelInvite(View v){
+        NotificationCompat.Builder inviteBuild = new NotificationCompat.Builder(this, getString(R.string.channel_invite))
+                .setSmallIcon(R.drawable.ic_icon)
+                .setContentTitle(getString(R.string.msg_invite))
+                .setContentText(getString(R.string.msg_invite_channel_working))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+        sendNotification(inviteBuild);
+        Log.d(TAG, "testChannelInvite: testing invite channel");
+    }
+
+    public void testChannelFriends(View v){
+        NotificationCompat.Builder friendBuild = new NotificationCompat.Builder(this, getString(R.string.channel_friend))
+                .setSmallIcon(R.drawable.ic_icon)
+                .setContentTitle(getString(R.string.msg_friends))
+                .setContentText(getString(R.string.msg_friend_channel_working))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+        sendNotification(friendBuild);
+        Log.d(TAG, "testChannelFriends: testing friend channel");
+    }
+
+    public void editUser(View v){
+        settingsFragment.editUser();
+    }
+
+    public void changePassword(View v){
+        settingsFragment.changePassword();
+    }
+
+    public void getAllData(View v){
+        settingsFragment.getAllData();
+    }
+
+    public void deleteAllEvents(View v){
+        settingsFragment.deleteAllEvents();
+    }
+
+    public void deleteAccount(View v){
+        settingsFragment.deleteAccount();
+    }
+
+    public void acceptChange(View v){
+        settingsFragment.acceptChange();
+    }
+
+    public void cancelChange(View v){
+        settingsFragment.cancelChange();
+    }
+
+    public void sendNotification(NotificationCompat.Builder build){
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+        managerCompat.notify(0, build.build());
     }
 }

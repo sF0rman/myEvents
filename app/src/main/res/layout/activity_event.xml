@@ -130,7 +130,7 @@
                     style="@style/DarkSubTitleText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/msg_reminder" />
+                    android:text="@string/msg_event" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
