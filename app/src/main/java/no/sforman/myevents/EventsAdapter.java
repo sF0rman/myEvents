@@ -1,18 +1,17 @@
 package no.sforman.myevents;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,14 +44,21 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         holder.name.setText(events.get(i).getName());
         holder.location.setText(events.get(i).getLocation());
-        holder.owner.setText("Hosted by: " + events.get(i).getOwner());
+        // holder.owner.setText(events.get(i).getOwner());
         holder.start.setText(dateFormat.format(events.get(i).getStart().getTime()));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked ID" + events.get(i).getId());
+                openEvent(events.get(i).getId());
             }
         });
+    }
+
+    private void openEvent(String eventId){
+        Intent i = new Intent(mCtx, EventActivity.class);
+        i.putExtra("eventId", eventId);
+        mCtx.startActivity(i);
     }
 
     @Override
@@ -75,14 +81,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private TextView start;
         private TextView owner;
         private CardView cardView;
-        private ConstraintLayout layout;
+        private LinearLayout layout;
 
         public EventViewHolder(@NonNull View itemView){
             super(itemView);
 
             this.name = itemView.findViewById(R.id.event_card_event_name);
             this.location = itemView.findViewById(R.id.event_card_event_location);
-            this.owner = itemView.findViewById(R.id.event_card_event_owner);
+            //this.owner = itemView.findViewById(R.id.event_card_event_owner);
             this.start = itemView.findViewById(R.id.event_card_event_start);
             this.cardView = itemView.findViewById(R.id.event_card_cardlayout);
             this.layout = itemView.findViewById(R.id.event_card_constraintlayout);

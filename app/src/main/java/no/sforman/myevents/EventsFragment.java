@@ -93,20 +93,20 @@ class EventsFragment extends Fragment {
                                 for(QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, "onComplete: event" + document.toString());
                                     String id = document.getId();
-                                    String name = document.get("name").toString();
-                                    String owner = document.get("owner").toString();
-                                    String description = document.get("description").toString();
+                                    String name = document.getString("name");
+                                    String owner = document.getString("owner");
+                                    String description = document.getString("description");
                                     Calendar start = Calendar.getInstance();
                                     Calendar end = Calendar.getInstance();
-                                    long stime = (long) document.get("start.timeInMillis");
-                                    long etime = (long) document.get("end.timeInMillis");
+                                    long stime = document.getLong("start.timeInMillis");
+                                    long etime = document.getLong("end.timeInMillis");
                                     start.setTimeInMillis(stime);
                                     end.setTimeInMillis(etime);
-                                    GeoPoint geoPoint = (GeoPoint) document.get("geoPoint");
-                                    String location = document.get("location").toString();
-                                    String address = document.get("address").toString();
-                                    boolean isOnline = (boolean) document.get("online");
-                                    long reminderKey = (long) document.get("reminderKey");
+                                    GeoPoint geoPoint = document.getGeoPoint("geoPoint");
+                                    String location = document.getString("location");
+                                    String address = document.getString("address");
+                                    boolean isOnline = document.getBoolean("online");
+                                    long reminderKey = document.getLong("reminderKey");
 
                                     Event e = new Event(name, owner, description, start, end,
                                             geoPoint.getLatitude(), geoPoint.getLongitude(),

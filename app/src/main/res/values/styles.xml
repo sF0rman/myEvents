@@ -41,7 +41,15 @@
 
     <style name="LightTitleText" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/lightColor</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="DarkTitleText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="DarkSubTitleText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="LightNormalText" parent="TextAppearance.AppCompat">
@@ -49,12 +57,25 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Cards" parent="CardView">
-        <item name="android:background">@drawable/btn_blue</item>
-        <item name="android:layout_margin">16dp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
+    <style name="CardBlue" parent="CardView">
+        <item name="cardBackgroundColor">@color/colorPrimary</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
         <item name="cardCornerRadius">12dp</item>
+        <item name="contentPadding">12dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+    <style name="CardLight" parent="CardView">
+        <item name="cardBackgroundColor">@color/lightColor</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="contentPadding">12dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">8dp</item>
     </style>
 
 </resources>

@@ -8,62 +8,50 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/event_card_cardlayout"
+        style="@style/CardBlue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#00ffffff">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/event_card_constraintlayout"
-            style="@style/Cards"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/event_card_event_name"
                 style="@style/LightTitleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="EventName"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="EventName" />
+
 
             <TextView
                 android:id="@+id/event_card_event_location"
                 style="@style/LightNormalText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="This is the event location"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_card_event_name" />
+                android:text="@string/hint_location" />
+
+            <TextView
+                android:id="@+id/event_card_event_going"
+                style="@style/LightNormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/temp_ppl_going" />
 
             <TextView
                 android:id="@+id/event_card_event_start"
                 style="@style/LightNormalText"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="Thu, 18th July 2019"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_card_event_location" />
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Thu, 18th July 2019" />
 
-            <TextView
-                android:id="@+id/event_card_event_owner"
-                style="@style/LightNormalText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_card_event_location" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 

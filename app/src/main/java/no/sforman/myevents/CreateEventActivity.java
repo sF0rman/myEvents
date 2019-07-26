@@ -43,15 +43,6 @@ import java.util.Map;
 public class CreateEventActivity extends AppCompatActivity {
 
     public static final String TAG = "CreateEventActivity";
-    public static final String NAME_KEY = "name";
-    public static final String DESCRIPTION_KEY = "description";
-    public static final String START_KEY = "start";
-    public static final String END_KEY = "end";
-    public static final String GEOPONT_KEY = "geopoint";
-    public static final String LOCATION_KEY = "location";
-    public static final String ADDRESS_KEY = "address";
-    public static final String ONLINE_KEY = "isOnline";
-    public static final String REMINDER_KEY = "reminderkey";
 
     //UI
     MapFragment mapFragment;
@@ -343,7 +334,6 @@ public class CreateEventActivity extends AppCompatActivity {
         ((TimePickerFragment) timePicker).setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
             @Override
             public void onTimeChosen(int hour, int min) {
-                //text.setText(String.format("%02d:%02d", hour, min));
                 cal.set(Calendar.HOUR_OF_DAY, hour);
                 cal.set(Calendar.MINUTE, min);
                 cal.set(Calendar.SECOND, 0);
@@ -351,13 +341,15 @@ public class CreateEventActivity extends AppCompatActivity {
                 text.setText(timeFormat.format(cal.getTime()));
 
                 if(text == startTime){
-                    endCal = startCal;
+                    endCal.setTimeInMillis(startCal.getTimeInMillis());
                     endCal.add(Calendar.HOUR_OF_DAY, 2);
-                    Log.d(TAG, "onTimeChosen: " + startCal.toString());
-                    Log.d(TAG, "onTimeChosen: "+ endCal.toString());
                     endDate.setText(dateFormat.format(endCal.getTime()));
                     endTime.setText(timeFormat.format(endCal.getTime()));
                 }
+
+                Log.d(TAG, "onTimeChosen: start: " + startCal.getTime().toString());
+                Log.d(TAG, "onTimeChosen: end  : " + endCal.getTime().toString());
+                Log.d(TAG, "onTimeChosen: rem  : " + reminderCal.getTime().toString());
             }
         });
         timePicker.show(getSupportFragmentManager(), "TimePicker");
@@ -396,7 +388,6 @@ public class CreateEventActivity extends AppCompatActivity {
                     false,
                     rid);
         }
-
 
         db.collection("event").add(event).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
