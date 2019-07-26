@@ -11,6 +11,22 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:id="@+id/event_online_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/gradient_blue"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_icon"
+                android:tint="@color/lightAccent"/>
+
+        </FrameLayout>
+
         <fragment
             android:id="@+id/event_map_fragment"
             android:name="no.sforman.myevents.MapFragment"

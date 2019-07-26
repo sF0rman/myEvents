@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class EventActivity extends AppCompatActivity {
 
     // UI Widgets
     private MapFragment mapFragment;
+    private FrameLayout onlineImg;
     private TextView eventName;
     private TextView eventDescription;
     private TextView eventStart;
@@ -102,6 +104,7 @@ public class EventActivity extends AppCompatActivity {
 
     private void initUI(){
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map_fragment);
+        onlineImg = findViewById(R.id.event_online_image);
         eventName = findViewById(R.id.event_name);
         eventDescription = findViewById(R.id.event_description);
         eventStart = findViewById(R.id.event_start_time);
@@ -206,6 +209,7 @@ public class EventActivity extends AppCompatActivity {
                         // Set map position
                         if(isOnline){
                             mapFragment.getView().setVisibility(View.GONE);
+                            onlineImg.setVisibility(View.VISIBLE);
                         } else {
                             LatLng loc = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
                             mapFragment.setLocationMarker(loc);

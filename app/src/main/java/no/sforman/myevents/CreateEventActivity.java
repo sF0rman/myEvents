@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -63,6 +64,7 @@ public class CreateEventActivity extends AppCompatActivity {
     TextView locationError;
     TextView reminderError;
     TextView isOnlineError;
+    FrameLayout onlineImg;
 
     // Places
     public static final int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -128,6 +130,7 @@ public class CreateEventActivity extends AppCompatActivity {
         description = findViewById(R.id.create_event_description_text);
 
         isOnline = findViewById(R.id.create_event_is_online);
+        onlineImg = findViewById(R.id.create_event_online_image);
         hasReminder = findViewById(R.id.create_event_add_reminder);
 
         nameError = findViewById(R.id.create_event_name_error);
@@ -141,10 +144,14 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
+                    mapFragment.getView().setVisibility(View.GONE);
+                    onlineImg.setVisibility(View.VISIBLE);
                     reminderDate.setVisibility(View.VISIBLE);
                     reminderTime.setVisibility(View.VISIBLE);
                     reminderError.setVisibility(View.VISIBLE);
                 } else {
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    onlineImg.setVisibility(View.GONE);
                     reminderDate.setVisibility(View.GONE);
                     reminderTime.setVisibility(View.GONE);
                     reminderError.setVisibility(View.GONE);
@@ -156,6 +163,7 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
+
                     location.setVisibility(View.GONE);
                     locationError.setVisibility(View.GONE);
                 } else {
