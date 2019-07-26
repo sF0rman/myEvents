@@ -415,8 +415,9 @@ public class CreateEventActivity extends AppCompatActivity {
         Log.d(TAG, "makeReminder: Started");
 
         Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
-        i.putExtra("eventId", event);
+        i.putExtra("id", event);
         i.putExtra("reminder", reminder);
+        i.putExtra("reminderTime", reminderCal.getTimeInMillis());
         i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(startCal.getTime()));
         i.putExtra("name", eventName);
         i.putExtra("channel", "event");

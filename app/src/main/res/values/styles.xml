@@ -22,11 +22,13 @@
     <style name="PrimaryButton" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_orange</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
 
     <style name="SecondaryButtons" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_light</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
 
     <style name="AppButtons" parent="TextAppearance.AppCompat.Button">
@@ -50,6 +52,7 @@
 
     <style name="DarkSubTitleText" parent="TextAppearance.AppCompat">
         <item name="android:textSize">18sp</item>
+        <item name="android:layout_marginBottom">8dp</item>
     </style>
 
     <style name="LightNormalText" parent="TextAppearance.AppCompat">
@@ -59,9 +62,9 @@
 
     <style name="CardBlue" parent="CardView">
         <item name="cardBackgroundColor">@color/colorPrimary</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginBottom">0dp</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="contentPadding">12dp</item>
@@ -71,8 +74,8 @@
     <style name="CardLight" parent="CardView">
         <item name="cardBackgroundColor">@color/lightColor</item>
         <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
         <item name="contentPadding">12dp</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">8dp</item>

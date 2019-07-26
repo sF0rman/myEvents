@@ -11,6 +11,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/gradient_blue">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/title_create_user"
+                android:layout_margin="24dp"
+                style="@style/LightTitleText"/>
+
+        </FrameLayout>
+
         <EditText
             android:id="@+id/create_user_firstname"
             style="@style/InputField"
@@ -53,26 +67,6 @@
             android:layout_marginTop="0dp"
             android:layout_marginEnd="16dp" />
 
-        <EditText
-            android:id="@+id/create_user_username"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_display_name"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/create_user_username_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
 
         <EditText
             android:id="@+id/create_user_email"
@@ -156,13 +150,11 @@
 
 
         <Button
+            android:layout_margin="16dp"
             android:id="@+id/create_user_create_button"
             style="@style/PrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:onClick="onCreateUser"
             android:text="@string/btn_create_account" />
 

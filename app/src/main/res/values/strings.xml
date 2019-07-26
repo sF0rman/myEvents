@@ -12,6 +12,11 @@
     <string name="title_people">People</string>
     <string name="title_edit_event">Edit event</string>
     <string name="title_rsvp">RSVP</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_user">User settings</string>
+    <string name="title_privacy">User data</string>
+    <string name="title_create_user">Create user</string>
+    <string name="title_warning">Warning!</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
@@ -31,6 +36,7 @@
     <string name="hint_surname">Surname</string>
     <string name="hint_display_name">Display name</string>
     <string name="hint_repeat_password">Repeat password</string>
+    <string name="hint_old_password">Old password</string>
     <string name="hint_terms">I have read and agree to terms and conditions.</string>
     <string name="hint_event_name">Event name</string>
     <string name="hint_description">Write your event description here!</string>
@@ -66,6 +72,15 @@
     <string name="btn_maybe">Maybe</string>
     <string name="btn_invited">Invited</string>
     <string name="btn_not_going">Not going</string>
+    <string name="btn_events">Events</string>
+    <string name="btn_invites">Invites</string>
+    <string name="btn_friends">Friends</string>
+    <string name="btn_notification_settings">Notification settings</string>
+    <string name="btn_edit_user">Edit user settings</string>
+    <string name="btn_change_password">Change password</string>
+    <string name="btn_delete_user">Delete user</string>
+    <string name="btn_delete_all_events">Delete all events</string>
+    <string name="btn_show_all_data">Get all user data</string>
 
     <!-- Navigation -->
     <string name="nav_drawer_open">Open navigation drawer</string>
@@ -107,6 +122,10 @@
     <string name="msg_not_set">Not set</string>
     <string name="msg_email_not_verified">You email hasn\'t been verified. Click here to resend verification email!</string>
     <string name="msg_password_recovery_sent">A message has been sent to your email with instructions to reset your password.</string>
+    <string name="msg_temp">This is a placeholder string</string>
+    <string name="msg_delete_events">Are you sure you want to delete all your events? This cannot be undone!</string>
+    <string name="msg_delete_user">By deleting your account, all events will also be deleted! Are you sure you want to delete your account? This cannot be undone!</string>
+    <string name="msg_warning_password">Input your password and touch accept to confirm</string>
 
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis nisi, fermentum finibus porttitor ac, bibendum ut lacus. Nulla rutrum velit eu semper lobortis. Suspendisse non porta risus. Sed lectus tellus, gravida in efficitur quis, volutpat eget nulla. Nullam ornare sodales nibh, ut consequat sapien rutrum sit amet</string>
 

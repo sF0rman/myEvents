@@ -2,7 +2,10 @@ package no.sforman.myevents;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class EventActivity extends AppCompatActivity {
@@ -61,6 +64,13 @@ public class EventActivity extends AppCompatActivity {
     private Button eventPplInvited;
     private Button eventAddReminder;
 
+    private CardView rsvpCard;
+    private CardView peopleCard;
+
+    private RecyclerView goingRv;
+    private RecyclerView maybeRv;
+    private RecyclerView invitedRv;
+
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -80,8 +90,14 @@ public class EventActivity extends AppCompatActivity {
     private long startInMillis;
     private long endInMillies;
     boolean isOnline;
+    ArrayList goingPeople = new ArrayList();
+    ArrayList maybePeople = new ArrayList();
+    ArrayList invitedPeople = new ArrayList();
 
     private GeoPoint geoPoint;
+
+    // Reminder
+    PendingIntent pIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +116,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         getEvent(eventId);
+        adjustForOwner();
     }
 
     private void initUI(){
@@ -121,6 +138,20 @@ public class EventActivity extends AppCompatActivity {
         eventPplMaybe = findViewById(R.id.event_ppl_maybe);
         eventPplInvited = findViewById(R.id.event_ppl_invited);
         eventAddReminder = findViewById(R.id.event_add_reminder);
+
+        rsvpCard = findViewById(R.id.event_rsvp_card);
+        peopleCard = findViewById(R.id.event_people_card);
+
+
+    }
+
+    private void adjustForOwner(){
+        if(currentUser.getEmail() == owner){
+            rsvpCard.setVisibility(View.GONE);
+        }
+        if(goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()){
+            peopleCard.setVisibility(View.GONE);
+        }
     }
 
     private void initFire(){
@@ -236,6 +267,21 @@ public class EventActivity extends AppCompatActivity {
 
     private void getReminder(long id){
         Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
-        Log.d(TAG, "getReminder: " + PendingIntent.getBroadcast(getApplicationContext(),(int)id, i, PendingIntent.FLAG_NO_CREATE).toString());
+        pIntent = PendingIntent.getBroadcast(getApplicationContext(), (int) id, i, PendingIntent.FLAG_NO_CREATE);
+        Log.d(TAG, "getReminder: " + pIntent.describeContents());
+
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Log.d(TAG, "getReminder: " + am.toString());
+
+        Log.d(TAG, "getReminder: " + am.getNextAlarmClock() + "\n" +
+                am.getNextAlarmClock().toString() + "\n" +
+                am.getNextAlarmClock().describeContents() + "\n" +
+                am.getNextAlarmClock().getShowIntent().toString() + "\n" +
+                am.getNextAlarmClock().getTriggerTime()
+        );
+
+        Calendar test = Calendar.getInstance();
+        am.getNextAlarmClock().getTriggerTime();
+        Log.d(TAG, "getReminder: TRIGGER: " + am.getNextAlarmClock().getTriggerTime());
     }
 }

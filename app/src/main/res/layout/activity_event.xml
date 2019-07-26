@@ -162,6 +162,7 @@
 
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/event_rsvp_card"
             style="@style/CardLight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -213,11 +214,6 @@
                         android:text="@string/btn_not_going" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/event_going"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/temp_ppl_going" />
 
             </LinearLayout>
 
@@ -252,6 +248,7 @@
 
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/event_people_card"
             style="@style/CardLight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -298,10 +295,29 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/event_going_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/temp_ppl_going" />
+
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_recycler_people"
+                    android:id="@+id/event_recycler_people_going"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/event_recycler_people_maybe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/event_recycler_people_invited"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 

@@ -15,6 +15,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     private String id;
     private String reminder;
+    private long reminderTime;
     private String name;
     private String msg;
     private String nChannel;
@@ -22,15 +23,17 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        id = (String) intent.getStringExtra("eventId");
-        reminder = (String) intent.getStringExtra("reminder");
-        name = (String) intent.getStringExtra("name");
-        msg = (String) intent.getStringExtra("message");
-        nChannel = (String) intent.getStringExtra("channel");
+        id = intent.getStringExtra("id");
+        reminder = intent.getStringExtra("reminder");
+        name =  intent.getStringExtra("name");
+        msg = intent.getStringExtra("message");
+        nChannel = intent.getStringExtra("channel");
+        reminderTime = intent.getLongExtra("reminderTime", 0);
 
         Intent notificationIntent = new Intent(context, EventActivity.class);
         notificationIntent.putExtra("eventId", id);
         notificationIntent.putExtra("reminder", reminder);
+        notificationIntent.putExtra("reminderTime", reminderTime);
         Log.d(TAG, "onReceive: Got ID" + id);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context,
