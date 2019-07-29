@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -13,7 +13,7 @@
     </style>
 
     <style name="Toolbar" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:background">@drawable/gradient_blue</item>
+        <item name="android:background">@color/colorPrimary</item>
         <item name="android:tint">@color/lightPrimary</item>
     </style>
 

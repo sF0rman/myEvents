@@ -1,286 +1,295 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/create_event_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="no.sforman.myevents.CreateEventActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        style="@style/Toolbar"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            style="@style/ToolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_create_event" />
-
-
-    </androidx.appcompat.widget.Toolbar>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            style="@style/Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-
-            <FrameLayout
-                android:id="@+id/create_event_online_image"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/gradient_blue"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_icon"
-                    android:tint="@color/lightSecondary" />
-
-            </FrameLayout>
-
-
-            <fragment
-                android:id="@+id/create_event_map_fragment"
-                android:name="no.sforman.myevents.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-
-            <ProgressBar
-                android:id="@+id/create_event_progress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
+            <TextView
+                style="@style/ToolbarTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:visibility="invisible" />
+                android:text="@string/btn_create_event" />
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
-                style="@style/Padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
 
-                <EditText
-                    android:id="@+id/create_event_name_text"
-                    style="@style/Input"
+                <FrameLayout
+                    android:id="@+id/create_event_online_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/gradient_blue"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_icon"
+                        android:tint="@color/lightSecondary" />
+
+                </FrameLayout>
+
+
+                <fragment
+                    android:id="@+id/create_event_map_fragment"
+                    android:name="no.sforman.myevents.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+                <ProgressBar
+                    android:id="@+id/create_event_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_event_name" />
-
-                <TextView
-                    android:id="@+id/create_event_name_error"
-                    style="@style/ErrorText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:indeterminate="true"
+                    android:visibility="invisible" />
 
                 <LinearLayout
+                    style="@style/Padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-                    <EditText
-                        android:id="@+id/create_event_startdate_text"
-                        style="@style/Input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="@string/hint_start_date"
-                        android:inputType="date"
-                        android:onClick="setDateTime" />
-
-                    <EditText
-                        android:id="@+id/create_event_starttime_text"
-                        style="@style/Input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="@string/hint_start_time"
-                        android:inputType="time"
-                        android:onClick="setDateTime" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:orientation="vertical">
 
 
                     <EditText
-                        android:id="@+id/create_event_enddate_text"
+                        android:id="@+id/create_event_name_text"
                         style="@style/Input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="@string/hint_end_date"
-                        android:inputType="date"
-                        android:onClick="setDateTime" />
+                        android:hint="@string/hint_event_name" />
 
+                    <TextView
+                        android:id="@+id/create_event_name_error"
+                        style="@style/ErrorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <EditText
-                        android:id="@+id/create_event_endtime_text"
-                        style="@style/Input"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="@string/hint_end_time"
-                        android:inputType="time"
-                        android:onClick="setDateTime" />
-                </LinearLayout>
+                        android:orientation="horizontal"
+                        android:weightSum="1">
 
+                        <EditText
+                            android:id="@+id/create_event_startdate_text"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_start_date"
+                            android:inputType="date"
+                            android:onClick="setDateTime" />
 
-                <TextView
-                    android:id="@+id/create_event_time_error"
-                    style="@style/ErrorText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
+                        <EditText
+                            android:id="@+id/create_event_starttime_text"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_start_time"
+                            android:inputType="time"
+                            android:onClick="setDateTime" />
 
+                    </LinearLayout>
 
-                <CheckBox
-                    android:id="@+id/create_event_add_reminder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_add_reminder"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/create_event_time_error" />
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-                    <EditText
-                        android:id="@+id/create_event_reminder_date"
-                        style="@style/Input"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="@string/hint_set_reminder_date"
-                        android:inputType="datetime"
-                        android:onClick="setDateTime"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+
+                        <EditText
+                            android:id="@+id/create_event_enddate_text"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_end_date"
+                            android:inputType="date"
+                            android:onClick="setDateTime" />
+
+
+                        <EditText
+                            android:id="@+id/create_event_endtime_text"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_end_time"
+                            android:inputType="time"
+                            android:onClick="setDateTime" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/create_event_time_error"
+                        style="@style/ErrorText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+
+
+                    <CheckBox
+                        android:id="@+id/create_event_add_reminder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_add_reminder"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/create_event_time_error" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <EditText
+                            android:id="@+id/create_event_reminder_date"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_set_reminder_date"
+                            android:inputType="datetime"
+                            android:onClick="setDateTime"
+                            android:visibility="gone" />
+
+                        <EditText
+                            android:id="@+id/create_event_reminder_time"
+                            style="@style/Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="@string/hint_set_reminder_time"
+                            android:inputType="datetime"
+                            android:onClick="setDateTime"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/create_event_reminder_time_error"
+                        style="@style/ErrorText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="gone" />
 
+                    <CheckBox
+                        android:id="@+id/create_event_is_online"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hint_isOnline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/create_event_reminder_time_error" />
+
+                    <TextView
+                        android:id="@+id/create_event_is_online_error"
+                        style="@style/ErrorText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
                     <EditText
-                        android:id="@+id/create_event_reminder_time"
+                        android:id="@+id/create_event_location_text"
                         style="@style/Input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
                         android:clickable="true"
                         android:focusable="false"
-                        android:hint="@string/hint_set_reminder_time"
-                        android:inputType="datetime"
-                        android:onClick="setDateTime"
+                        android:hint="@string/hint_location"
+                        android:onClick="findLocation" />
+
+
+                    <TextView
+                        android:id="@+id/create_event_location_error"
+                        style="@style/ErrorText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/create_event_location_text" />
+
+                    <EditText
+                        android:id="@+id/create_event_description_text"
+                        style="@style/Input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_description" />
+
+                    <TextView
+                        android:id="@+id/create_event_description_error"
+                        style="@style/ErrorText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
+                    <Button
+                        android:id="@+id/create_event_submit_button"
+                        style="@style/PrimaryButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onSubmitEvent"
+                        android:text="@string/btn_create_event" />
+
+                    <Button
+                        android:id="@+id/create_event_delete_button"
+                        style="@style/SecondaryButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="deleteEvent"
+                        android:text="@string/btn_delete_event"
                         android:visibility="gone" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/create_event_reminder_time_error"
-                    style="@style/ErrorText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <CheckBox
-                    android:id="@+id/create_event_is_online"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hint_isOnline"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/create_event_reminder_time_error" />
-
-                <TextView
-                    android:id="@+id/create_event_is_online_error"
-                    style="@style/ErrorText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-
-                <EditText
-                    android:id="@+id/create_event_location_text"
-                    style="@style/Input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="@string/hint_location"
-                    android:onClick="findLocation" />
-
-
-                <TextView
-                    android:id="@+id/create_event_location_error"
-                    style="@style/ErrorText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/create_event_location_text" />
-
-                <EditText
-                    android:id="@+id/create_event_description_text"
-                    style="@style/Input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_description" />
-
-                <TextView
-                    android:id="@+id/create_event_description_error"
-                    style="@style/ErrorText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-
-                <Button
-                    android:id="@+id/create_event_submit_button"
-                    style="@style/PrimaryButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onSubmitEvent"
-                    android:text="@string/btn_create_event" />
-
-                <Button
-                    android:id="@+id/create_event_delete_button"
-                    style="@style/SecondaryButton"
-                    android:onClick="deleteEvent"
-                    android:text="@string/btn_delete_event"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"/>
 
             </LinearLayout>
 
+        </ScrollView>
+    </LinearLayout>
 
-        </LinearLayout>
+</FrameLayout>
 
-    </ScrollView>
-
-
-</LinearLayout>

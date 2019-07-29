@@ -13,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,6 +21,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,7 +39,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateEventActivity extends AppCompatActivity implements WarningDialogFragment.WarningListener {
 
     public static final String TAG = "CreateEventActivity";
 
@@ -57,6 +56,7 @@ public class CreateEventActivity extends AppCompatActivity {
     String eventId;
 
     //UI
+    FrameLayout layout;
     ProgressBar progressBar;
     MapFragment mapFragment;
     EditText name;
@@ -142,6 +142,7 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void initUI(){
+        layout = findViewById(R.id.create_event_layout);
         progressBar = findViewById(R.id.create_event_progress);
         name = findViewById(R.id.create_event_name_text);
         startDate = findViewById(R.id.create_event_startdate_text);
@@ -581,31 +582,38 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public void deleteEvent(View v){
-        progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "deleteEvent: Started");
 
-        NoticeFragment deleteEventNotice = new NoticeFragment();
+        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete: " + eventId, this);
 
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("event")
-                .document(eventId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "onSuccess: Deleted event id: " + eventId);
-                        Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        startActivity(main);
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressBar.setVisibility(View.GONE);
-                Log.w(TAG, "onFailure: Couldn't delete event", e);
-            }
-        });
+        warning.show(getSupportFragmentManager(), "Warning");
     }
 
+    @Override
+    public void onCompleted(boolean b) {
+        if(b){
+            Log.d(TAG, "onDialogPositiveClick: Accepted");
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("event")
+                    .document(eventId)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "onSuccess: Deleted event id: " + eventId);
+                            Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(CreateEventActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
+                            startActivity(main);
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressBar.setVisibility(View.GONE);
+                    Log.w(TAG, "onFailure: Couldn't delete event", e);
+                }
+            });
+        }
+    }
 }
