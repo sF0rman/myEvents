@@ -17,14 +17,8 @@
         <androidx.appcompat.widget.Toolbar
             style="@style/Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                style="@style/ToolbarTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_create_event" />
-
+            android:layout_height="wrap_content"
+            app:title="@string/btn_create_event">
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -63,12 +57,12 @@
                     android:layout_height="200dp" />
 
                 <ProgressBar
+                    style="@style/Progressbar"
                     android:id="@+id/create_event_progress"
-                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
-                    android:visibility="invisible" />
+                    android:visibility="visible" />
 
                 <LinearLayout
                     style="@style/Padding"

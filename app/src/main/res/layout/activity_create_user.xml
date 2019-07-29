@@ -10,13 +10,8 @@
     <androidx.appcompat.widget.Toolbar
         style="@style/Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/ToolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_create_user" />
+        android:layout_height="wrap_content"
+        app:title="@string/title_create_user">
 
     </androidx.appcompat.widget.Toolbar>
 

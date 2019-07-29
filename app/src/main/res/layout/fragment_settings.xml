@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:background="@drawable/gradient_blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

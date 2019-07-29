@@ -16,5 +16,5 @@
     <color name="greenSecondary">#00cc00</color>
     <color name="darkColor">#252525</color>
     <color name="unfocusedColor">#454545</color>
-    <color name="unfocusedColorLight">#ababab</color>
+    <color name="unfocusedColorLight">#222222</color>
 </resources>

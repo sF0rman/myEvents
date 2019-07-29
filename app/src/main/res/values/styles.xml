@@ -6,22 +6,31 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="editTextColor">@color/darkColor</item>
+        <item name="android:textColorPrimary">@color/lightPrimary</item>
+        <item name="android:textColorSecondary">@color/lightPrimary</item>
+        <item name="android:calendarTextColor">@color/darkColor</item>
     </style>
 
     <style name="Padding">
         <item name="android:layout_margin">16dp</item>
     </style>
 
-    <style name="Toolbar" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Toolbar" parent="Theme.AppCompat">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:tint">@color/lightPrimary</item>
+        <item name="android:titleTextColor">@color/lightPrimary</item>
+        <item name="android:textColorPrimary">@color/lightPrimary</item>
+        <item name="android:textColorSecondary">@color/lightPrimary</item>
+        <item name="android:subtitleTextColor">@color/lightPrimary</item>
+        <item name="actionMenuTextColor">@color/lightPrimary</item>
     </style>
 
 
     <style name="Card" parent="CardView">
         <item name="cardPreventCornerOverlap">true</item>
         <item name="cardBackgroundColor">@color/lightSecondary</item>
-        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
@@ -35,19 +44,17 @@
         <item name="android:background">@drawable/input_light</item>
         <item name="android:textSize">14sp</item>
         <item name="android:layout_margin">2dp</item>
+        <item name="android:textColor">@color/darkColor</item>
     </style>
 
-
-    <style name="ToolbarTitle" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/lightPrimary</item>
-        <item name="android:textSize">22sp</item>
-    </style>
 
     <style name="Title" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:textSize">22sp</item>
     </style>
 
     <style name="SubTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:textSize">18sp</item>
     </style>
 
@@ -58,6 +65,7 @@
 
 
     <style name="PrimaryButton" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:background">@drawable/btn_orange</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_margin">2dp</item>
@@ -65,6 +73,7 @@
 
 
     <style name="SecondaryButton" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:background">@drawable/btn_light</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_margin">2dp</item>
@@ -72,6 +81,7 @@
 
 
     <style name="AcceptButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:icon">@drawable/ic_check</item>
         <item name="android:background">@drawable/btn_green</item>
         <item name="android:textSize">12sp</item>
@@ -80,10 +90,17 @@
 
 
     <style name="CancelButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:textColor">@color/darkColor</item>
         <item name="android:icon">@drawable/ic_cancel</item>
         <item name="android:background">@drawable/btn_red</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_margin">2dp</item>
+    </style>
+
+    <style name="Progressbar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:color">@color/orangePrimary</item>
+        <item name="android:layout_marginTop">-6dp</item>
+        <item name="android:layout_marginBottom">-6dp</item>
     </style>
 
 </resources>

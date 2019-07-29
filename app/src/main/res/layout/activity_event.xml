@@ -8,7 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/gradient_blue">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/event_toolbar"
@@ -19,6 +20,13 @@
             app:title="@string/loading_event">
 
         </androidx.appcompat.widget.Toolbar>
+
+        <ProgressBar
+            android:id="@+id/event_progress_bar"
+            style="@style/Progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <FrameLayout
             android:id="@+id/event_online_image"
