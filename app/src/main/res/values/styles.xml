@@ -6,18 +6,57 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:titleTextColor">@color/lightPrimary</item>
     </style>
 
+    <style name="Padding">
+        <item name="android:layout_margin">16dp</item>
+    </style>
 
-    <style name="TitleBar" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Toolbar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">@drawable/gradient_blue</item>
+        <item name="android:tint">@color/lightPrimary</item>
     </style>
 
-    <style name="InputField" parent="TextAppearance.AppCompat">
-        <!-- Customize your theme here. -->
+
+    <style name="Card" parent="CardView">
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="cardBackgroundColor">@color/lightSecondary</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="contentPadding">16dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+
+    <style name="Input" parent="TextAppearance.AppCompat">
         <item name="android:background">@drawable/input_light</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
+
+
+    <style name="ToolbarTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/lightPrimary</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="Title" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="SubTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="ErrorText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/redPrimary</item>
+    </style>
+
 
     <style name="PrimaryButton" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_orange</item>
@@ -25,61 +64,27 @@
         <item name="android:layout_margin">2dp</item>
     </style>
 
-    <style name="SecondaryButtons" parent="TextAppearance.AppCompat.Button">
+
+    <style name="SecondaryButton" parent="TextAppearance.AppCompat.Button">
         <item name="android:background">@drawable/btn_light</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_margin">2dp</item>
     </style>
 
-    <style name="AppButtons" parent="TextAppearance.AppCompat.Button">
-        <item name="android:background">@drawable/btn_blue</item>
+
+    <style name="AcceptButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:icon">@drawable/ic_check</item>
+        <item name="android:background">@drawable/btn_green</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
 
-    <style name="ErrorText" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/errorRed</item>
+
+    <style name="CancelButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:icon">@drawable/ic_cancel</item>
+        <item name="android:background">@drawable/btn_red</item>
         <item name="android:textSize">12sp</item>
-    </style>
-
-    <style name="LightTitleText" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/lightColor</item>
-        <item name="android:textSize">22sp</item>
-    </style>
-
-    <style name="DarkTitleText" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">22sp</item>
-    </style>
-
-    <style name="DarkSubTitleText" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">18sp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-    </style>
-
-    <style name="LightNormalText" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/lightColor</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="CardBlue" parent="CardView">
-        <item name="cardBackgroundColor">@color/colorPrimary</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginBottom">0dp</item>
-        <item name="cardCornerRadius">12dp</item>
-        <item name="contentPadding">12dp</item>
-        <item name="cardElevation">8dp</item>
-    </style>
-
-    <style name="CardLight" parent="CardView">
-        <item name="cardPreventCornerOverlap">true</item>
-        <item name="cardBackgroundColor">@color/lightColor</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
-        <item name="contentPadding">12dp</item>
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">8dp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
 
 </resources>

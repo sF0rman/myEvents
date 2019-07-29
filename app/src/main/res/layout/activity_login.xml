@@ -15,73 +15,77 @@
         android:layout_marginTop="24dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_icon"
-        android:tint="@color/lightAccent" />
+        android:tint="@color/lightSecondary" />
 
-    <EditText
-        android:id="@+id/login_input_email"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:autofillHints="email"
-        android:ems="10"
-        android:hint="@string/hint_email"
-        android:inputType="textEmailAddress" />
-
-    <EditText
-        android:id="@+id/login_input_password"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:autofillHints="password"
-        android:ems="10"
-        android:hint="@string/hint_password"
-        android:inputType="textPassword" />
-
-    <Button
-        android:id="@+id/login_btn_login"
-        style="@style/PrimaryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:onClick="onLogin"
-        android:text="@string/hint_login" />
-    
-    <ProgressBar
-        android:id="@+id/login_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_gravity="center"
-        android:visibility="invisible"/>
 
     <LinearLayout
+        style="@style/Padding"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/login_btn_forgot_password"
-            style="@style/SecondaryButtons"
+
+        <EditText
+            android:id="@+id/login_input_email"
+            style="@style/Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onForgotPassword"
-            android:text="@string/btn_forgot" />
+            android:autofillHints="email"
+            android:ems="10"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress" />
 
-        <Button
-            android:id="@+id/login_btn_create_account"
-            style="@style/SecondaryButtons"
+        <EditText
+            android:id="@+id/login_input_password"
+            style="@style/Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onCreateUser"
-            android:text="@string/btn_create_account" />
+            android:autofillHints="password"
+            android:ems="10"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/login_btn_login"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onLogin"
+            android:text="@string/hint_login" />
+
+        <ProgressBar
+            style="@style/Padding"
+            android:id="@+id/login_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/login_btn_forgot_password"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onForgotPassword"
+                android:text="@string/btn_forgot" />
+
+            <Button
+                android:id="@+id/login_btn_create_account"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onCreateUser"
+                android:text="@string/btn_create_account" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

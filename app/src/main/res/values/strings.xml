@@ -17,6 +17,7 @@
     <string name="title_privacy">User data</string>
     <string name="title_create_user">Create user</string>
     <string name="title_warning">Warning!</string>
+    <string name="title_reminder">Reminder</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
@@ -49,8 +50,6 @@
     <string name="hint_location">Location</string>
     <string name="hint_address">Address</string>
     <string name="hint_time">Time</string>
-    <string name="hint_reminder">Add a reminder</string>
-    <string name="hint_change_reminder">Change reminder</string>
     <string name="hint_set_reminder_date">Set reminder date</string>
     <string name="hint_set_reminder_time">Set reminder time</string>
 
@@ -81,6 +80,8 @@
     <string name="btn_delete_user">Delete user</string>
     <string name="btn_delete_all_events">Delete all events</string>
     <string name="btn_show_all_data">Get all user data</string>
+    <string name="btn_add_reminder">Add a reminder</string>
+    <string name="btn_change_reminder">Change reminder</string>
 
     <!-- Navigation -->
     <string name="nav_drawer_open">Open navigation drawer</string>
@@ -135,6 +136,8 @@
     <!-- Loading -->
     <string name="loading_name">Loading name...</string>
     <string name="loading_email">Loading email...</string>
+    <string name="loading_event">Loading event...</string>
+    <string name="loading_generic">Loading...</string>
 
     <!-- AutoStrings from templates -->
 

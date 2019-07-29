@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,12 +8,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="12px"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="12px">
 
 
         <androidx.cardview.widget.CardView
-            style="@style/CardLight"
+            style="@style/Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -22,7 +23,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/DarkSubTitleText"
+                    style="@style/SubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_notifications" />
@@ -30,11 +31,11 @@
                 <Button
                     android:id="@+id/settings_notification_settings"
                     style="@style/PrimaryButton"
-                    android:onClick="notificationSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="4dp"
+                    android:onClick="notificationSettings"
                     android:text="@string/btn_notification_settings" />
 
                 <LinearLayout
@@ -45,32 +46,32 @@
 
                     <Button
                         android:id="@+id/settings_event_channel"
-                        android:onClick="testChannelEvent"
-                        style="@style/SecondaryButtons"
+                        style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:onClick="testChannelEvent"
                         android:text="@string/btn_events" />
 
                     <Button
                         android:id="@+id/settings_invite_channel"
-                        android:onClick="testChannelInvite"
-                        style="@style/SecondaryButtons"
+                        style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:onClick="testChannelInvite"
                         android:text="@string/btn_invites" />
 
                     <Button
-                        android:onClick="testChannelFriends"
                         android:id="@+id/settings_friend_channel"
-                        style="@style/SecondaryButtons"
+                        style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:onClick="testChannelFriends"
                         android:text="@string/btn_friends" />
 
                 </LinearLayout>
@@ -86,7 +87,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            style="@style/CardLight"
+            style="@style/Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -96,14 +97,52 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/DarkSubTitleText"
+                    style="@style/SubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_user" />
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/settings_profile_image"
+                        style="@style/Padding"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:src="@drawable/ic_person"
+                        app:civ_border_width="2dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading_name"
+                            android:textColor="@color/darkColor" />
+
+                        <TextView
+                            style="@style/SubTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading_email" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
                 <EditText
                     android:id="@+id/settings_firstname"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_first_name"
@@ -118,7 +157,7 @@
 
                 <EditText
                     android:id="@+id/settings_surname"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_surname"
@@ -133,7 +172,7 @@
 
                 <EditText
                     android:id="@+id/settings_email"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_email"
@@ -148,7 +187,7 @@
 
                 <EditText
                     android:id="@+id/settings_old_password"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_old_password"
@@ -164,7 +203,7 @@
 
                 <EditText
                     android:id="@+id/settings_password"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_password"
@@ -180,7 +219,7 @@
 
                 <EditText
                     android:id="@+id/settings_repeat_password"
-                    style="@style/InputField"
+                    style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_repeat_password"
@@ -195,19 +234,19 @@
                     android:visibility="gone" />
 
                 <Button
-                    android:onClick="editUser"
                     android:id="@+id/settings_edit_user"
-                    style="@style/SecondaryButtons"
+                    style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="editUser"
                     android:text="@string/btn_edit_user" />
 
                 <Button
-                    android:onClick="changePassword"
                     android:id="@+id/settings_change_password"
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="changePassword"
                     android:text="@string/btn_change_password" />
 
 
@@ -219,24 +258,24 @@
                     android:weightSum="2">
 
                     <Button
-                        android:onClick="cancelChange"
                         android:id="@+id/settings_user_cancel"
-                        style="@style/SecondaryButtons"
+                        style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:onClick="cancelChange"
                         android:text="@string/btn_cancel"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                     <Button
-                        android:onClick="acceptChange"
                         android:id="@+id/settings_user_accept"
                         style="@style/PrimaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:onClick="acceptChange"
                         android:text="@string/btn_accept"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
                 </LinearLayout>
 
 
@@ -246,7 +285,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            style="@style/CardLight"
+            style="@style/Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -256,30 +295,30 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/DarkSubTitleText"
+                    style="@style/SubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_privacy" />
 
                 <Button
-                    android:onClick="getAllData"
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="getAllData"
                     android:text="@string/btn_show_all_data" />
 
                 <Button
-                    android:onClick="deleteAllEvents"
-                    style="@style/SecondaryButtons"
+                    style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="deleteAllEvents"
                     android:text="@string/btn_delete_all_events" />
 
                 <Button
-                    android:onClick="deleteAccount"
-                    style="@style/SecondaryButtons"
+                    style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="deleteAccount"
                     android:text="@string/btn_delete_user" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

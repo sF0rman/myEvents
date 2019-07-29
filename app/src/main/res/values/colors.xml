@@ -4,12 +4,16 @@
     <color name="colorPrimaryDark">#28717f</color>
     <color name="colorAccent">#ff6e02</color>
 
+    <color name="bluePrimary">#21669f</color>
     <color name="blueSecondary">#28717f</color>
     <color name="orangePrimary">#ff6e02</color>
     <color name="orangeSecondary">#e28016</color>
-    <color name="lightColor">#dfe4e8</color>
-    <color name="lightAccent">#bdc4ca</color>
-    <color name="errorRed">#ff0000</color>
+    <color name="lightPrimary">#dfe4e8</color>
+    <color name="lightSecondary">#bdc4ca</color>
+    <color name="redPrimary">#ff0000</color>
+    <color name="redSecondary">#cc0000</color>
+    <color name="greenPrimary">#00ff00</color>
+    <color name="greenSecondary">#00cc00</color>
     <color name="darkColor">#252525</color>
     <color name="unfocusedColor">#454545</color>
     <color name="unfocusedColorLight">#ababab</color>

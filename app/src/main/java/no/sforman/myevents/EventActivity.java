@@ -6,6 +6,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +47,7 @@ public class EventActivity extends AppCompatActivity {
     Intent intent;
 
     // UI Widgets
+    private TextView eventToolbarTitle;
     private MapFragment mapFragment;
     private FrameLayout onlineImg;
     private TextView eventName;
@@ -84,6 +87,8 @@ public class EventActivity extends AppCompatActivity {
     private Calendar end = Calendar.getInstance();
     private String owner;
     private long reminderKey;
+    String reminderTime;
+    Calendar reminderCal;
     private String location;
     private String address;
     private static final String isOnlineText = "Online event";
@@ -116,10 +121,17 @@ public class EventActivity extends AppCompatActivity {
         }
 
         getEvent(eventId);
-        adjustForOwner();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent back = new Intent(this, MainActivity.class);
+        startActivity(back);
+        finish();
     }
 
     private void initUI(){
+        eventToolbarTitle = findViewById(R.id.event_toolbar_title);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map_fragment);
         onlineImg = findViewById(R.id.event_online_image);
         eventName = findViewById(R.id.event_name);
@@ -146,12 +158,13 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void adjustForOwner(){
-        if(currentUser.getEmail() == owner){
+        if(currentUser.getUid() == owner){
             rsvpCard.setVisibility(View.GONE);
         }
         if(goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()){
             peopleCard.setVisibility(View.GONE);
         }
+        Log.d(TAG, "adjustForOwner: " + currentUser.getUid());
     }
 
     private void initFire(){
@@ -218,6 +231,7 @@ public class EventActivity extends AppCompatActivity {
 
 
                         // Populate data
+                        eventToolbarTitle.setText(name);
                         eventName.setText(name);
                         eventDescription.setText(description);
                         eventOwner.setText(owner);
@@ -254,10 +268,86 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: There is no reminder");
                         }
 
+                        adjustForOwner();
+
                     }
                 }
             }
         });
+    }
+
+    public void setReminder(View v){
+        reminderCal = Calendar.getInstance();
+        DatePickerFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
+            @Override
+            public void onDateChosen(int year, int month, int day) {
+                reminderCal.set(year, month, day);
+
+                TimePickerFragment timePickerFragment = new TimePickerFragment();
+                timePickerFragment.setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
+                    @Override
+                    public void onTimeChosen(int hour, int min) {
+                        reminderCal.set(Calendar.HOUR_OF_DAY, hour);
+                        reminderCal.set(Calendar.MINUTE, min);
+                        reminderCal.set(Calendar.SECOND, 0);
+                        reminderCal.set(Calendar.MILLISECOND, 0);
+
+                        addReminder(reminderCal);
+
+                    }
+                });
+                timePickerFragment.show(getSupportFragmentManager(), "TimePicker");
+
+            }
+        });
+        datePickerFragment.show(getSupportFragmentManager(), "DatePicker");
+
+
+
+    }
+
+    private void addReminder(final Calendar reminder){
+
+        reminderTime = dateTimeFormat.format(reminderCal.getTime());
+        eventReminder.setText(reminderTime);
+
+        DocumentReference docRef = db.collection("event")
+                .document(eventId)
+                .collection("Going")
+                .document(currentUser.getUid());
+        
+        docRef.update("reminder", reminder).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: Saved reminder to event");
+            }
+        });
+
+
+        Log.d(TAG, "makeReminder: Started");
+
+        Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
+        i.putExtra("id", eventId);
+        i.putExtra("reminder", reminder);
+        i.putExtra("reminderTime", reminderCal.getTimeInMillis());
+        i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(start.getTime()));
+        i.putExtra("name", name);
+        i.putExtra("channel", "event");
+
+        PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
+                getApplicationContext(),
+                (int)reminderKey, i,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCal.getTimeInMillis(), nIntent);
+
+        Log.d(TAG, "makeReminder: reminder set for " + reminderCal.getTime());
+        Log.d(TAG, "makeReminder: reminderID: " + reminder);
+
+
     }
 
     private boolean hasReminder(long id){
@@ -266,22 +356,27 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void getReminder(long id){
-        Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
-        pIntent = PendingIntent.getBroadcast(getApplicationContext(), (int) id, i, PendingIntent.FLAG_NO_CREATE);
-        Log.d(TAG, "getReminder: " + pIntent.describeContents());
+        DocumentReference reminderRef = db.collection("event")
+                .document(eventId)
+                .collection("Going")
+                .document(currentUser.getUid());
 
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Log.d(TAG, "getReminder: " + am.toString());
-
-        Log.d(TAG, "getReminder: " + am.getNextAlarmClock() + "\n" +
-                am.getNextAlarmClock().toString() + "\n" +
-                am.getNextAlarmClock().describeContents() + "\n" +
-                am.getNextAlarmClock().getShowIntent().toString() + "\n" +
-                am.getNextAlarmClock().getTriggerTime()
-        );
-
-        Calendar test = Calendar.getInstance();
-        am.getNextAlarmClock().getTriggerTime();
-        Log.d(TAG, "getReminder: TRIGGER: " + am.getNextAlarmClock().getTriggerTime());
+        reminderRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        long reminderInMillis = document.getLong("reminder.timeInMillis");
+                        Calendar rCal = Calendar.getInstance();
+                        rCal.setTimeInMillis(reminderInMillis);
+                        if(Calendar.getInstance().before(rCal)){
+                            eventReminder.setText(dateTimeFormat.format(rCal.getTime()));
+                            eventAddReminder.setText(R.string.btn_change_reminder);
+                        }
+                    }
+                }
+            }
+        });
     }
 }

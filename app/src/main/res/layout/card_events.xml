@@ -8,7 +8,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/event_card_cardlayout"
-        style="@style/CardBlue"
+        style="@style/Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -20,22 +20,21 @@
 
             <TextView
                 android:id="@+id/event_card_event_name"
-                style="@style/LightTitleText"
+                style="@style/Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="EventName" />
 
 
             <TextView
+                style="@style/SubTitle"
                 android:id="@+id/event_card_event_location"
-                style="@style/LightNormalText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/hint_location" />
 
             <TextView
                 android:id="@+id/event_card_event_going"
-                style="@style/LightNormalText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -43,7 +42,6 @@
 
             <TextView
                 android:id="@+id/event_card_event_start"
-                style="@style/LightNormalText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

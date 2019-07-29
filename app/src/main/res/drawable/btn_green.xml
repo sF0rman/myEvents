@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ripple android:color="@color/orangeSecondary"
+<ripple android:color="@color/greenPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="false">
         <shape>
-            <solid android:color="@color/orangePrimary" />
-            <stroke android:width="2dp" android:color="@color/orangeSecondary" />
+            <solid android:color="@color/greenSecondary" />
+            <stroke android:width="2dp" android:color="@color/greenPrimary" />
             <corners android:radius="5dp" />
             <padding android:bottom="10dp" android:left="15dp" android:right="15dp" android:top="10dp" />
         </shape>
     </item>
 
 </ripple>
-

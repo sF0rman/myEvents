@@ -2,8 +2,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="false">
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="@color/lightColor" />
-            <stroke android:width="2dp" android:color="@color/lightAccent" />
+            <solid android:color="@color/lightPrimary" />
+            <stroke android:width="2dp" android:color="@color/lightSecondary" />
             <corners android:radius="5dp" />
             <padding android:bottom="15dp" android:left="15dp" android:right="15dp" android:top="15dp" />
         </shape>
@@ -11,7 +11,7 @@
 
     <item android:state_focused="true">
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="@color/lightColor" />
+            <solid android:color="@color/lightPrimary" />
             <stroke android:width="2dp" android:color="@color/orangePrimary" />
             <corners android:radius="5dp" />
             <padding android:bottom="15dp" android:left="15dp" android:right="15dp" android:top="15dp" />

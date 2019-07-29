@@ -1,180 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".CreateUserActivity">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        style="@style/Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:background="@drawable/gradient_blue">
-
-            <TextView
-                style="@style/LightTitleText"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_margin="24dp"
-                android:text="@string/title_create_user" />
-
-        </FrameLayout>
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/create_user_image"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:onClick="createSetImage"
-            android:src="@drawable/ic_icon"
-            app:civ_border_width="2dp" />
-
-        <EditText
-            android:id="@+id/create_user_firstname"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_first_name"
-            android:inputType="textPersonName" />
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/create_user_firstname_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
-
-        <EditText
-            android:id="@+id/create_user_surname"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_surname"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/create_user_surname_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
-
-
-        <EditText
-            android:id="@+id/create_user_email"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_email"
-            android:inputType="textEmailAddress" />
-
-        <TextView
-            android:id="@+id/create_user_email_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
-
-        <EditText
-            android:id="@+id/create_user_password"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_password"
-            android:inputType="textPassword" />
-
-        <TextView
-            android:id="@+id/create_user_password_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
-
-
-        <EditText
-            android:id="@+id/create_user_repeat_password"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/hint_repeat_password"
-            android:inputType="textPassword" />
-
-        <TextView
-            android:id="@+id/create_user_repeat_password_error"
-            style="@style/ErrorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
-
-        <CheckBox
-            android:id="@+id/create_user_terms_checkbox"
+            style="@style/ToolbarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/hint_terms" />
+            android:text="@string/title_create_user" />
 
-        <TextView
-            android:id="@+id/create_user_terms_error"
-            style="@style/ErrorText"
+    </androidx.appcompat.widget.Toolbar>
+
+    <ProgressBar
+        android:id="@+id/create_user_progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:visibility="invisible" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="16dp" />
+            android:orientation="vertical">
 
 
-        <ProgressBar
-            android:id="@+id/create_user_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/create_user_image"
+                style="@style/Padding"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="createSetImage"
+                android:src="@drawable/ic_icon"
+                app:civ_border_width="2dp" />
 
-        <Button
-            android:id="@+id/create_user_create_button"
-            style="@style/PrimaryButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:onClick="onCreateUser"
-            android:text="@string/btn_create_account" />
+            <LinearLayout
+                style="@style/Padding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/create_user_firstname"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_first_name"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/create_user_firstname_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/create_user_surname"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_surname"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/create_user_surname_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
 
-    </LinearLayout>
-</ScrollView>
+                <EditText
+                    android:id="@+id/create_user_email"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_email"
+                    android:inputType="textEmailAddress" />
+
+                <TextView
+                    android:id="@+id/create_user_email_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/create_user_password"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_password"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/create_user_password_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <EditText
+                    android:id="@+id/create_user_repeat_password"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_repeat_password"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/create_user_repeat_password_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <CheckBox
+                    android:id="@+id/create_user_terms_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/hint_terms" />
+
+                <TextView
+                    android:id="@+id/create_user_terms_error"
+                    style="@style/ErrorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <Button
+                    android:id="@+id/create_user_create_button"
+                    style="@style/PrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCreateUser"
+                    android:text="@string/btn_create_account" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

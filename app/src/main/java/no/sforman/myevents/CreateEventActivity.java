@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -46,6 +48,7 @@ public class CreateEventActivity extends AppCompatActivity {
     public static final String TAG = "CreateEventActivity";
 
     //UI
+    ProgressBar progressBar;
     MapFragment mapFragment;
     EditText name;
     EditText description;
@@ -76,6 +79,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     //Event variables
+    String eventOwnerId;
     String eventName;
     String eventDescription;
     String eventLocation;
@@ -116,9 +120,11 @@ public class CreateEventActivity extends AppCompatActivity {
     private void initFirebase(){
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        eventOwnerId = currentUser.getUid();
     }
 
     private void initUI(){
+        progressBar = findViewById(R.id.create_event_progress);
         name = findViewById(R.id.create_event_name_text);
         startDate = findViewById(R.id.create_event_startdate_text);
         startTime = findViewById(R.id.create_event_starttime_text);
@@ -215,8 +221,12 @@ public class CreateEventActivity extends AppCompatActivity {
     public void onSubmitEvent(View v){
         Log.d(TAG, "onSubmitEvent: Submit clicked");
 
+        progressBar.setVisibility(View.VISIBLE);
+
         if(validInput()){
             createEvent();
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -372,7 +382,7 @@ public class CreateEventActivity extends AppCompatActivity {
         final long rid = (long) today.getTimeInMillis();
         if(isOnline.isChecked()){
             event = new Event(eventName,
-                    currentUser.getEmail(),
+                    eventOwnerId,
                     eventDescription,
                     startCal,
                     endCal,
@@ -384,7 +394,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     rid);
         } else {
             event = new Event(eventName,
-                    currentUser.getEmail(),
+                    eventOwnerId,
                     eventDescription,
                     startCal,
                     endCal,
@@ -400,13 +410,15 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
-                String id = documentReference.getId();
-                event.addID(id);
+                String eventId = documentReference.getId();
+                event.addID(eventId);
                 if(hasReminder.isChecked()){
-                    makeReminder(id, rid);
+                    makeReminder(eventId, rid);
                 }
                 Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
                 startActivity(i);
+                progressBar.setVisibility(View.INVISIBLE);
+                finish();
             }
         });
     }
@@ -433,6 +445,24 @@ public class CreateEventActivity extends AppCompatActivity {
 
         Log.d(TAG, "makeReminder: reminder set for " + reminderCal.getTime());
         Log.d(TAG, "makeReminder: reminderID: " + reminder);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> reminderMap = new HashMap<>();
+        reminderMap.put("name", currentUser.getDisplayName());
+        reminderMap.put("email", currentUser.getEmail());
+        reminderMap.put("reminder", reminderCal);
+        
+        db.collection("event")
+                .document(event)
+                .collection("Going")
+                .document(eventOwnerId)
+                .set(reminderMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: User added as going with reminder");
+                    }
+                });
 
     }
 

@@ -78,6 +78,11 @@ class EventsFragment extends Fragment {
         getEvents();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     private void initFire(){
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -87,7 +92,7 @@ class EventsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         try {
             db.collection("event")
-                    .whereEqualTo("owner", currentUser.getEmail())
+                    .whereEqualTo("owner", currentUser.getUid())
                     .orderBy("start", Query.Direction.ASCENDING)
                     .startAt(today)
                     .get()
