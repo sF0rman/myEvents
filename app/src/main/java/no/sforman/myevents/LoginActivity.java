@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     // UI
     private EditText emailInput;
     private EditText passwordInput;
-    private TextView errorMessage;
+    private ProgressBar progressBar;
 
     //FireBase
     private FirebaseAuth mAuth;
@@ -54,9 +56,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initUI(){
+        progressBar = findViewById(R.id.login_progress);
         emailInput = findViewById(R.id.login_input_email);
         passwordInput = findViewById(R.id.login_input_password);
-        errorMessage = findViewById(R.id.login_text_error);
     }
 
     public boolean isOnline() {
@@ -77,19 +79,21 @@ public class LoginActivity extends AppCompatActivity {
         if(user != null){
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
+            finish();
         }
     }
 
     // Handle buttons
 
     public void onLogin(View v){
-        errorMessage.setText("");
+        progressBar.setVisibility(View.VISIBLE);
         String e = emailInput.getText().toString();
         String p = passwordInput.getText().toString();
         if(isValidEmail(e) && inputPassword(p)){
             login(e, p);
         } else {
-            errorMessage.setText(R.string.error_incorrect_password);
+            Toast.makeText(LoginActivity.this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -116,11 +120,13 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            progressBar.setVisibility(View.INVISIBLE);
                             updateUserData(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            errorMessage.setText(R.string.error_incorrect_password);
+                            Toast.makeText(LoginActivity.this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
 
                     }
@@ -128,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onCreateUser(View v){
+        progressBar.setVisibility(View.VISIBLE);
         Intent i = new Intent(LoginActivity.this, CreateUserActivity.class);
         startActivity(i);
     }

@@ -63,12 +63,19 @@ class EventsFragment extends Fragment {
         initRecyclerView();
         initFab();
         initFire();
-        getEvents();
 
         intent = getActivity().getIntent();
 
 
         return layout;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        eventList.clear();
+        getEvents();
     }
 
     private void initFire(){

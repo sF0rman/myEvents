@@ -132,6 +132,10 @@
 
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis nisi, fermentum finibus porttitor ac, bibendum ut lacus. Nulla rutrum velit eu semper lobortis. Suspendisse non porta risus. Sed lectus tellus, gravida in efficitur quis, volutpat eget nulla. Nullam ornare sodales nibh, ut consequat sapien rutrum sit amet</string>
 
+    <!-- Loading -->
+    <string name="loading_name">Loading name...</string>
+    <string name="loading_email">Loading email...</string>
+
     <!-- AutoStrings from templates -->
 
     <string name="title_activity_your">YourActivity</string>

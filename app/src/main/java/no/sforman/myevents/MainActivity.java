@@ -21,10 +21,20 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -36,9 +46,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private NavigationView navView;
     private FrameLayout content;
+    private FrameLayout notice;
     private View navHeader;
 
-    private TextView username;
+    private CircleImageView userImage;
+    private TextView name;
     private TextView email;
 
     // Firebase
@@ -47,11 +59,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Firestore
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     // Fragments
     EventsFragment eventsFragment;
     SettingsFragment settingsFragment;
     ContactFragment contactFragment;
+    NoticeFragment noticeFragment;
 
 
     @Override
@@ -59,31 +74,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         initUI();
         initNavigation();
 
-
-        if(isOnline()){
-            initFirebase();
-            initUserData();
-        } else {
-            Log.e(TAG, "onCreate: No network");
-        }
+        contactFragment = new ContactFragment();
+        settingsFragment = new SettingsFragment();
+        eventsFragment = new EventsFragment();
 
         // Don't reload fragment if device is rotated.
         if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "contacts"){
-            contactFragment = new ContactFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
         } else if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "settings"){
-            settingsFragment = new SettingsFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: intent-redirected to settings.");
         } else {
-            eventsFragment = new EventsFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: Normal load to events page.");
@@ -93,14 +100,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(isOnline()){
+            initFirebase();
+            initUserData();
+        } else {
+            Log.e(TAG, "onCreate: No network");
+        }
+    }
+
     private void initUserData(){
         if(currentUser != null){
-            username.setText(currentUser.getDisplayName());
-            email.setText(currentUser.getEmail());
-        } else {
-            Log.e(TAG, "initUserData: No user logged on");
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
+            final String uId = currentUser.getUid();
+
+            db = FirebaseFirestore.getInstance();
+            final DocumentReference docRef = db.collection("user")
+                    .document(uId);
+
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        final DocumentSnapshot document = task.getResult();
+                        if(document.exists()) {
+                            name.setText(document.getString("firstname") + " " + document.getString("surname"));
+                            email.setText(document.getString("email"));
+                            Log.d(TAG, "onComplete: ImageUri " + document.getString("image"));
+                            try{
+                                FirebaseStorage storage = FirebaseStorage.getInstance();
+                                StorageReference imgRef = storage.getReferenceFromUrl(document.getString("image"));
+                                Glide.with(getApplicationContext())
+                                        .load(document.getString("image"))
+                                        .into(userImage);
+                            } catch (Exception e){
+                                Log.e(TAG, "onComplete: userImage: ", e);
+                            }
+
+                        }
+                    }
+                }
+            });
+
         }
     }
 
@@ -117,12 +161,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawer = findViewById(R.id.main_drawer);
         content = findViewById(R.id.main_content_container);
+        notice = findViewById(R.id.main_notice_container);
         navView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.main_toolbar);
         navHeader = navView.getHeaderView(0);
 
-        username = navHeader.findViewById(R.id.nav_header_user_name);
+        name = navHeader.findViewById(R.id.nav_header_user_name);
         email = navHeader.findViewById(R.id.nav_header_email);
+        userImage = navHeader.findViewById(R.id.nav_header_image);
     }
 
     private void initNavigation(){
@@ -137,12 +183,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initFirebase(){
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        if(currentUser == null) {
+            Log.e(TAG, "initUserData: No user logged on");
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 
     private void signOut(){
         mAuth.getInstance().signOut();
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
+        finish();
     }
 
 
@@ -151,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(drawer.isDrawerOpen(GravityCompat.START)){
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
             finish();
         }
     }
@@ -161,17 +215,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.nav_events:
-                eventsFragment = new EventsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Events loaded");
                 break;
             case R.id.nav_contacts:
-                contactFragment = new ContactFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Contacts loaded");
                 break;
             case R.id.nav_settings:
-                settingsFragment = new SettingsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
                 Log.d(TAG, "onNavigationItemSelected: Settings loaded");
                 break;

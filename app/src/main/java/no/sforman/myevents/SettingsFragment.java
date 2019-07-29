@@ -101,7 +101,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void getUserDetails(){
-        mAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         email = currentUser.getEmail();
@@ -112,7 +112,12 @@ class SettingsFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
-                        Log.d(TAG, "onComplete: Got data: " + docRef);
+                        DocumentSnapshot document = task.getResult();
+                        if(document.exists()) {
+                            firstnameInput.setText(document.getString("firstname"));
+                            surnameInput.setText(document.getString("surname"));
+                            emailInput.setText(document.getString("email"));
+                        }
                     }
                 }
             });
@@ -138,6 +143,8 @@ class SettingsFragment extends Fragment {
         userEdit.setVisibility(View.GONE);
         userChangeAccept.setVisibility(View.VISIBLE);
         userChangeCancel.setVisibility(View.VISIBLE);
+
+        getUserDetails();
     }
 
     public void changePassword(){
@@ -157,7 +164,6 @@ class SettingsFragment extends Fragment {
     }
 
     public void getAllData(){
-
     }
 
     public void deleteAllEvents(){
@@ -169,6 +175,14 @@ class SettingsFragment extends Fragment {
     }
 
     public void acceptChange(){
+
+        if(editUser){
+
+        } else if (changePassword) {
+
+        } else {
+
+        }
 
     }
 

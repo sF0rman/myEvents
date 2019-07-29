@@ -5,8 +5,9 @@
     android:background="@color/orangePrimary">
 
     <TextView
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
         android:text="@string/msg_temp"
+        android:textSize="16dp"
         android:textColor="@color/lightColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -1,20 +1,24 @@
 package no.sforman.myevents;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,13 +28,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class CreateUserActivity extends AppCompatActivity {
 
     public static final String TAG = "CreateUserActivity";
+    public static final int PICK_IMAGE = 1;
 
     // UI
     private EditText firstname;
@@ -45,9 +55,15 @@ public class CreateUserActivity extends AppCompatActivity {
     private TextView passwordError;
     private TextView passwordRepeatError;
     private TextView termsError;
+    private CircleImageView image;
+    private ProgressBar progressBar;
+
+    private Uri imageUri;
 
     // Firebase
     private FirebaseAuth mAuth;
+    private StorageReference storageRef;
+    private FirebaseStorage mStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +80,8 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void initUI(){
+        imageUri = null;
+        image = findViewById(R.id.create_user_image);
         firstname = findViewById(R.id.create_user_firstname);
         surname = findViewById(R.id.create_user_surname);
         email = findViewById(R.id.create_user_email);
@@ -76,10 +94,13 @@ public class CreateUserActivity extends AppCompatActivity {
         passwordError = findViewById(R.id.create_user_password_error);
         passwordRepeatError = findViewById(R.id.create_user_repeat_password_error);
         termsError = findViewById(R.id.create_user_terms_error);
+        progressBar = findViewById(R.id.create_user_progress);
     }
 
     private void initFirebase(){
         mAuth = FirebaseAuth.getInstance();
+        mStorage = FirebaseStorage.getInstance();
+        storageRef = mStorage.getReference();
     }
 
     public boolean isOnline() {
@@ -91,10 +112,10 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     public void initUserData(FirebaseUser u){
-        if(u != null){
-            Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
-            startActivity(i);
-        }
+        Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
+        progressBar.setVisibility(View.INVISIBLE);
+        startActivity(i);
+        finish();
     }
 
     private void clearErrors(){
@@ -107,6 +128,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     public void onCreateUser(View v){
+        progressBar.setVisibility(View.VISIBLE);
         clearErrors();
 
         Log.d(TAG, "onCreateUser: Started user creation");
@@ -115,10 +137,13 @@ public class CreateUserActivity extends AppCompatActivity {
         String e = email.getText().toString();
         String pw = password.getText().toString();
         String pw2 = passwordRepeat.getText().toString();
+        String img = imageUri.toString();
 
         if(isValidInput(f, s, e, pw, pw2)){
             Log.d(TAG, "onCreateUser: Input ok");
             createAccount(f, s, e, pw);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -174,35 +199,61 @@ public class CreateUserActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            final FirebaseUser user = mAuth.getCurrentUser();
+                            final String userId = user.getUid();
 
-                            updateUserName(user, f + " " + s);
-                            sendEmail(user);
-                            populateDatabase(user, f, s, e);
+                            // Update displayname
+                            UserProfileChangeRequest uChangeRequest = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName((f + " " + s).trim()).build();
 
-                            initUserData(user);
+                            user.updateProfile(uChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d(TAG, "DisplayNameAdded: success");
+
+                                    // Upload profile image
+                                    final StorageReference imgRef = storageRef.child("images/" + userId + ".jpg");
+                                    imgRef.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                            if(task.isSuccessful()){
+                                                imgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        String downloadUrl = uri.toString();
+
+                                                        // Update database data
+                                                        populateDatabase(f, s, e, userId, downloadUrl);
+                                                        // Send email
+                                                        sendEmail(user);
+
+                                                        initUserData(user);
+
+                                                    }
+                                                });
+                                            } else {
+                                                Log.e(TAG, "onComplete: Unable to upload image", task.getException());
+                                                user.delete();
+                                                Log.d(TAG, "onComplete: Deleted user");
+                                            }
+                                        }
+                                    });
+
+
+                                }
+                            });
+
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(CreateUserActivity.this, "Error:" + task.getException(), Toast.LENGTH_SHORT).show();
                             initUserData(null);
                         }
                     }
                 });
     }
 
-    private void updateUserName(FirebaseUser currentUser, String n){
-        // Add Displayname to user.
-        UserProfileChangeRequest uChangeRequest = new UserProfileChangeRequest.Builder()
-                .setDisplayName(n.trim()).build();
-
-        currentUser.updateProfile(uChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.d(TAG, "DisplayNameAdded: success");
-            }
-        });
-    }
 
     private void sendEmail(FirebaseUser currentUser){
         // send email verification
@@ -217,8 +268,7 @@ public class CreateUserActivity extends AppCompatActivity {
                 });
     }
 
-    private void populateDatabase(final FirebaseUser currentUser, final String f,
-                                  final String s, final String e){
+    private void populateDatabase(final String f, final String s, final String e, final String uId, final String imageUrl){
         // Add user to Firestore database (for use with friends/contacts)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -226,8 +276,11 @@ public class CreateUserActivity extends AppCompatActivity {
         user.put(Keys.FIRSTNAME_KEY, f.trim());
         user.put(Keys.SURNAME_KEY, s.trim());
         user.put(Keys.EMAIL_KEY, e);
+        user.put(Keys.IMAGE_KEY, imageUrl);
 
-        db.collection("user").document(e).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+
+        db.collection("user").document(uId).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "AddedUserToFireStore:success");
@@ -240,5 +293,27 @@ public class CreateUserActivity extends AppCompatActivity {
                 Toast.makeText(CreateUserActivity.this, "Error: " + e, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+
+
+    public void createSetImage(View v){
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == PICK_IMAGE){
+            try {
+                imageUri = data.getData();
+                image.setImageURI(imageUri);
+                Log.d(TAG, "onActivityResult: ImageURI: " + imageUri.toString());
+            } catch (RuntimeException e){
+                Log.e(TAG, "onActivityResult: No image was selected", e);
+            }
+        }
     }
 }
