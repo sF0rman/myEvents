@@ -82,6 +82,8 @@
     <string name="btn_show_all_data">Get all user data</string>
     <string name="btn_add_reminder">Add a reminder</string>
     <string name="btn_change_reminder">Change reminder</string>
+    <string name="btn_delete_event">Delete event</string>
+    <string name="btn_edit_event">Update event</string>
 
     <!-- Navigation -->
     <string name="nav_drawer_open">Open navigation drawer</string>

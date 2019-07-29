@@ -266,6 +266,15 @@
                     android:onClick="onSubmitEvent"
                     android:text="@string/btn_create_event" />
 
+                <Button
+                    android:id="@+id/create_event_delete_button"
+                    style="@style/SecondaryButton"
+                    android:onClick="deleteEvent"
+                    android:text="@string/btn_delete_event"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
 

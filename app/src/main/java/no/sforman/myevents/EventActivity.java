@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -63,6 +64,8 @@ public class EventActivity extends AppCompatActivity {
     private Button eventPplMaybe;
     private Button eventPplInvited;
     private Button eventAddReminder;
+
+    private Menu contextMenu;
 
     private CardView rsvpCard;
     private CardView peopleCard;
@@ -119,7 +122,9 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.event_menu, menu);
+        contextMenu = menu;
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.event_menu, menu);
         return true;
     }
 
@@ -169,10 +174,15 @@ public class EventActivity extends AppCompatActivity {
 
     }
 
-    private void adjustForOwner(){
-        if(currentUser.getUid() == owner){
+    private void adjustForOwner(String userId){
+        Log.d(TAG, "adjustForOwner: userId: " + userId + " owner: " + owner);
+        if(userId.equals(owner)){
+            Log.d(TAG, "adjustForOwner: Cannot rsvp for own event");
             rsvpCard.setVisibility(View.GONE);
-
+        }
+        if(!userId.equals(owner)){
+            Log.d(TAG, "adjustForOwner: Hide menu");
+            contextMenu.getItem(0).setVisible(false);
         }
         if(goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()){
             peopleCard.setVisibility(View.GONE);
@@ -209,9 +219,6 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: Description: " + description);
 
                             owner = document.getString(Keys.OWNER_KEY);
-                            if(owner == currentUser.getUid()){
-                                toolbar.dismissPopupMenus();
-                            }
                             Log.d(TAG, "onComplete: Owner: " + owner);
 
                             startInMillis = (long) document.get("start.timeInMillis");
@@ -284,7 +291,7 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: There is no reminder");
                         }
 
-                        adjustForOwner();
+                        adjustForOwner(mAuth.getUid());
 
                     }
                 }

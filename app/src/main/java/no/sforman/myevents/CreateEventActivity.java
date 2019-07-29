@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -75,6 +77,8 @@ public class CreateEventActivity extends AppCompatActivity {
     TextView reminderError;
     TextView isOnlineError;
     FrameLayout onlineImg;
+    Button createEvent;
+    Button deleteEvent;
 
     // Places
     public static final int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -191,6 +195,9 @@ public class CreateEventActivity extends AppCompatActivity {
                 }
             }
         });
+
+        createEvent = findViewById(R.id.create_event_submit_button);
+        deleteEvent = findViewById(R.id.create_event_delete_button);
 
 
     }
@@ -487,6 +494,9 @@ public class CreateEventActivity extends AppCompatActivity {
     private void getEventData(String id){
         hasReminder.setVisibility(View.GONE);
         reminderError.setVisibility(View.GONE);
+        deleteEvent.setVisibility(View.VISIBLE);
+        createEvent.setText(R.string.btn_edit_event);
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final DocumentReference eventRef = db.collection("event").document(id);
         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -566,6 +576,34 @@ public class CreateEventActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
                 startActivity(updated);
                 finish();
+            }
+        });
+    }
+
+    public void deleteEvent(View v){
+        progressBar.setVisibility(View.VISIBLE);
+
+        NoticeFragment deleteEventNotice = new NoticeFragment();
+
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("event")
+                .document(eventId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: Deleted event id: " + eventId);
+                        Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        startActivity(main);
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Log.w(TAG, "onFailure: Couldn't delete event", e);
             }
         });
     }
