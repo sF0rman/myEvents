@@ -30,7 +30,6 @@ import java.util.Calendar;
 
 class EventsFragment extends Fragment {
 
-    Intent intent;
     public static final String TAG = "EventFramgent";
     Calendar today = Calendar.getInstance();
 
@@ -64,8 +63,6 @@ class EventsFragment extends Fragment {
         initFab();
         initFire();
 
-        intent = getActivity().getIntent();
-
 
         return layout;
     }
@@ -82,6 +79,7 @@ class EventsFragment extends Fragment {
     public void onStop() {
         super.onStop();
     }
+
 
     private void initFire(){
         mAuth = FirebaseAuth.getInstance();

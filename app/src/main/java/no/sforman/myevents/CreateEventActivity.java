@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -22,7 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -31,6 +34,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
@@ -46,6 +50,9 @@ import java.util.Map;
 public class CreateEventActivity extends AppCompatActivity {
 
     public static final String TAG = "CreateEventActivity";
+
+    Intent intent;
+    String eventId;
 
     //UI
     ProgressBar progressBar;
@@ -85,6 +92,7 @@ public class CreateEventActivity extends AppCompatActivity {
     String eventLocation;
     String eventAddress;
     Calendar reminderCal = Calendar.getInstance();
+    long reminderKey;
     Calendar startCal = Calendar.getInstance();
     Calendar endCal = Calendar.getInstance();
     Calendar today = Calendar.getInstance();
@@ -105,6 +113,12 @@ public class CreateEventActivity extends AppCompatActivity {
             initPlaces();
         } else {
             Log.e(TAG, "onCreate: No network");
+        }
+
+        intent = getIntent();
+        if(intent.hasExtra("eventId")){
+            eventId = intent.getStringExtra("eventId");
+            getEventData(eventId);
         }
 
     }
@@ -224,7 +238,12 @@ public class CreateEventActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         if(validInput()){
-            createEvent();
+            if(intent.hasExtra("eventId")){
+                editEvent();
+            } else {
+                createEvent();
+            }
+
         } else {
             progressBar.setVisibility(View.INVISIBLE);
         }
@@ -429,7 +448,6 @@ public class CreateEventActivity extends AppCompatActivity {
         Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
         i.putExtra("id", event);
         i.putExtra("reminder", reminder);
-        i.putExtra("reminderTime", reminderCal.getTimeInMillis());
         i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(startCal.getTime()));
         i.putExtra("name", eventName);
         i.putExtra("channel", "event");
@@ -464,6 +482,92 @@ public class CreateEventActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void getEventData(String id){
+        hasReminder.setVisibility(View.GONE);
+        reminderError.setVisibility(View.GONE);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final DocumentReference eventRef = db.collection("event").document(id);
+        eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot eventDoc = task.getResult();
+                    if(eventDoc.exists()){
+                        name.setText(eventDoc.getString(Keys.NAME_KEY));
+                        description.setText(eventDoc.getString(Keys.DESCRIPTION_KEY));
+                        long startInMillis = eventDoc.getLong("start.timeInMillis");
+                        startCal.setTimeInMillis(startInMillis);
+                        startDate.setText(dateFormat.format(startCal.getTime()));
+                        startTime.setText(timeFormat.format(startCal.getTime()));
+                        long endInMillis = eventDoc.getLong("end.timeInMillis");
+                        endCal.setTimeInMillis(endInMillis);
+                        endDate.setText(dateFormat.format(endCal.getTime()));
+                        endTime.setText(timeFormat.format(endCal.getTime()));
+                        eventGeoPoint = eventDoc.getGeoPoint(Keys.GEOPONT_KEY);
+                        eventAddress = eventDoc.getString(Keys.ADDRESS_KEY);
+                        eventLocation = eventDoc.getString(Keys.LOCATION_KEY);
+                        if(eventAddress.contains(eventLocation)){
+                            // strip everything up to the first comma and the following space.
+                            eventAddress = eventAddress.substring(eventAddress.indexOf(",")+2);
+                        }
+                        // Add line breaks
+                        location.setText(eventLocation + " " + eventAddress);
+
+
+                        isOnline.setChecked(eventDoc.getBoolean(Keys.ONLINE_KEY));
+                        hasReminder.setChecked(false);
+                        reminderKey = eventDoc.getLong(Keys.REMINDER_KEY);
+
+                    }
+                }
+            }
+        });
+    }
+
+    private void editEvent(){
+        Log.d(TAG, "createEventObject: Started");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        final Event event;
+        if(isOnline.isChecked()){
+            event = new Event(eventName,
+                    eventOwnerId,
+                    eventDescription,
+                    startCal,
+                    endCal,
+                    0,
+                    0,
+                    "none",
+                    "none",
+                    true,
+                    reminderKey);
+        } else {
+            event = new Event(eventName,
+                    eventOwnerId,
+                    eventDescription,
+                    startCal,
+                    endCal,
+                    eventGeoPoint.getLatitude(),
+                    eventGeoPoint.getLongitude(),
+                    eventLocation,
+                    eventAddress,
+                    false,
+                    reminderKey);
+        }
+
+        db.collection("event").document(eventId).set(event).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: Document update. ID: " + eventId);
+                Intent updated = new Intent(CreateEventActivity.this, EventActivity.class);
+                updated.putExtra("eventId", eventId);
+                progressBar.setVisibility(View.INVISIBLE);
+                startActivity(updated);
+                finish();
+            }
+        });
     }
 
 }

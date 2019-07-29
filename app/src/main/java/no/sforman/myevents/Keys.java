@@ -5,4 +5,13 @@ public class Keys {
     public static final String SURNAME_KEY = "surname";
     public static final String IMAGE_KEY = "image";
     public static final String EMAIL_KEY = "email";
+
+    public static final String NAME_KEY = "name";
+    public static final String DESCRIPTION_KEY = "description";
+    public static final String GEOPONT_KEY = "geoPoint";
+    public static final String LOCATION_KEY = "location";
+    public static final String ADDRESS_KEY = "address";
+    public static final String ONLINE_KEY = "online";
+    public static final String REMINDER_KEY = "reminderKey";
+    public static final String OWNER_KEY = "owner";
 }

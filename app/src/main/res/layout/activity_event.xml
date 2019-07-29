@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
     <LinearLayout
@@ -10,16 +11,12 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/event_toolbar"
             style="@style/Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/event_toolbar_title"
-                style="@style/ToolbarTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/loading_event"/>
+            android:layout_height="wrap_content"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/loading_event">
 
         </androidx.appcompat.widget.Toolbar>
 

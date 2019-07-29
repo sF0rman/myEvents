@@ -2,19 +2,22 @@ package no.sforman.myevents;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
-import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,22 +37,16 @@ import java.util.Calendar;
 public class EventActivity extends AppCompatActivity {
 
     public static final String TAG = "EventActivity";
-    public static final String NAME_KEY = "name";
-    public static final String DESCRIPTION_KEY = "description";
-    public static final String GEOPONT_KEY = "geoPoint";
-    public static final String LOCATION_KEY = "location";
-    public static final String ADDRESS_KEY = "address";
-    public static final String ONLINE_KEY = "online";
-    public static final String REMINDER_KEY = "reminderKey";
-    public static final String OWNER_KEY = "owner";
 
     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("E, dd. MMM yyyy HH:mm");
     Intent intent;
 
     // UI Widgets
-    private TextView eventToolbarTitle;
     private MapFragment mapFragment;
     private FrameLayout onlineImg;
+
+    private Toolbar toolbar;
+
     private TextView eventName;
     private TextView eventDescription;
     private TextView eventStart;
@@ -101,9 +98,6 @@ public class EventActivity extends AppCompatActivity {
 
     private GeoPoint geoPoint;
 
-    // Reminder
-    PendingIntent pIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +118,23 @@ public class EventActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.event_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.event_edit_event){
+            Intent editEvent = new Intent(this, CreateEventActivity.class);
+            editEvent.putExtra("eventId", eventId);
+            startActivity(editEvent);
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         Intent back = new Intent(this, MainActivity.class);
         startActivity(back);
@@ -131,7 +142,8 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void initUI(){
-        eventToolbarTitle = findViewById(R.id.event_toolbar_title);
+        toolbar = findViewById(R.id.event_toolbar);
+        setSupportActionBar(toolbar);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map_fragment);
         onlineImg = findViewById(R.id.event_online_image);
         eventName = findViewById(R.id.event_name);
@@ -160,6 +172,7 @@ public class EventActivity extends AppCompatActivity {
     private void adjustForOwner(){
         if(currentUser.getUid() == owner){
             rsvpCard.setVisibility(View.GONE);
+
         }
         if(goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()){
             peopleCard.setVisibility(View.GONE);
@@ -190,12 +203,15 @@ public class EventActivity extends AppCompatActivity {
 
                         // Get document fields
                         try{
-                            name = document.getString(NAME_KEY);
+                            name = document.getString(Keys.NAME_KEY);
                             Log.d(TAG, "onComplete: Name: " + name);
-                            description = document.getString(DESCRIPTION_KEY);
+                            description = document.getString(Keys.DESCRIPTION_KEY);
                             Log.d(TAG, "onComplete: Description: " + description);
 
-                            owner = document.getString(OWNER_KEY);
+                            owner = document.getString(Keys.OWNER_KEY);
+                            if(owner == currentUser.getUid()){
+                                toolbar.dismissPopupMenus();
+                            }
                             Log.d(TAG, "onComplete: Owner: " + owner);
 
                             startInMillis = (long) document.get("start.timeInMillis");
@@ -207,7 +223,7 @@ public class EventActivity extends AppCompatActivity {
                             end.setTimeInMillis(endInMillies);
                             Log.d(TAG, "onComplete: End: " + end.getTime().toString());
 
-                            isOnline = (boolean) document.get(ONLINE_KEY);
+                            isOnline = (boolean) document.get(Keys.ONLINE_KEY);
                             Log.d(TAG, "onComplete: isOnline: " + isOnline);
 
                             if(isOnline){
@@ -215,15 +231,15 @@ public class EventActivity extends AppCompatActivity {
                                 geoPoint = null;
                                 address = "";
                             } else {
-                                location = document.getString(LOCATION_KEY);
+                                location = document.getString(Keys.LOCATION_KEY);
                                 Log.d(TAG, "onComplete: Location: " + location);
-                                address = document.getString(ADDRESS_KEY);
+                                address = document.getString(Keys.ADDRESS_KEY);
                                 Log.d(TAG, "onComplete: Address: " + address);
-                                geoPoint = document.getGeoPoint(GEOPONT_KEY);
+                                geoPoint = document.getGeoPoint(Keys.GEOPONT_KEY);
                                 Log.d(TAG, "onComplete: GeoPount: " + geoPoint.toString());
                             }
 
-                            reminderKey = document.getLong(REMINDER_KEY);
+                            reminderKey = document.getLong(Keys.REMINDER_KEY);
 
                         } catch (NullPointerException e){
                             Log.e(TAG, "onComplete: Missing field", e);
@@ -231,7 +247,7 @@ public class EventActivity extends AppCompatActivity {
 
 
                         // Populate data
-                        eventToolbarTitle.setText(name);
+                        toolbar.setTitle(name);
                         eventName.setText(name);
                         eventDescription.setText(description);
                         eventOwner.setText(owner);
@@ -293,7 +309,11 @@ public class EventActivity extends AppCompatActivity {
                         reminderCal.set(Calendar.SECOND, 0);
                         reminderCal.set(Calendar.MILLISECOND, 0);
 
-                        addReminder(reminderCal);
+                        if(Calendar.getInstance().before(reminderCal)){
+                            addReminder(reminderCal);
+                        } else {
+                            Toast.makeText(EventActivity.this, "You cannot set reminder before current date!", Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 });
