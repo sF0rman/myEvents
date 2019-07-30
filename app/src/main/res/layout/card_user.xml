@@ -17,9 +17,9 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 style="@style/Padding"
-                android:layout_gravity="center_vertical"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
+                android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_icon"
                 app:civ_border_width="2dp" />
 
@@ -41,31 +41,32 @@
                     android:text="@string/loading_email" />
 
                 <LinearLayout
-                    android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <Button
-                        android:layout_weight="1"
-                        android:layout_gravity="end"
                         style="@style/PrimaryButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/btn_accept" />
-
-                    <Button
                         android:layout_gravity="end"
                         android:layout_weight="1"
+                        android:text="@string/btn_accept"
+                        android:visibility="gone" />
+
+                    <Button
                         style="@style/SecondaryButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/btn_cancel"/>
+                        android:layout_gravity="end"
+                        android:layout_weight="1"
+                        android:text="@string/btn_cancel"
+                        android:visibility="gone" />
                 </LinearLayout>
 
             </LinearLayout>
-
 
 
         </LinearLayout>
