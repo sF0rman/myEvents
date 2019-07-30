@@ -388,7 +388,7 @@ public class EventActivity extends AppCompatActivity {
     private void getReminder(long id){
         DocumentReference reminderRef = db.collection("event")
                 .document(eventId)
-                .collection("Going")
+                .collection("invited")
                 .document(userId);
 
         reminderRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
