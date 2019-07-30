@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mDeleteAllEvents(View v){
-        settingsFragment.deleteAllEvents();
+        settingsFragment.callDeleteAllEvents();
     }
 
     public void mDeleteAccount(View v){

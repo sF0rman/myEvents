@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.LogDescriptor;
@@ -88,8 +89,8 @@ class SettingsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-        view =  inflater.inflate(R.layout.fragment_settings, container, false);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_settings, container, false);
         initUI();
         return view;
     }
@@ -105,7 +106,7 @@ class SettingsFragment extends Fragment {
         super.onResume();
     }
 
-    private void initUI(){
+    private void initUI() {
         userEdit = view.findViewById(R.id.settings_edit_user);
         userChangePassword = view.findViewById(R.id.settings_change_password);
         userChangeAccept = view.findViewById(R.id.settings_user_accept);
@@ -134,7 +135,7 @@ class SettingsFragment extends Fragment {
 
     }
 
-    private void getUserDetails(){
+    private void getUserDetails() {
         Log.d(TAG, "getUserDetails: Started");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -147,13 +148,13 @@ class SettingsFragment extends Fragment {
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        if(document.exists()) {
+                        if (document.exists()) {
 
 
                             Log.d(TAG, "onComplete: Got user");
-                            
+
                             f = document.getString("firstname");
                             s = document.getString("surname");
                             e = document.getString("email");
@@ -161,7 +162,7 @@ class SettingsFragment extends Fragment {
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
-                            if(img != null){
+                            if (img != null %% profileImage != null) {
                                 Glide.with(getContext())
                                         .load(img)
                                         .placeholder(R.drawable.ic_person)
@@ -173,13 +174,13 @@ class SettingsFragment extends Fragment {
                     }
                 }
             });
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.e(TAG, "getUserDetails: ", e);
         }
     }
 
 
-    public void editUser(){
+    public void editUser() {
         clearErrors();
         editUser = true;
         firstnameInput.setVisibility(View.VISIBLE);
@@ -200,7 +201,7 @@ class SettingsFragment extends Fragment {
         getUserDetails();
     }
 
-    public void changePassword(){
+    public void changePassword() {
         clearErrors();
         changePassword = true;
         oldPasswordInput.setVisibility(View.VISIBLE);
@@ -217,140 +218,141 @@ class SettingsFragment extends Fragment {
         userChangeCancel.setVisibility(View.VISIBLE);
     }
 
-    public void getAllData(){
+    public void getAllData() {
     }
 
-    public void deleteAllEvents(){
-        Log.d(TAG, "deleteAllEvents: Started");
-        
+    public void callDeleteAllEvents() {
         WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_all_events), new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
-                if(b){
-                    Log.d(TAG, "onCompleted: User confirmed!");
-                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                deleteAllEvents();
+            }
+        });
+        warning.show(getFragmentManager(), "WarningDeleteEvents");
+    }
 
-                    // Get every event that you have created!
-                    db.collection("event")
-                            .whereEqualTo("owner", userId)
-                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if(task.isSuccessful()){
-                                Log.d(TAG, "onComplete: Got events");
-                                for(QueryDocumentSnapshot doc : task.getResult()){
+    public void deleteAllEvents() {
+        Log.d(TAG, "deleteAllEvents: Started");
 
-                                    // Get documentId for event.
-                                    final String documentId = doc.getId();
+        Log.d(TAG, "onCompleted: User confirmed!");
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                                    // Get everyone invited to event
-                                    db.collection("event")
-                                            .document(documentId)
-                                            .collection("invited")
-                                            .get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if(task.isSuccessful()){
-                                                        Log.d(TAG, "onComplete: Got subcollection going");
-                                                        // Remove everyone invited (regardless of rsvp)
-                                                        for (QueryDocumentSnapshot goingDoc : task.getResult()){
-                                                            // Delete event from everyone who has the event.
-                                                            String goingId = goingDoc.getId();
-                                                            deleteSubDocs("event", documentId, "invited", goingId);
-                                                        }
-                                                    }
-                                                }
-                                            });
+        // Get every event that you have created!
+        db.collection("event")
+                .whereEqualTo("owner", userId)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: Got events");
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
 
-                                    // Get all events under self
-                                    db.collection("user")
-                                            .document(userId)
-                                            .collection("event")
-                                            .get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if(task.isSuccessful()){
+                        // Get documentId for event.
+                        final String documentId = doc.getId();
+
+                        // Get everyone invited to event
+                        db.collection("event")
+                                .document(documentId)
+                                .collection("invited")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "onComplete: Got subcollection going");
+                                            // Remove everyone invited (regardless of rsvp)
+                                            for (QueryDocumentSnapshot goingDoc : task.getResult()) {
+                                                // Delete event from everyone who has the event.
+                                                String goingId = goingDoc.getId();
+                                                deleteSubDocs("event", documentId, "invited", goingId);
+                                            }
+                                        }
+                                    }
+                                });
+
+                        // Get all events under self
+                        db.collection("user")
+                                .document(userId)
+                                .collection("event")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
 
 
-                                                        Log.d(TAG, "onComplete: Got all events under self");
-                                                        for(QueryDocumentSnapshot subEventDoc : task.getResult()){
-                                                            String subEventId = subEventDoc.getId();
-                                                            // For each event delete it.
-                                                            deleteSubDocs("user", userId, "event", subEventId);
-                                                            // For each event remove self from invited.
-                                                            deleteSubDocs("event", subEventId, "invited", userId);
-                                                        }
-                                                    }
-                                                }
-                                            });
+                                            Log.d(TAG, "onComplete: Got all events under self");
+                                            for (QueryDocumentSnapshot subEventDoc : task.getResult()) {
+                                                String subEventId = subEventDoc.getId();
+                                                // For each event delete it.
+                                                deleteSubDocs("user", userId, "event", subEventId);
+                                                // For each event remove self from invited.
+                                                deleteSubDocs("event", subEventId, "invited", userId);
+                                            }
+                                        }
+                                    }
+                                });
 
-                                    deleteEvent(documentId);
+                        deleteEvent(documentId);
 
-                                }
-                            } else {
-                                Log.e(TAG, "onComplete: Couldn't get events", task.getException());
-                                Toast.makeText(getContext(), "No events to delete!", Toast.LENGTH_SHORT).show();
-                                userProgressbar.setVisibility(View.GONE);
-                            }
-                        }
-                    });
+                    }
                 } else {
+                    Log.e(TAG, "onComplete: Couldn't get events", task.getException());
+                    Toast.makeText(getContext(), "No events to delete!", Toast.LENGTH_SHORT).show();
                     userProgressbar.setVisibility(View.GONE);
-                    Log.d(TAG, "onCompleted: User cancelled!");
                 }
             }
         });
-
-        warning.show(getFragmentManager(), "Warning");
-        userProgressbar.setVisibility(View.VISIBLE);
-        
     }
 
-    private void deleteEvent(final String id){
+    private void deleteEvent(final String id) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("event")
                 .document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: Deleted event: " + id);
-                userProgressbar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void deleteSubDocs(final String col, final String docId, final String subCol, final String subDocid){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(col)
-                .document(docId)
-                .collection(subCol)
-                .document(subDocid)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "onSuccess: Deleted subDocument: " + subDocid);
+                        Log.d(TAG, "onSuccess: Deleted event: " + id);
+                        userProgressbar.setVisibility(View.GONE);
                     }
                 });
     }
 
-    public void deleteAccount(){
-        final WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_account), true,  new WarningDialogFragment.WarningListener() {
+    private void deleteSubDocs(final String col, final String docId, final String subCol, final String subDocId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(col)
+                .document(docId)
+                .collection(subCol)
+                .document(subDocId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: Deleted subDocument: " + subDocId);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: Unable to delete subDocument", e);
+            }
+        });
+    }
+
+    public void deleteAccount() {
+        final WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_account), true, new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
-                if(b){
+                if (b) {
                     deleteAllEvents();
                     deleteUser();
                 }
             }
         });
-        warning.show(getFragmentManager(), "Warning");
+        warning.show(getFragmentManager(), "WarningDeleteAccount");
     }
 
-    public void deleteUser(){
+    public void deleteUser() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("user")
                 .document(userId)
@@ -363,7 +365,7 @@ class SettingsFragment extends Fragment {
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             Log.d(TAG, "onComplete: User Accoutn deleted");
                                             Toast.makeText(getContext(), "You account was deleted", Toast.LENGTH_SHORT).show();
                                             mAuth.signOut();
@@ -378,10 +380,10 @@ class SettingsFragment extends Fragment {
                 });
     }
 
-    public void acceptChange(){
+    public void acceptChange() {
         clearErrors();
 
-        if(editUser){
+        if (editUser) {
             updateUserSettings();
         } else if (changePassword) {
             changeUserPassword();
@@ -392,7 +394,7 @@ class SettingsFragment extends Fragment {
 
     }
 
-    public void cancelChange(){
+    public void cancelChange() {
         clearErrors();
         editUser = false;
         changePassword = false;
@@ -419,7 +421,7 @@ class SettingsFragment extends Fragment {
         getUserDetails();
     }
 
-    private void updateUserSettings(){
+    private void updateUserSettings() {
         profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         String newFirstname = firstnameInput.getText().toString();
@@ -427,7 +429,7 @@ class SettingsFragment extends Fragment {
         String newEmail = emailInput.getText().toString();
 
         // Verify input
-        if(verifyInput(newFirstname, newSurname, newEmail)){
+        if (verifyInput(newFirstname, newSurname, newEmail)) {
             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                     .setDisplayName(newFirstname + " " + newSurname)
                     .build();
@@ -437,7 +439,7 @@ class SettingsFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: Displayname updated successfully");
                             } else {
                                 Toast.makeText(context, "Name change failed!", Toast.LENGTH_SHORT).show();
@@ -452,7 +454,7 @@ class SettingsFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: Email updated successfully");
                             } else {
                                 Toast.makeText(context, "Email change failed!", Toast.LENGTH_SHORT).show();
@@ -460,7 +462,7 @@ class SettingsFragment extends Fragment {
                         }
                     });
 
-            // Create new map with userData
+// Create new map with userData
             final Map<Object, String> userData = new HashMap<>();
             userData.put(Keys.FIRSTNAME_KEY, newFirstname);
             userData.put(Keys.SURNAME_KEY, newSurname);
@@ -473,7 +475,7 @@ class SettingsFragment extends Fragment {
                     .document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Changed userData in self");
                     } else {
                         Log.e(TAG, "onComplete: Couldn't write to firestore", task.getException());
@@ -489,8 +491,8 @@ class SettingsFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if(task.isSuccessful()){
-                                for(QueryDocumentSnapshot friendDoc : task.getResult()){
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot friendDoc : task.getResult()) {
                                     // Edit user details in friend sub collection.
                                     String friendId = friendDoc.getId();
                                     editSubDocs("user", friendId, "friends", userId, userData);
@@ -507,8 +509,8 @@ class SettingsFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if(task.isSuccessful()){
-                                for(QueryDocumentSnapshot eventDoc : task.getResult()){
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot eventDoc : task.getResult()) {
                                     // Edit user details in event subcollection
                                     String eventId = eventDoc.getId();
                                     editSubDocs("event", eventId, "invited", userId, userData);
@@ -527,7 +529,7 @@ class SettingsFragment extends Fragment {
     }
 
 
-    private void editSubDocs(final String col, final String docId, final String subCol, final String subDocId, Map<Object, String> data){
+    private void editSubDocs(final String col, final String docId, final String subCol, final String subDocId, Map<Object, String> data) {
         FirebaseFirestore esdDb = FirebaseFirestore.getInstance();
         esdDb.collection(col)
                 .document(docId)
@@ -536,8 +538,8 @@ class SettingsFragment extends Fragment {
                 .set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Log.d(TAG, "onComplete: Updated information in: " + col+"/"+docId+"/"+subCol+"/"+subDocId);
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: Updated information in: " + col + "/" + docId + "/" + subCol + "/" + subDocId);
                 } else {
                     Log.e(TAG, "onComplete: Could not update unformation", task.getException());
                 }
@@ -545,15 +547,15 @@ class SettingsFragment extends Fragment {
         });
     }
 
-    private void changeUserPassword(){
+    private void changeUserPassword() {
         profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         final String oldPassword = oldPasswordInput.getText().toString();
         final String newPassword = passwordInput.getText().toString();
         final String newRepeatPassword = repeatPasswordInput.getText().toString();
 
-        if(newPassword.length() > 4){
-            if(newPassword.equals(newRepeatPassword)){
+        if (newPassword.length() > 4) {
+            if (newPassword.equals(newRepeatPassword)) {
                 Log.d(TAG, "changeUserPassword: Changing password...");
 
                 AuthCredential credential = EmailAuthProvider
@@ -563,13 +565,13 @@ class SettingsFragment extends Fragment {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
 
                                     currentUser.updatePassword(newPassword)
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
-                                                    if(task.isSuccessful()){
+                                                    if (task.isSuccessful()) {
                                                         Toast.makeText(context, getString(R.string.msg_success_new_password), Toast.LENGTH_SHORT).show();
                                                         cancelChange();
                                                         profileProgressbar.setVisibility(View.GONE);
@@ -599,39 +601,39 @@ class SettingsFragment extends Fragment {
         }
     }
 
-    private boolean verifyInput(String f, String s, String e){
+    private boolean verifyInput(String f, String s, String e) {
         boolean inputOk = true;
-        if(!isValidEmail(e)){
+        if (!isValidEmail(e)) {
             inputOk = false;
             emailError.setText(R.string.error_invalid_email);
         }
 
-        if(f.length() < 2){
+        if (f.length() < 2) {
             inputOk = false;
             firstnameError.setText(R.string.error_invalid_input);
         }
 
-        if(s.length() < 2){
+        if (s.length() < 2) {
             surnameInput.setText(R.string.error_invalid_input);
         }
 
         return inputOk;
     }
 
-    private void getEventData(){
+    private void getEventData() {
 
     }
 
-    private void getContactData(){
+    private void getContactData() {
 
     }
 
-    private boolean isValidEmail(String e){
+    private boolean isValidEmail(String e) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
-    private void clearErrors(){
+    private void clearErrors() {
         firstnameError.setText("");
         surnameError.setText("");
         emailError.setText("");
