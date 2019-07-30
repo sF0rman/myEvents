@@ -85,13 +85,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
 
         // Don't reload fragment if device is rotated.
-        if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "contacts"){
+        if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")){
             contactFragment = new ContactFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             toolbar.setTitle(R.string.title_contacts);
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
-        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir") == "settings"){
+        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")){
             settingsFragment = new SettingsFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             toolbar.setTitle(R.string.title_settings);
@@ -288,36 +288,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "testChannelFriends: testing friend channel");
     }
 
-    public void editUser(View v){
-        settingsFragment.editUser();
-    }
-
-    public void changePassword(View v){
-        settingsFragment.changePassword();
-    }
-
-    public void getAllData(View v){
-        settingsFragment.getAllData();
-    }
-
-    public void deleteAllEvents(View v){
-        settingsFragment.deleteAllEvents();
-    }
-
-    public void deleteAccount(View v){
-        settingsFragment.deleteAccount();
-    }
-
-    public void acceptChange(View v){
-        settingsFragment.acceptChange();
-    }
-
-    public void cancelChange(View v){
-        settingsFragment.cancelChange();
-    }
-
     public void sendNotification(NotificationCompat.Builder build){
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         managerCompat.notify(0, build.build());
+    }
+
+    public void mEditUser(View v){
+        settingsFragment.editUser();
+    }
+
+    public void mChangePassword(View v){
+        settingsFragment.changePassword();
+    }
+
+    public void mGetAllData(View v){
+        settingsFragment.getAllData();
+    }
+
+    public void mDeleteAllEvents(View v){
+        settingsFragment.deleteAllEvents();
+    }
+
+    public void mDeleteAccount(View v){
+        settingsFragment.deleteAccount();
+    }
+
+    public void mAcceptChange(View v){
+        settingsFragment.acceptChange();
+    }
+
+    public void mCancelChange(View v){
+        settingsFragment.cancelChange();
     }
 }

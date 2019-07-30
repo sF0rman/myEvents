@@ -128,10 +128,18 @@
     <string name="msg_temp">This is a placeholder string</string>
     <string name="msg_delete_events">Are you sure you want to delete all your events? This cannot be undone!</string>
     <string name="msg_delete_user">By deleting your account, all events will also be deleted! Are you sure you want to delete your account? This cannot be undone!</string>
-    <string name="msg_warning_password">Input your password and touch accept to confirm</string>
     <string name="msg_event_channel_working">Event channel is working and active</string>
     <string name="msg_invite_channel_working">Invite channel is working and active</string>
     <string name="msg_friend_channel_working">Friend channel is working and active</string>
+    <string name="msg_success_user_data_change">Userdata successfully updated!</string>
+    <string name="msg_success_new_password">Password updated successfully!</string>
+
+    <!-- Warnings -->
+    <string name="msg_warning_password">Input your password and touch accept to confirm</string>
+    <string name="msg_warning_default">Are you sure you want to proceed?</string>
+    <string name="msg_warning_delete_event">Are you sure you want to delete this event? This action cannot be undone!</string>
+    <string name="msg_warning_delete_all_events">Are you sure you want to delete all your events? This action cannot be undone!</string>
+    <string name="msg_warning_delete_account">Are you sure you want to delete your account? Deleting your account will also delete all your events! This action cannot be undone.</string>
 
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis nisi, fermentum finibus porttitor ac, bibendum ut lacus. Nulla rutrum velit eu semper lobortis. Suspendisse non porta risus. Sed lectus tellus, gravida in efficitur quis, volutpat eget nulla. Nullam ornare sodales nibh, ut consequat sapien rutrum sit amet</string>
 

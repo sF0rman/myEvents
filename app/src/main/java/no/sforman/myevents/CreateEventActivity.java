@@ -39,6 +39,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -82,7 +84,6 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     // Places
     public static final int AUTOCOMPLETE_REQUEST_CODE = 1;
-    String placeName;
     LatLng placeLatLng;
 
     // Firebase
@@ -231,7 +232,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 eventGeoPoint = new GeoPoint(placeLatLng.latitude, placeLatLng.longitude);
                 eventLocation = place.getName();
                 eventAddress = place.getAddress();
-                location.setText(eventAddress);
+                if(eventAddress.contains(eventLocation)){
+                    // strip everything up to the first comma and the following space.
+                    eventAddress = eventAddress.substring(eventAddress.indexOf(",")+2);
+                }
+                // Add line breaks
+                location.setText(eventLocation + " " + eventAddress);
 
                 if(mapFragment != null){
                     mapFragment.setLocationMarker(placeLatLng);
@@ -603,7 +609,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     public void deleteEvent(View v){
         Log.d(TAG, "deleteEvent: Started");
 
-        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete: " + eventId, this);
+        WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_event), this);
         warning.show(getSupportFragmentManager(), "Warning");
     }
 
@@ -611,7 +617,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     public void onCompleted(boolean b) {
         if(b){
             Log.d(TAG, "onDialogPositiveClick: Accepted");
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            final FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("event")
                     .document(eventId)
                     .delete()
@@ -619,11 +625,32 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "onSuccess: Deleted event id: " + eventId);
-                            Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(CreateEventActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
-                            startActivity(main);
-                            finish();
+
+                            db.collection("event")
+                                    .document(eventId)
+                                    .collection("invited")
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                            if(task.isSuccessful()){
+                                                Log.d(TAG, "onComplete: Got sub collection");
+
+                                                for(QueryDocumentSnapshot subDoc : task.getResult()){
+                                                    String subDocId = subDoc.getId();
+                                                    deleteSubCollection(subDocId);
+                                                }
+
+                                                Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                                Toast.makeText(CreateEventActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
+                                                startActivity(main);
+                                                finish();
+                                            }
+                                        }
+                                    });
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -633,5 +660,20 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 }
             });
         }
+    }
+
+    public void deleteSubCollection(final String id){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("event")
+                .document(eventId)
+                .collection("invited")
+                .document(id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: deleted subcollection id: " + id);
+                    }
+                });
     }
 }

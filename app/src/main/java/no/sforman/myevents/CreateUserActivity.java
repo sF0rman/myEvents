@@ -137,7 +137,10 @@ public class CreateUserActivity extends AppCompatActivity {
         String e = email.getText().toString();
         String pw = password.getText().toString();
         String pw2 = passwordRepeat.getText().toString();
-        String img = imageUri.toString();
+        if(imageUri != null){
+            String img = imageUri.toString();
+        }
+
 
         if(isValidInput(f, s, e, pw, pw2)){
             Log.d(TAG, "onCreateUser: Input ok");
@@ -247,7 +250,12 @@ public class CreateUserActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(CreateUserActivity.this, "Error:" + task.getException(), Toast.LENGTH_SHORT).show();
+                            if(task.getException().toString().contains("The email address is already in use by another account.")){
+                                Toast.makeText(CreateUserActivity.this, "User with that email already exists!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(CreateUserActivity.this, "An error occurred: " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                            }
+
                             initUserData(null);
                         }
                     }

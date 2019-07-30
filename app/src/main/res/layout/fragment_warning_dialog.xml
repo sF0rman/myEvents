@@ -2,15 +2,15 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Card"
-    app:cardPreventCornerOverlap="true"
-    android:layout_margin="32dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="32dp"
+    app:cardPreventCornerOverlap="true">
 
     <LinearLayout
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
         <LinearLayout
@@ -19,55 +19,91 @@
 
             <ImageView
                 style="@style/Padding"
-                android:layout_gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_warning" />
 
             <LinearLayout
-                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     style="@style/Title"
-                    android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:text="@string/title_warning" />
 
 
                 <TextView
                     android:id="@+id/warning_message_field"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/loading_generic"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/loading_generic" />
 
             </LinearLayout>
 
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/warning_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/warning_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:visibility="gone" />
+
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right">
 
-            <Button
-                android:id="@+id/warning_cancel_buttin"
-                style="@style/SecondaryButton"
-                android:text="@string/btn_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/warning_accept_button"
-                style="@style/PrimaryButton"
-                android:text="@string/btn_accept"
+            <ProgressBar
+                android:id="@+id/warning_progress_bar"
+                android:indeterminate="true"
+                android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:visibility="gone"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/warning_cancel_buttin"
+                    style="@style/SecondaryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_cancel" />
+
+                <Button
+                    android:id="@+id/warning_accept_button"
+                    style="@style/PrimaryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_accept" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

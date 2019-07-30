@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +21,19 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,15 +67,16 @@ class SettingsFragment extends Fragment {
     private TextView profileName;
     private TextView profileEmail;
 
+    private ProgressBar profileProgressbar;
+    private ProgressBar userProgressbar;
+
 
     // User variables
     private String userId;
-    private String firstname;
-    private String surname;
-    private String email;
-    private String oldPassword;
-    private String password;
-    private String repeatPassword;
+    private String f;
+    private String s;
+    private String e;
+    private String img;
     private boolean editUser = false;
     private boolean changePassword = false;
 
@@ -81,13 +90,13 @@ class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         view =  inflater.inflate(R.layout.fragment_settings, container, false);
         initUI();
-        getUserDetails();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        getUserDetails();
     }
 
     @Override
@@ -119,6 +128,9 @@ class SettingsFragment extends Fragment {
         profileName = view.findViewById(R.id.settings_profile_name);
         profileEmail = view.findViewById(R.id.settings_profile_email);
 
+        profileProgressbar = view.findViewById(R.id.settings_profile_progress_bar);
+        userProgressbar = view.findViewById(R.id.settings_user_progress_bar);
+
     }
 
     private void getUserDetails(){
@@ -128,7 +140,6 @@ class SettingsFragment extends Fragment {
 
         userId = currentUser.getUid();
 
-        email = currentUser.getEmail();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {
             final DocumentReference docRef = db.collection("user").document(userId);
@@ -142,10 +153,10 @@ class SettingsFragment extends Fragment {
 
                             Log.d(TAG, "onComplete: Got user");
                             
-                            String f = document.getString("firstname");
-                            String s = document.getString("surname");
-                            String e = document.getString("email");
-                            String img = document.getString("image");
+                            f = document.getString("firstname");
+                            s = document.getString("surname");
+                            e = document.getString("email");
+                            img = document.getString("image");
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
@@ -165,6 +176,7 @@ class SettingsFragment extends Fragment {
 
 
     public void editUser(){
+        clearErrors();
         editUser = true;
         firstnameInput.setVisibility(View.VISIBLE);
         surnameInput.setVisibility(View.VISIBLE);
@@ -185,6 +197,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void changePassword(){
+        clearErrors();
         changePassword = true;
         oldPasswordInput.setVisibility(View.VISIBLE);
         passwordInput.setVisibility(View.VISIBLE);
@@ -206,8 +219,7 @@ class SettingsFragment extends Fragment {
     public void deleteAllEvents(){
         Log.d(TAG, "deleteAllEvents: Started");
         
-        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete all your events? This cannot be undone!",
-                new WarningDialogFragment.WarningListener() {
+        WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_all_events), new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
                 if(b){
@@ -245,16 +257,19 @@ class SettingsFragment extends Fragment {
                             } else {
                                 Log.e(TAG, "onComplete: Couldn't get events", task.getException());
                                 Toast.makeText(getContext(), "No events to delete!", Toast.LENGTH_SHORT).show();
+                                userProgressbar.setVisibility(View.GONE);
                             }
                         }
                     });
                 } else {
+                    userProgressbar.setVisibility(View.GONE);
                     Log.d(TAG, "onCompleted: User cancelled!");
                 }
             }
         });
 
         warning.show(getFragmentManager(), "Warning");
+        userProgressbar.setVisibility(View.VISIBLE);
         
     }
 
@@ -267,6 +282,7 @@ class SettingsFragment extends Fragment {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Deleted event: " + id);
+                userProgressbar.setVisibility(View.GONE);
             }
         });
     }
@@ -287,44 +303,63 @@ class SettingsFragment extends Fragment {
     }
 
     public void deleteAccount(){
-        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete you account? This will also remove all your events and cannot be undone", new WarningDialogFragment.WarningListener() {
+        final WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_account), true,  new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
                 if(b){
                     deleteAllEvents();
-
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("user")
-                            .document(userId)
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(getContext(), "You account was deleted", Toast.LENGTH_SHORT).show();
-                                    mAuth.signOut();
-                                    Intent deletedAccount = new Intent(getContext(), LoginActivity.class);
-                                    startActivity(deletedAccount);
-                                }
-                            });
-
+                    deleteUser();
                 }
             }
         });
+        warning.show(getFragmentManager(), "Warning");
+    }
+
+    public void deleteUser(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("user")
+                .document(userId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        currentUser.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Log.d(TAG, "onComplete: User Accoutn deleted");
+                                            Toast.makeText(getContext(), "You account was deleted", Toast.LENGTH_SHORT).show();
+                                            mAuth.signOut();
+                                            Intent deletedAccount = new Intent(getContext(), LoginActivity.class);
+                                            startActivity(deletedAccount);
+                                        }
+                                    }
+                                });
+
+
+                    }
+                });
     }
 
     public void acceptChange(){
+        clearErrors();
 
+        userProgressbar.setVisibility(View.VISIBLE);
         if(editUser){
-
+            updateUserSettings();
         } else if (changePassword) {
-
+            changeUserPassword();
         } else {
-
+            Log.w(TAG, "acceptChange: Something went wrong");
+            userProgressbar.setVisibility(View.GONE);
         }
 
     }
 
     public void cancelChange(){
+        clearErrors();
         editUser = false;
         changePassword = false;
 
@@ -348,8 +383,136 @@ class SettingsFragment extends Fragment {
         userChangeCancel.setVisibility(View.GONE);
     }
 
-    private void getUserData(){
+    private void updateUserSettings(){
+        final Context context = getContext();
+        String newFirstname = firstnameInput.getText().toString();
+        String newSurname = surnameInput.getText().toString();
+        String newEmail = emailInput.getText().toString();
 
+        if(verifyInput(newFirstname, newSurname, newEmail)){
+            UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(newFirstname + " " + newSurname)
+                    .build();
+
+            currentUser.updateProfile(profileUpdate)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "onComplete: Displayname updated successfully");
+                            } else {
+                                Toast.makeText(context, "Name change failed!", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "onComplete: Displayname change error: ", task.getException());
+                            }
+
+                        }
+                    });
+
+            currentUser.updateEmail(newEmail)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "onComplete: Email updated successfully");
+                            } else {
+                                Toast.makeText(context, "Email change failed!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+            Map<Object, String> userData = new HashMap<>();
+            userData.put(Keys.FIRSTNAME_KEY, newFirstname);
+            userData.put(Keys.SURNAME_KEY, newSurname);
+            userData.put(Keys.EMAIL_KEY, newEmail);
+            userData.put(Keys.IMAGE_KEY, img);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("user")
+                    .document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
+                        cancelChange();
+                        userProgressbar.setVisibility(View.GONE);
+                        getUserDetails();
+                    } else {
+                        Log.e(TAG, "onComplete: Couldn't write to firestore", task.getException());
+                    }
+                }
+            });
+        }
+    }
+
+    private void changeUserPassword(){
+        final Context context = getContext();
+        final String oldPassword = oldPasswordInput.getText().toString();
+        final String newPassword = passwordInput.getText().toString();
+        final String newRepeatPassword = repeatPasswordInput.getText().toString();
+
+        if(newPassword.length() > 4){
+            if(newPassword.equals(newRepeatPassword)){
+                Log.d(TAG, "changeUserPassword: Changing password...");
+
+                AuthCredential credential = EmailAuthProvider
+                        .getCredential(e, oldPassword);
+
+                currentUser.reauthenticate(credential)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+
+                                    currentUser.updatePassword(newPassword)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if(task.isSuccessful()){
+                                                        Toast.makeText(context, getString(R.string.msg_success_new_password), Toast.LENGTH_SHORT).show();
+                                                        userProgressbar.setVisibility(View.GONE);
+                                                    } else {
+                                                        Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                                        Log.w(TAG, "onComplete: Password change error: ", task.getException());
+                                                        userProgressbar.setVisibility(View.GONE);
+                                                    }
+                                                }
+                                            });
+
+                                } else {
+                                    Toast.makeText(context, getString(R.string.error_incorrect_password), Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "onComplete: Incorrect username and password" + task.getException());
+                                    userProgressbar.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+
+            } else {
+                repeatPasswordError.setText(R.string.error_password_dont_match);
+                userProgressbar.setVisibility(View.GONE);
+            }
+        } else {
+            passwordError.setText(R.string.error_invalid_password);
+            userProgressbar.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean verifyInput(String f, String s, String e){
+        boolean inputOk = true;
+        if(!isValidEmail(e)){
+            inputOk = false;
+            emailError.setText(R.string.error_invalid_email);
+        }
+
+        if(f.length() < 2){
+            inputOk = false;
+            firstnameError.setText(R.string.error_invalid_input);
+        }
+
+        if(s.length() < 2){
+            surnameInput.setText(R.string.error_invalid_input);
+        }
+
+        return inputOk;
     }
 
     private void getEventData(){
@@ -358,6 +521,19 @@ class SettingsFragment extends Fragment {
 
     private void getContactData(){
 
+    }
+
+    private boolean isValidEmail(String e){
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return e.matches(regex);
+    }
+
+    private void clearErrors(){
+        firstnameError.setText("");
+        surnameError.setText("");
+        emailError.setText("");
+        passwordError.setText("");
+        repeatPasswordError.setText("");
     }
 
 }

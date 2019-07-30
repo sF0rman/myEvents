@@ -140,8 +140,16 @@
 
                     </LinearLayout>
 
+
+
                 </LinearLayout>
 
+                <ProgressBar
+                    android:id="@+id/settings_profile_progress_bar"
+                    android:visibility="gone"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <EditText
                     android:id="@+id/settings_firstname"
@@ -241,7 +249,7 @@
                     style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="editUser"
+                    android:onClick="mEditUser"
                     android:text="@string/btn_edit_user" />
 
                 <Button
@@ -249,7 +257,7 @@
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="changePassword"
+                    android:onClick="mChangePassword"
                     android:text="@string/btn_change_password" />
 
 
@@ -266,7 +274,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onClick="cancelChange"
+                        android:onClick="mCancelChange"
                         android:text="@string/btn_cancel"
                         android:visibility="gone" />
 
@@ -276,7 +284,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onClick="acceptChange"
+                        android:onClick="mAcceptChange"
                         android:text="@string/btn_accept"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -303,25 +311,32 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_privacy" />
 
+                <ProgressBar
+                    android:id="@+id/settings_user_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone"/>
+
                 <Button
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="getAllData"
+                    android:onClick="mGetAllData"
                     android:text="@string/btn_show_all_data" />
 
                 <Button
                     style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="deleteAllEvents"
+                    android:onClick="mDeleteAllEvents"
                     android:text="@string/btn_delete_all_events" />
 
                 <Button
                     style="@style/SecondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="deleteAccount"
+                    android:onClick="mDeleteAccount"
                     android:text="@string/btn_delete_user" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

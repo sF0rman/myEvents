@@ -17,7 +17,7 @@
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/btn_create_event"/>
+            app:title="@string/btn_create_event" />
 
 
         <ScrollView
@@ -54,8 +54,8 @@
                     android:layout_height="200dp" />
 
                 <ProgressBar
-                    style="@style/Progressbar"
                     android:id="@+id/create_event_progress"
+                    style="@style/Progressbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
@@ -78,7 +78,7 @@
                     <TextView
                         android:id="@+id/create_event_name_error"
                         style="@style/ErrorText"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <LinearLayout
@@ -88,8 +88,8 @@
                         android:weightSum="1">
 
                         <EditText
-                            android:id="@+id/create_event_startdate_text"
                             style="@style/Input"
+                            android:id="@+id/create_event_startdate_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -100,8 +100,8 @@
                             android:onClick="setDateTime" />
 
                         <EditText
-                            android:id="@+id/create_event_starttime_text"
                             style="@style/Input"
+                            android:id="@+id/create_event_starttime_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -121,8 +121,8 @@
 
 
                         <EditText
-                            android:id="@+id/create_event_enddate_text"
                             style="@style/Input"
+                            android:id="@+id/create_event_enddate_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -134,8 +134,8 @@
 
 
                         <EditText
-                            android:id="@+id/create_event_endtime_text"
                             style="@style/Input"
+                            android:id="@+id/create_event_endtime_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -150,7 +150,7 @@
                     <TextView
                         android:id="@+id/create_event_time_error"
                         style="@style/ErrorText"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
 
@@ -172,7 +172,6 @@
 
                         <EditText
                             android:id="@+id/create_event_reminder_date"
-                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -185,7 +184,7 @@
 
                         <EditText
                             android:id="@+id/create_event_reminder_time"
-                            style="@style/Input"
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -224,7 +223,6 @@
 
                     <EditText
                         android:id="@+id/create_event_location_text"
-                        style="@style/Input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
@@ -236,7 +234,7 @@
                     <TextView
                         android:id="@+id/create_event_location_error"
                         style="@style/ErrorText"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -245,7 +243,6 @@
 
                     <EditText
                         android:id="@+id/create_event_description_text"
-                        style="@style/Input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hint_description" />

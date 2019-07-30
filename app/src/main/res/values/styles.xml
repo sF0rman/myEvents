@@ -14,6 +14,7 @@
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="actionBarStyle">@style/Toolbar</item>
         <item name="drawerArrowStyle">@style/DrawerIcon</item>
+        <item name="editTextStyle">@style/Input</item>
     </style>
 
     <style name="Padding">
@@ -48,7 +49,7 @@
     </style>
 
 
-    <style name="Input" parent="TextAppearance.AppCompat">
+    <style name="Input" parent="Widget.AppCompat.EditText">
         <item name="android:background">@drawable/input_light</item>
         <item name="android:textSize">14sp</item>
         <item name="android:layout_margin">2dp</item>
