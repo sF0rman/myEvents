@@ -31,7 +31,7 @@ import java.util.Calendar;
 
 class EventsFragment extends Fragment {
 
-    public static final String TAG = "EventFramgent";
+    public static final String TAG = "EventsFragment";
     Calendar today = Calendar.getInstance();
 
     //UI
@@ -50,11 +50,12 @@ class EventsFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
+    String userId;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-
+        Log.d(TAG, "onCreateView: CreateView");
         if(container == null){
             return null;
         }
@@ -73,14 +74,16 @@ class EventsFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: Started");
         super.onStart();
+        eventList.clear();
+        getEvents();
     }
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume: Resumed");
         super.onResume();
-        eventList.clear();
-        getEvents();
     }
 
     @Override
@@ -92,14 +95,16 @@ class EventsFragment extends Fragment {
     private void initFire(){
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        userId = currentUser.getUid();
     }
 
     private void getEvents(){
         progressBar.setVisibility(View.VISIBLE);
         db = FirebaseFirestore.getInstance();
         try {
-            db.collection("event")
-                    .whereEqualTo("owner", currentUser.getUid())
+            db.collection("user")
+                    .document(userId)
+                    .collection("event")
                     .orderBy("start", Query.Direction.ASCENDING)
                     .startAt(today)
                     .get()
