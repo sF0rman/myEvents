@@ -443,7 +443,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
-                String eventId = documentReference.getId();
+                final String eventId = documentReference.getId();
                 event.addID(eventId);
                 if(hasReminder.isChecked()){
                     makeReminder(eventId, rid);
@@ -464,6 +464,9 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                                 Log.d(TAG, "onSuccess: Owner added as going");
                                 Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
 
+                                Log.d(TAG, "onSuccess: SendEventId" + eventId);
+                                addEventToSelf(eventId, event);
+
                                 Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
                                 startActivity(i);
                                 progressBar.setVisibility(View.INVISIBLE);
@@ -475,6 +478,24 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         });
 
 
+    }
+    
+    private void addEventToSelf(String eventId, Event event){
+        Log.d(TAG, "addEventToSelf: Recieved eventId " + eventId);
+        FirebaseFirestore eDb = FirebaseFirestore.getInstance();
+        eDb.collection("user")
+                .document(eventOwnerId)
+                .collection("event")
+                .document(eventId)
+                .set(event)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Event added to self");
+                        }
+                    }
+                });
     }
 
     public void makeReminder(String event, long reminder){
@@ -597,6 +618,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Document update. ID: " + eventId);
+                addEventToSelf(eventId, event);
                 Intent updated = new Intent(CreateEventActivity.this, EventActivity.class);
                 updated.putExtra("eventId", eventId);
                 progressBar.setVisibility(View.INVISIBLE);

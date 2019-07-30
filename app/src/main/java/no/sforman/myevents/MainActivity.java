@@ -135,9 +135,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             try{
                                 FirebaseStorage storage = FirebaseStorage.getInstance();
                                 StorageReference imgRef = storage.getReferenceFromUrl(document.getString("image"));
-                                Glide.with(getApplicationContext())
-                                        .load(document.getString("image"))
-                                        .into(userImage);
+                                if(imgRef != null){
+                                    Glide.with(getApplicationContext())
+                                            .load(document.getString("image"))
+                                            .placeholder(R.drawable.ic_person)
+                                            .into(userImage);
+                                }
                             } catch (Exception e){
                                 Log.e(TAG, "onComplete: userImage: ", e);
                             }

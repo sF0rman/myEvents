@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -160,9 +161,12 @@ class SettingsFragment extends Fragment {
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
-                            Glide.with(getContext())
-                                    .load(img)
-                                    .into(profileImage);
+                            if(img != null){
+                                Glide.with(getContext())
+                                        .load(img)
+                                        .placeholder(R.drawable.ic_person)
+                                        .into(profileImage);
+                            }
                             profileName.setText(f + " " + s);
                             profileEmail.setText(e);
                         }
@@ -225,6 +229,8 @@ class SettingsFragment extends Fragment {
                 if(b){
                     Log.d(TAG, "onCompleted: User confirmed!");
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                    // Get every event that you have created!
                     db.collection("event")
                             .whereEqualTo("owner", userId)
                             .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -233,19 +239,48 @@ class SettingsFragment extends Fragment {
                             if(task.isSuccessful()){
                                 Log.d(TAG, "onComplete: Got events");
                                 for(QueryDocumentSnapshot doc : task.getResult()){
+
+                                    // Get documentId for event.
                                     final String documentId = doc.getId();
 
+                                    // Get everyone invited to event
                                     db.collection("event")
                                             .document(documentId)
-                                            .collection("invited").get()
+                                            .collection("invited")
+                                            .get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                     if(task.isSuccessful()){
                                                         Log.d(TAG, "onComplete: Got subcollection going");
+                                                        // Remove everyone invited (regardless of rsvp)
                                                         for (QueryDocumentSnapshot goingDoc : task.getResult()){
+                                                            // Delete event from everyone who has the event.
                                                             String goingId = goingDoc.getId();
-                                                            deleteSubDocs(documentId, goingId, "invited");
+                                                            deleteSubDocs("event", documentId, "invited", goingId);
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                    // Get all events under self
+                                    db.collection("user")
+                                            .document(userId)
+                                            .collection("event")
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if(task.isSuccessful()){
+
+
+                                                        Log.d(TAG, "onComplete: Got all events under self");
+                                                        for(QueryDocumentSnapshot subEventDoc : task.getResult()){
+                                                            String subEventId = subEventDoc.getId();
+                                                            // For each event delete it.
+                                                            deleteSubDocs("user", userId, "event", subEventId);
+                                                            // For each event remove self from invited.
+                                                            deleteSubDocs("event", subEventId, "invited", userId);
                                                         }
                                                     }
                                                 }
@@ -287,9 +322,9 @@ class SettingsFragment extends Fragment {
         });
     }
 
-    private void deleteSubDocs(final String docId, final String subDocid, final String subCol){
+    private void deleteSubDocs(final String col, final String docId, final String subCol, final String subDocid){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("event")
+        db.collection(col)
                 .document(docId)
                 .collection(subCol)
                 .document(subDocid)
@@ -444,6 +479,14 @@ class SettingsFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void updateUserSettingsInFriends(String friendId){
+
+    }
+
+    private void updateUserSettingsInEvent(String eventId){
+
     }
 
     private void changeUserPassword(){

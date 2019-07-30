@@ -214,34 +214,42 @@ public class CreateUserActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Log.d(TAG, "DisplayNameAdded: success");
 
-                                    // Upload profile image
-                                    final StorageReference imgRef = storageRef.child("images/" + userId + ".jpg");
-                                    imgRef.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                            if(task.isSuccessful()){
-                                                imgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                    @Override
-                                                    public void onSuccess(Uri uri) {
-                                                        String downloadUrl = uri.toString();
+                                    if(imageUri != null){
+                                        // Upload profile image
+                                        final StorageReference imgRef = storageRef.child("images/" + userId + ".jpg");
+                                        imgRef.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                if(task.isSuccessful()){
+                                                    imgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                        @Override
+                                                        public void onSuccess(Uri uri) {
+                                                            String downloadUrl = uri.toString();
 
-                                                        // Update database data
-                                                        populateDatabase(f, s, e, userId, downloadUrl);
-                                                        // Send email
-                                                        sendEmail(user);
+                                                            // Update database data
+                                                            populateDatabase(f, s, e, userId, downloadUrl);
+                                                            // Send email
+                                                            sendEmail(user);
 
-                                                        initUserData(user);
+                                                            initUserData(user);
 
-                                                    }
-                                                });
-                                            } else {
-                                                Log.e(TAG, "onComplete: Unable to upload image", task.getException());
-                                                user.delete();
-                                                Log.d(TAG, "onComplete: Deleted user");
+                                                        }
+                                                    });
+                                                } else {
+                                                    Log.e(TAG, "onComplete: Unable to upload image", task.getException());
+                                                    user.delete();
+                                                    Log.d(TAG, "onComplete: Deleted user");
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    } else {
+                                        // Update database data
+                                        populateDatabase(f, s, e, userId, null);
+                                        // Send email
+                                        sendEmail(user);
 
+                                        initUserData(user);
+                                    }
 
                                 }
                             });
