@@ -346,14 +346,13 @@ class SettingsFragment extends Fragment {
     public void acceptChange(){
         clearErrors();
 
-        userProgressbar.setVisibility(View.VISIBLE);
         if(editUser){
             updateUserSettings();
         } else if (changePassword) {
             changeUserPassword();
         } else {
             Log.w(TAG, "acceptChange: Something went wrong");
-            userProgressbar.setVisibility(View.GONE);
+            profileProgressbar.setVisibility(View.GONE);
         }
 
     }
@@ -381,9 +380,12 @@ class SettingsFragment extends Fragment {
         userEdit.setVisibility(View.VISIBLE);
         userChangeAccept.setVisibility(View.GONE);
         userChangeCancel.setVisibility(View.GONE);
+
+        getUserDetails();
     }
 
     private void updateUserSettings(){
+        profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         String newFirstname = firstnameInput.getText().toString();
         String newSurname = surnameInput.getText().toString();
@@ -434,7 +436,7 @@ class SettingsFragment extends Fragment {
                     if(task.isSuccessful()){
                         Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
                         cancelChange();
-                        userProgressbar.setVisibility(View.GONE);
+                        profileProgressbar.setVisibility(View.GONE);
                         getUserDetails();
                     } else {
                         Log.e(TAG, "onComplete: Couldn't write to firestore", task.getException());
@@ -445,6 +447,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void changeUserPassword(){
+        profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         final String oldPassword = oldPasswordInput.getText().toString();
         final String newPassword = passwordInput.getText().toString();
@@ -469,11 +472,12 @@ class SettingsFragment extends Fragment {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if(task.isSuccessful()){
                                                         Toast.makeText(context, getString(R.string.msg_success_new_password), Toast.LENGTH_SHORT).show();
-                                                        userProgressbar.setVisibility(View.GONE);
+                                                        cancelChange();
+                                                        profileProgressbar.setVisibility(View.GONE);
                                                     } else {
                                                         Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
                                                         Log.w(TAG, "onComplete: Password change error: ", task.getException());
-                                                        userProgressbar.setVisibility(View.GONE);
+                                                        profileProgressbar.setVisibility(View.GONE);
                                                     }
                                                 }
                                             });
@@ -481,18 +485,18 @@ class SettingsFragment extends Fragment {
                                 } else {
                                     Toast.makeText(context, getString(R.string.error_incorrect_password), Toast.LENGTH_SHORT).show();
                                     Log.d(TAG, "onComplete: Incorrect username and password" + task.getException());
-                                    userProgressbar.setVisibility(View.GONE);
+                                    profileProgressbar.setVisibility(View.GONE);
                                 }
                             }
                         });
 
             } else {
                 repeatPasswordError.setText(R.string.error_password_dont_match);
-                userProgressbar.setVisibility(View.GONE);
+                profileProgressbar.setVisibility(View.GONE);
             }
         } else {
             passwordError.setText(R.string.error_invalid_password);
-            userProgressbar.setVisibility(View.GONE);
+            profileProgressbar.setVisibility(View.GONE);
         }
     }
 
