@@ -426,11 +426,13 @@ class SettingsFragment extends Fragment {
         String newSurname = surnameInput.getText().toString();
         String newEmail = emailInput.getText().toString();
 
+        // Verify input
         if(verifyInput(newFirstname, newSurname, newEmail)){
             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                     .setDisplayName(newFirstname + " " + newSurname)
                     .build();
 
+            // Update displaname in auth
             currentUser.updateProfile(profileUpdate)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -445,6 +447,7 @@ class SettingsFragment extends Fragment {
                         }
                     });
 
+            // Update email in auth
             currentUser.updateEmail(newEmail)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -457,36 +460,89 @@ class SettingsFragment extends Fragment {
                         }
                     });
 
-            Map<Object, String> userData = new HashMap<>();
+            // Create new map with userData
+            final Map<Object, String> userData = new HashMap<>();
             userData.put(Keys.FIRSTNAME_KEY, newFirstname);
             userData.put(Keys.SURNAME_KEY, newSurname);
             userData.put(Keys.EMAIL_KEY, newEmail);
             userData.put(Keys.IMAGE_KEY, img);
 
+            // Update details in user database
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("user")
                     .document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
-                        Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
-                        cancelChange();
-                        profileProgressbar.setVisibility(View.GONE);
-                        getUserDetails();
+                        Log.d(TAG, "onComplete: Changed userData in self");
                     } else {
                         Log.e(TAG, "onComplete: Couldn't write to firestore", task.getException());
                     }
                 }
             });
+
+            // Get all friends
+            db.collection("user")
+                    .document(userId)
+                    .collection("friends")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                for(QueryDocumentSnapshot friendDoc : task.getResult()){
+                                    // Edit user details in friend sub collection.
+                                    String friendId = friendDoc.getId();
+                                    editSubDocs("user", friendId, "friends", userId, userData);
+                                }
+                            }
+                        }
+                    });
+
+            // Get all events where invited
+            db.collection("user")
+                    .document(userId)
+                    .collection("event")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                for(QueryDocumentSnapshot eventDoc : task.getResult()){
+                                    // Edit user details in event subcollection
+                                    String eventId = eventDoc.getId();
+                                    editSubDocs("event", eventId, "invited", userId, userData);
+                                }
+
+                                // Display completed message and remove editboxes and progressbar
+                                Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
+                                cancelChange();
+                                profileProgressbar.setVisibility(View.GONE);
+                                getUserDetails();
+                            }
+                        }
+                    });
+
         }
     }
 
-    private void updateUserSettingsInFriends(String friendId){
 
-    }
-
-    private void updateUserSettingsInEvent(String eventId){
-
+    private void editSubDocs(final String col, final String docId, final String subCol, final String subDocId, Map<Object, String> data){
+        FirebaseFirestore esdDb = FirebaseFirestore.getInstance();
+        esdDb.collection(col)
+                .document(docId)
+                .collection(subCol)
+                .document(subDocId)
+                .set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "onComplete: Updated information in: " + col+"/"+docId+"/"+subCol+"/"+subDocId);
+                } else {
+                    Log.e(TAG, "onComplete: Could not update unformation", task.getException());
+                }
+            }
+        });
     }
 
     private void changeUserPassword(){
