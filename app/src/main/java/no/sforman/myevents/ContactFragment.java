@@ -72,6 +72,8 @@ class ContactFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        userList.clear();
+        getContacts();
     }
 
     private void initFire(){
@@ -111,7 +113,18 @@ class ContactFragment extends Fragment {
                                 for (QueryDocumentSnapshot userDoc : task.getResult()){
                                     Log.d(TAG, "onComplete: Got document");
                                     String id = userDoc.getId();
-                                    getUserDetails(id);
+                                    String firstname = userDoc.getString(Keys.FIRSTNAME_KEY);
+                                    String surname = userDoc.getString(Keys.SURNAME_KEY);
+                                    String email = userDoc.getString(Keys.EMAIL_KEY);
+                                    String image = userDoc.getString(Keys.IMAGE_KEY);
+
+                                    User u = new User(id,
+                                            firstname,
+                                            surname,
+                                            email,
+                                            image);
+
+                                    userList.add(u);
                                 }
 
                                 initRecyclerView();
@@ -128,35 +141,6 @@ class ContactFragment extends Fragment {
         }
     }
 
-    private void getUserDetails(final String contactId){
-        FirebaseFirestore uDb = FirebaseFirestore.getInstance();
-        uDb.collection("user")
-                .document(contactId)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: got user details" + contactId);
-                            DocumentSnapshot uDoc = task.getResult();
-
-                            String firstname = uDoc.getString(Keys.FIRSTNAME_KEY);
-                            String surname = uDoc.getString(Keys.SURNAME_KEY);
-                            String email = uDoc.getString(Keys.EMAIL_KEY);
-                            String img = uDoc.getString(Keys.IMAGE_KEY);
-
-                            User u = new User(contactId,
-                                    firstname,
-                                    surname,
-                                    email,
-                                    img);
-
-                            userList.add(u);
-
-                        }
-                    }
-                });
-    }
 
     private void initRecyclerView(){
         Context c = getContext();

@@ -146,6 +146,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             this.cardView = itemView.findViewById(R.id.user_card_card_view);
             this.userImage = itemView.findViewById(R.id.user_card_image);
             this.userName = itemView.findViewById(R.id.user_card_name);
+            this.userEmail = itemView.findViewById(R.id.user_card_email);
             this.acceptBtn = itemView.findViewById(R.id.user_card_accept);
             this.declineBtn = itemView.findViewById(R.id.user_card_decline);
 
