@@ -480,7 +480,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         
         db.collection("event")
                 .document(event)
-                .collection("Going")
+                .collection("going")
                 .document(eventOwnerId)
                 .set(reminderMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

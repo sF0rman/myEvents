@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,13 +81,18 @@ class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         view =  inflater.inflate(R.layout.fragment_settings, container, false);
         initUI();
+        getUserDetails();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getUserDetails();
     }
 
     private void initUI(){
@@ -125,7 +131,7 @@ class SettingsFragment extends Fragment {
         email = currentUser.getEmail();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {
-            final DocumentReference docRef = db.collection("user").document(email);
+            final DocumentReference docRef = db.collection("user").document(userId);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -206,7 +212,7 @@ class SettingsFragment extends Fragment {
             public void onCompleted(boolean b) {
                 if(b){
                     Log.d(TAG, "onCompleted: User confirmed!");
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
                     db.collection("event")
                             .whereEqualTo("owner", userId)
                             .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -215,7 +221,27 @@ class SettingsFragment extends Fragment {
                             if(task.isSuccessful()){
                                 Log.d(TAG, "onComplete: Got events");
                                 for(QueryDocumentSnapshot doc : task.getResult()){
-                                    String documentId = doc.getId();
+                                    final String documentId = doc.getId();
+
+                                    String[] subDocs = {"going", "maybe", "invited"};
+
+                                    for(final String subDoc : subDocs){
+                                        db.collection("event")
+                                                .document(documentId)
+                                                .collection(subDoc).get()
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if(task.isSuccessful()){
+                                                            Log.d(TAG, "onComplete: Got subcollection going");
+                                                            for (QueryDocumentSnapshot goingDoc : task.getResult()){
+                                                                String goingId = goingDoc.getId();
+                                                                deleteSubDocs(documentId, goingId, subDoc);
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                    }
 
                                     deleteEvent(documentId);
 
@@ -231,12 +257,17 @@ class SettingsFragment extends Fragment {
                 }
             }
         });
+
+        warning.show(getFragmentManager(), "Warning");
         
     }
 
     private void deleteEvent(final String id){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("event").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("event")
+                .document(id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Deleted event: " + id);
@@ -244,8 +275,45 @@ class SettingsFragment extends Fragment {
         });
     }
 
+    private void deleteSubDocs(final String docId, final String subDocid, final String subCol){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("event")
+                .document(docId)
+                .collection(subCol)
+                .document(subDocid)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: Deleted subDocument: " + subDocid);
+                    }
+                });
+    }
+
     public void deleteAccount(){
-        deleteAllEvents();
+        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete you account? This will also remove all your events and cannot be undone", new WarningDialogFragment.WarningListener() {
+            @Override
+            public void onCompleted(boolean b) {
+                if(b){
+                    deleteAllEvents();
+
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("user")
+                            .document(userId)
+                            .delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getContext(), "You account was deleted", Toast.LENGTH_SHORT).show();
+                                    mAuth.signOut();
+                                    Intent deletedAccount = new Intent(getContext(), LoginActivity.class);
+                                    startActivity(deletedAccount);
+                                }
+                            });
+
+                }
+            }
+        });
     }
 
     public void acceptChange(){

@@ -341,7 +341,7 @@ public class EventActivity extends AppCompatActivity {
 
         DocumentReference docRef = db.collection("event")
                 .document(eventId)
-                .collection("Going")
+                .collection("going")
                 .document(currentUser.getUid());
         
         docRef.update("reminder", reminder).addOnSuccessListener(new OnSuccessListener<Void>() {
