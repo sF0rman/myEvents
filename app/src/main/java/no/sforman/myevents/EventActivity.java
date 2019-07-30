@@ -180,6 +180,8 @@ public class EventActivity extends AppCompatActivity {
         if(userId.equals(owner)){
             Log.d(TAG, "adjustForOwner: Cannot rsvp for own event");
             rsvpCard.setVisibility(View.GONE);
+        } else {
+            rsvpCard.setVisibility(View.VISIBLE);
         }
         if(!userId.equals(owner)){
             Log.d(TAG, "adjustForOwner: Hide menu");
@@ -294,6 +296,7 @@ public class EventActivity extends AppCompatActivity {
                         }
 
                         adjustForOwner();
+                        getRsvp();
 
                     }
                 }
@@ -408,5 +411,116 @@ public class EventActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void getRsvp(){
+        final FirebaseFirestore rsvp = FirebaseFirestore.getInstance();
+        rsvp.collection("event")
+                .document(eventId)
+                .collection("invited")
+                .document(userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot doc = task.getResult();
+                            String rsvpStatus = doc.getString("rsvp");
+                            Log.d(TAG, "onComplete: Got RSVP status: " + rsvpStatus);
+                            if(rsvpStatus.equals("going")){
+                                Log.d(TAG, "onComplete: RSVP status: Going");
+                                eventRsvpGoing.setBackgroundResource(R.drawable.btn_orange);
+                                eventRsvpMaybe.setBackgroundResource(R.drawable.btn_light);
+                            } else if (rsvpStatus.equals("maybe")) {
+                                Log.d(TAG, "onComplete: RSVP status: Maybe");
+                                eventRsvpGoing.setBackgroundResource(R.drawable.btn_light);
+                                eventRsvpMaybe.setBackgroundResource(R.drawable.btn_orange);
+                            }
+                        }
+
+
+                    }
+                });
+    }
+
+    public void setGoing(View v){
+        Log.d(TAG, "setGoing: Selected");
+        FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+        eventDb.collection("event")
+                .document(eventId)
+                .collection("invited")
+                .document(userId)
+                .update("rsvp", "going")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Set rsvp to going");
+                            getRsvp();
+                        }
+                    }
+                });
+    }
+
+    public void setMaybe(View v){
+        Log.d(TAG, "setMaybe: Selected");
+        FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+        eventDb.collection("event")
+                .document(eventId)
+                .collection("invited")
+                .document(userId)
+                .update("rsvp", "maybe")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Set rsvp to maybe");
+                            getRsvp();
+                        }
+                    }
+                });
+    }
+
+    public void setNotGoing(View v){
+        Log.d(TAG, "setNotGoing: Selected");
+        WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_not_going), new WarningDialogFragment.WarningListener() {
+            @Override
+            public void onCompleted(boolean b) {
+                final FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                eventDb.collection("event")
+                        .document(eventId)
+                        .collection("invited")
+                        .document(userId)
+                        .delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    Log.d(TAG, "onComplete: Deleted reference to self in event");
+                                    eventDb.collection("user")
+                                            .document(userId)
+                                            .collection("event")
+                                            .document(eventId)
+                                            .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()){
+                                                Log.d(TAG, "onComplete: Removed event from self");
+                                                Toast.makeText(EventActivity.this, "You have set not going and have removed yourself from the event!", Toast.LENGTH_SHORT).show();
+                                                Intent notGoing = new Intent(EventActivity.this, MainActivity.class);
+                                                startActivity(notGoing);
+                                                finish();
+                                            }
+                                        }
+                                    });
+
+
+                                }
+                            }
+                        });
+
+            }
+        });
+        warning.show(getSupportFragmentManager(), "NotGoingWarning");
     }
 }

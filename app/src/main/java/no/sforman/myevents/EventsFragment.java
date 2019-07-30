@@ -96,6 +96,7 @@ class EventsFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         userId = currentUser.getUid();
+        Log.d(TAG, "initFire: Got User ID: " + userId);
     }
 
     private void getEvents(){
@@ -131,6 +132,7 @@ class EventsFragment extends Fragment {
                                     boolean isOnline = document.getBoolean("online");
                                     long reminderKey = document.getLong("reminderKey");
 
+                                    Log.d(TAG, "onComplete: Creating event id: " + id);
                                     Event e = new Event(name,
                                             owner,
                                             description,

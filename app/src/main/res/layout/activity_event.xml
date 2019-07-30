@@ -211,6 +211,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
                         android:gravity="center"
+                        android:onClick="setGoing"
                         android:text="@string/btn_going" />
 
                     <Button
@@ -220,6 +221,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
                         android:gravity="center"
+                        android:onClick="setMaybe"
                         android:text="@string/btn_maybe" />
 
                     <Button
@@ -229,6 +231,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
                         android:gravity="center"
+                        android:onClick="setNotGoing"
                         android:text="@string/btn_not_going" />
                 </LinearLayout>
 
