@@ -1,28 +1,32 @@
 package no.sforman.myevents;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 class SettingsFragment extends Fragment {
 
@@ -50,8 +54,13 @@ class SettingsFragment extends Fragment {
     private TextView passwordError;
     private TextView repeatPasswordError;
 
+    private CircleImageView profileImage;
+    private TextView profileName;
+    private TextView profileEmail;
+
 
     // User variables
+    private String userId;
     private String firstname;
     private String surname;
     private String email;
@@ -74,6 +83,12 @@ class SettingsFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUserDetails();
+    }
+
     private void initUI(){
         userEdit = view.findViewById(R.id.settings_edit_user);
         userChangePassword = view.findViewById(R.id.settings_change_password);
@@ -94,15 +109,18 @@ class SettingsFragment extends Fragment {
         passwordError = view.findViewById(R.id.settings_password_error);
         repeatPasswordError = view.findViewById(R.id.settings_repeat_password_error);
 
-    }
-
-    private void displayConfirmBox(String msg, boolean requiresPassword){
+        profileImage = view.findViewById(R.id.settings_profile_image);
+        profileName = view.findViewById(R.id.settings_profile_name);
+        profileEmail = view.findViewById(R.id.settings_profile_email);
 
     }
 
     private void getUserDetails(){
+        Log.d(TAG, "getUserDetails: Started");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        userId = currentUser.getUid();
 
         email = currentUser.getEmail();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -114,9 +132,22 @@ class SettingsFragment extends Fragment {
                     if(task.isSuccessful()){
                         DocumentSnapshot document = task.getResult();
                         if(document.exists()) {
-                            firstnameInput.setText(document.getString("firstname"));
-                            surnameInput.setText(document.getString("surname"));
-                            emailInput.setText(document.getString("email"));
+
+
+                            Log.d(TAG, "onComplete: Got user");
+                            
+                            String f = document.getString("firstname");
+                            String s = document.getString("surname");
+                            String e = document.getString("email");
+                            String img = document.getString("image");
+                            firstnameInput.setText(f);
+                            surnameInput.setText(s);
+                            emailInput.setText(e);
+                            Glide.with(getContext())
+                                    .load(img)
+                                    .into(profileImage);
+                            profileName.setText(f + " " + s);
+                            profileEmail.setText(e);
                         }
                     }
                 }
@@ -167,11 +198,54 @@ class SettingsFragment extends Fragment {
     }
 
     public void deleteAllEvents(){
+        Log.d(TAG, "deleteAllEvents: Started");
+        
+        WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete all your events? This cannot be undone!",
+                new WarningDialogFragment.WarningListener() {
+            @Override
+            public void onCompleted(boolean b) {
+                if(b){
+                    Log.d(TAG, "onCompleted: User confirmed!");
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("event")
+                            .whereEqualTo("owner", userId)
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "onComplete: Got events");
+                                for(QueryDocumentSnapshot doc : task.getResult()){
+                                    String documentId = doc.getId();
 
+                                    deleteEvent(documentId);
+
+                                }
+                            } else {
+                                Log.e(TAG, "onComplete: Couldn't get events", task.getException());
+                                Toast.makeText(getContext(), "No events to delete!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "onCompleted: User cancelled!");
+                }
+            }
+        });
+        
+    }
+
+    private void deleteEvent(final String id){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("event").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: Deleted event: " + id);
+            }
+        });
     }
 
     public void deleteAccount(){
-
+        deleteAllEvents();
     }
 
     public void acceptChange(){

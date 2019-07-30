@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +37,7 @@ class EventsFragment extends Fragment {
     //UI
     private FloatingActionButton fab;
     private ConstraintLayout layout;
+    private ProgressBar progressBar;
 
     //RecyclerView
     private RecyclerView recyclerView;
@@ -59,9 +61,12 @@ class EventsFragment extends Fragment {
 
         layout = (ConstraintLayout) inflater.inflate(R.layout.fragment_event, container, false);
 
+        progressBar = layout.findViewById(R.id.event_fragment_progressbar);
+
         initRecyclerView();
         initFab();
         initFire();
+
 
 
         return layout;
@@ -70,7 +75,11 @@ class EventsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         eventList.clear();
         getEvents();
     }
@@ -87,6 +96,7 @@ class EventsFragment extends Fragment {
     }
 
     private void getEvents(){
+        progressBar.setVisibility(View.VISIBLE);
         db = FirebaseFirestore.getInstance();
         try {
             db.collection("event")
@@ -133,6 +143,8 @@ class EventsFragment extends Fragment {
             Intent i = new Intent(getContext(), LoginActivity.class);
             startActivity(i);
         }
+
+        progressBar.setVisibility(View.GONE);
     }
 
     private void initRecyclerView(){

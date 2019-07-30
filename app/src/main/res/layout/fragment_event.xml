@@ -28,8 +28,7 @@
             android:id="@+id/event_fragment_progressbar"
             style="@style/Progressbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/events_fragment_recycler_view"

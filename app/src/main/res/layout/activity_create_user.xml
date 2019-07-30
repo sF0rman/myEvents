@@ -8,7 +8,6 @@
     tools:context=".CreateUserActivity">
 
     <androidx.appcompat.widget.Toolbar
-        style="@style/Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/title_create_user">

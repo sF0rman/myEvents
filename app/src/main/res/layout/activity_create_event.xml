@@ -15,12 +15,9 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
-            style="@style/Toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/btn_create_event">
-
-        </androidx.appcompat.widget.Toolbar>
+            app:title="@string/btn_create_event"/>
 
 
         <ScrollView
@@ -62,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
-                    android:visibility="visible" />
+                    android:visibility="invisible" />
 
                 <LinearLayout
                     style="@style/Padding"

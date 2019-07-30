@@ -124,6 +124,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/settings_profile_name"
                             style="@style/Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -131,6 +132,7 @@
                             android:textColor="@color/darkColor" />
 
                         <TextView
+                            android:id="@+id/settings_profile_email"
                             style="@style/SubTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
