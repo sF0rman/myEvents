@@ -88,8 +88,8 @@
                         android:weightSum="1">
 
                         <EditText
-                            style="@style/Input"
                             android:id="@+id/create_event_startdate_text"
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -100,8 +100,8 @@
                             android:onClick="setDateTime" />
 
                         <EditText
-                            style="@style/Input"
                             android:id="@+id/create_event_starttime_text"
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -121,8 +121,8 @@
 
 
                         <EditText
-                            style="@style/Input"
                             android:id="@+id/create_event_enddate_text"
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -134,8 +134,8 @@
 
 
                         <EditText
-                            style="@style/Input"
                             android:id="@+id/create_event_endtime_text"
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -172,6 +172,7 @@
 
                         <EditText
                             android:id="@+id/create_event_reminder_date"
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -184,7 +185,7 @@
 
                         <EditText
                             android:id="@+id/create_event_reminder_time"
-
+                            style="@style/Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
