@@ -43,7 +43,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         Log.d(TAG, "onBindViewHolder: Started");
 
         holder.name.setText(events.get(i).getName());
-        if(events.get(i).getLocation().equals("one")){
+        if(events.get(i).getLocation().equals("none")){
             holder.location.setText(R.string.msg_event_online);
         } else {
             holder.location.setText(events.get(i).getLocation());
