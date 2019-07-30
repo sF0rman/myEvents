@@ -403,7 +403,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     public void createEvent(){
         Log.d(TAG, "createEventObject: Started");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         final Event event;
         final long rid = (long) today.getTimeInMillis();
@@ -442,12 +442,33 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 if(hasReminder.isChecked()){
                     makeReminder(eventId, rid);
                 }
-                Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
-                startActivity(i);
-                progressBar.setVisibility(View.INVISIBLE);
-                finish();
+
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("name", currentUser.getDisplayName());
+                userMap.put("email", currentUser.getEmail());
+                userMap.put("rsvp", "going");
+                db.collection("event")
+                        .document(eventId)
+                        .collection("invited")
+                        .document(eventOwnerId)
+                        .set(userMap)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "onSuccess: Owner added as going");
+                                Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
+
+                                Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
+                                startActivity(i);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                finish();
+                            }
+                        });
+
             }
         });
+
+
     }
 
     public void makeReminder(String event, long reminder){
@@ -474,13 +495,11 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> reminderMap = new HashMap<>();
-        reminderMap.put("name", currentUser.getDisplayName());
-        reminderMap.put("email", currentUser.getEmail());
         reminderMap.put("reminder", reminderCal);
         
         db.collection("event")
                 .document(event)
-                .collection("going")
+                .collection("invited")
                 .document(eventOwnerId)
                 .set(reminderMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -585,7 +604,6 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         Log.d(TAG, "deleteEvent: Started");
 
         WarningDialogFragment warning = new WarningDialogFragment("Are you sure you want to delete: " + eventId, this);
-
         warning.show(getSupportFragmentManager(), "Warning");
     }
 

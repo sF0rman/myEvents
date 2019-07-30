@@ -78,6 +78,7 @@ public class EventActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
+    String userId;
 
     // Event variables
     private String eventId;
@@ -174,7 +175,7 @@ public class EventActivity extends AppCompatActivity {
 
     }
 
-    private void adjustForOwner(String userId){
+    private void adjustForOwner(){
         Log.d(TAG, "adjustForOwner: userId: " + userId + " owner: " + owner);
         if(userId.equals(owner)){
             Log.d(TAG, "adjustForOwner: Cannot rsvp for own event");
@@ -194,6 +195,7 @@ public class EventActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         try{
             currentUser = mAuth.getCurrentUser();
+            userId = currentUser.getUid();
         } catch (NullPointerException e){
             startActivity(new Intent(this, LoginActivity.class));
         }
@@ -291,7 +293,7 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: There is no reminder");
                         }
 
-                        adjustForOwner(mAuth.getUid());
+                        adjustForOwner();
 
                     }
                 }
@@ -300,6 +302,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     public void setReminder(View v){
+        Log.d(TAG, "setReminder: Setting reminder!");
         reminderCal = Calendar.getInstance();
         DatePickerFragment datePickerFragment = new DatePickerFragment();
         datePickerFragment.setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
@@ -335,13 +338,13 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void addReminder(final Calendar reminder){
-
+        Log.d(TAG, "addReminder: Adding reminder to database");
         reminderTime = dateTimeFormat.format(reminderCal.getTime());
         eventReminder.setText(reminderTime);
 
         DocumentReference docRef = db.collection("event")
                 .document(eventId)
-                .collection("going")
+                .collection("invited")
                 .document(currentUser.getUid());
         
         docRef.update("reminder", reminder).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -386,7 +389,7 @@ public class EventActivity extends AppCompatActivity {
         DocumentReference reminderRef = db.collection("event")
                 .document(eventId)
                 .collection("Going")
-                .document(currentUser.getUid());
+                .document(userId);
 
         reminderRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

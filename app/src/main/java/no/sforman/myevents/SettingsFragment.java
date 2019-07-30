@@ -223,25 +223,21 @@ class SettingsFragment extends Fragment {
                                 for(QueryDocumentSnapshot doc : task.getResult()){
                                     final String documentId = doc.getId();
 
-                                    String[] subDocs = {"going", "maybe", "invited"};
-
-                                    for(final String subDoc : subDocs){
-                                        db.collection("event")
-                                                .document(documentId)
-                                                .collection(subDoc).get()
-                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                        if(task.isSuccessful()){
-                                                            Log.d(TAG, "onComplete: Got subcollection going");
-                                                            for (QueryDocumentSnapshot goingDoc : task.getResult()){
-                                                                String goingId = goingDoc.getId();
-                                                                deleteSubDocs(documentId, goingId, subDoc);
-                                                            }
+                                    db.collection("event")
+                                            .document(documentId)
+                                            .collection("invited").get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if(task.isSuccessful()){
+                                                        Log.d(TAG, "onComplete: Got subcollection going");
+                                                        for (QueryDocumentSnapshot goingDoc : task.getResult()){
+                                                            String goingId = goingDoc.getId();
+                                                            deleteSubDocs(documentId, goingId, "invited");
                                                         }
                                                     }
-                                                });
-                                    }
+                                                }
+                                            });
 
                                     deleteEvent(documentId);
 
