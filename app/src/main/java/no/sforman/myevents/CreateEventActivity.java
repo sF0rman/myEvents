@@ -411,6 +411,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         Log.d(TAG, "createEventObject: Started");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // Create event object
         final Event event;
         final long rid = (long) today.getTimeInMillis();
         if(isOnline.isChecked()){
@@ -439,7 +440,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                     rid);
         }
 
-        db.collection("event").add(event).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        // Add event to database
+        db.collection("event")
+                .add(event)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
@@ -449,30 +453,57 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                     makeReminder(eventId, rid);
                 }
 
-                Map<String, Object> userMap = new HashMap<>();
-                userMap.put("name", currentUser.getDisplayName());
-                userMap.put("email", currentUser.getEmail());
-                userMap.put("rsvp", "going");
-                db.collection("event")
-                        .document(eventId)
-                        .collection("invited")
+
+                db.collection("user")
                         .document(eventOwnerId)
-                        .set(userMap)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "onSuccess: Owner added as going");
-                                Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Got owner information");
+                            DocumentSnapshot userDoc = task.getResult();
+                            String userFirstname;
+                            String userSurname;
+                            String userImage;
+                            String userEmail;
+                            userFirstname = userDoc.getString(Keys.FIRSTNAME_KEY);
+                            userSurname = userDoc.getString(Keys.SURNAME_KEY);
+                            userImage = userDoc.getString(Keys.IMAGE_KEY);
+                            userEmail = userDoc.getString(Keys.EMAIL_KEY);
 
-                                Log.d(TAG, "onSuccess: SendEventId" + eventId);
-                                addEventToSelf(eventId, event);
+                            // Create user map
+                            Map<String, Object> userMap = new HashMap<>();
+                            userMap.put("firstname", userFirstname);
+                            userMap.put("surname", userSurname);
+                            userMap.put("email", userEmail);
+                            userMap.put("image", userImage);
+                            userMap.put("rsvp", "going");
 
-                                Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
-                                startActivity(i);
-                                progressBar.setVisibility(View.INVISIBLE);
-                                finish();
-                            }
-                        });
+                            // Add user to event as going
+                            db.collection("event")
+                                    .document(eventId)
+                                    .collection("invited")
+                                    .document(eventOwnerId)
+                                    .set(userMap)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "onSuccess: Owner added as going");
+                                            Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
+
+                                            Log.d(TAG, "onSuccess: SendEventId" + eventId);
+                                            addEventToSelf(eventId, event);
+
+                                            Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
+                                            startActivity(i);
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            finish();
+                                        }
+                                    });
+
+                        }
+                    }
+                });
 
             }
         });

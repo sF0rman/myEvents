@@ -86,24 +86,37 @@ class SettingsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    SettingsListener settingsListener;
+    public interface SettingsListener {
+        public void onUserUpdated();
+    }
+
+    SettingsFragment(SettingsListener listener){
+        this.settingsListener = listener;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: CreateView");
         view = inflater.inflate(R.layout.fragment_settings, container, false);
-        initUI();
         return view;
     }
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: Started");
         super.onStart();
-        getUserDetails();
+        initUI();
+
     }
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume: Resumed");
         super.onResume();
+
+        getUserDetails();
     }
 
     private void initUI() {
@@ -162,12 +175,10 @@ class SettingsFragment extends Fragment {
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
-                            if (img != null && profileImage != null) {
-                                Glide.with(getContext())
-                                        .load(img)
-                                        .placeholder(R.drawable.ic_person)
-                                        .into(profileImage);
-                            }
+                            Glide.with(getContext())
+                                    .load(img)
+                                    .placeholder(R.drawable.ic_person)
+                                    .into(profileImage);
                             profileName.setText(f + " " + s);
                             profileEmail.setText(e);
                         }
@@ -344,12 +355,33 @@ class SettingsFragment extends Fragment {
             @Override
             public void onCompleted(boolean b) {
                 if (b) {
+                    removeUserFromFriends();
                     deleteAllEvents();
                     deleteUser();
                 }
             }
         });
         warning.show(getFragmentManager(), "WarningDeleteAccount");
+    }
+
+    private void removeUserFromFriends() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("user")
+                .document(userId)
+                .collection("friends")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: Got all friends");
+                            for (QueryDocumentSnapshot friend : task.getResult()) {
+                                String friendId = friend.getId();
+                                deleteSubDocs("user", friendId, "friends", userId);
+                            }
+                        }
+                    }
+                });
     }
 
     public void deleteUser() {
@@ -366,7 +398,7 @@ class SettingsFragment extends Fragment {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            Log.d(TAG, "onComplete: User Accoutn deleted");
+                                            Log.d(TAG, "onComplete: User Account deleted");
                                             Toast.makeText(getContext(), "You account was deleted", Toast.LENGTH_SHORT).show();
                                             mAuth.signOut();
                                             Intent deletedAccount = new Intent(getContext(), LoginActivity.class);
@@ -430,6 +462,7 @@ class SettingsFragment extends Fragment {
 
         // Verify input
         if (verifyInput(newFirstname, newSurname, newEmail)) {
+            Log.d(TAG, "updateUserSettings: InputVerified");
             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                     .setDisplayName(newFirstname + " " + newSurname)
                     .build();
@@ -440,10 +473,10 @@ class SettingsFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d(TAG, "onComplete: Displayname updated successfully");
+                                Log.d(TAG, "onComplete: Display name updated successfully");
                             } else {
                                 Toast.makeText(context, "Name change failed!", Toast.LENGTH_SHORT).show();
-                                Log.e(TAG, "onComplete: Displayname change error: ", task.getException());
+                                Log.e(TAG, "onComplete: Display name change error: ", task.getException());
                             }
 
                         }
@@ -462,7 +495,7 @@ class SettingsFragment extends Fragment {
                         }
                     });
 
-// Create new map with userData
+            // Create new map with userData
             final Map<Object, String> userData = new HashMap<>();
             userData.put(Keys.FIRSTNAME_KEY, newFirstname);
             userData.put(Keys.SURNAME_KEY, newSurname);
@@ -492,6 +525,7 @@ class SettingsFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: Got all friends");
                                 for (QueryDocumentSnapshot friendDoc : task.getResult()) {
                                     // Edit user details in friend sub collection.
                                     String friendId = friendDoc.getId();
@@ -500,6 +534,7 @@ class SettingsFragment extends Fragment {
                             }
                         }
                     });
+
 
             // Get all events where invited
             db.collection("user")
@@ -510,17 +545,39 @@ class SettingsFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: Got all events where invited");
                                 for (QueryDocumentSnapshot eventDoc : task.getResult()) {
                                     // Edit user details in event subcollection
-                                    String eventId = eventDoc.getId();
-                                    editSubDocs("event", eventId, "invited", userId, userData);
+                                    final String eventId = eventDoc.getId();
+                                    // Get rsvp reply so it doesn't change
+                                    FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                                    eventDb.collection("event")
+                                            .document(eventId)
+                                            .collection("invited")
+                                            .document(userId)
+                                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "onComplete: Got RSVP reply");
+                                                DocumentSnapshot doc = task.getResult();
+                                                String rsvp = doc.getString("rsvp");
+                                                userData.put("rsvp", rsvp);
+                                                editSubDocs("event", eventId, "invited", userId, userData);
+
+                                                // Display completed message and remove editboxes and progressbar
+                                                Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
+                                                cancelChange();
+                                                profileProgressbar.setVisibility(View.GONE);
+                                                getUserDetails();
+                                                settingsListener.onUserUpdated();
+
+                                            }
+                                        }
+                                    });
+
                                 }
 
-                                // Display completed message and remove editboxes and progressbar
-                                Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
-                                cancelChange();
-                                profileProgressbar.setVisibility(View.GONE);
-                                getUserDetails();
                             }
                         }
                     });

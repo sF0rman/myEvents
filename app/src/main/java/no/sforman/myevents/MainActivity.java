@@ -36,7 +36,7 @@ import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.SettingsListener {
 
     Intent intent;
     public static final String TAG = "MainActivity";
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CircleImageView userImage;
     private TextView name;
     private TextView email;
+    private String userImageUrl;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -70,19 +71,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: Create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initUI();
         initNavigation();
-
-
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         // Don't reload fragment if device is rotated.
         if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")){
@@ -92,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
         } else if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")){
-            settingsFragment = new SettingsFragment();
+            settingsFragment = new SettingsFragment(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             toolbar.setTitle(R.string.title_settings);
             navView.setCheckedItem(R.id.nav_events);
@@ -107,6 +101,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         onNavigationItemSelected(navView.getCheckedItem());
 
+    }
+
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: Started");
+        super.onStart();
+
+        // Don't reload fragment if device is rotated.
+        if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")){
+            contactFragment = new ContactFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
+            toolbar.setTitle(R.string.title_contacts);
+            navView.setCheckedItem(R.id.nav_contacts);
+            Log.d(TAG, "onCreate: intent-redirected to contacts.");
+        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")){
+            settingsFragment = new SettingsFragment(this);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
+            toolbar.setTitle(R.string.title_settings);
+            navView.setCheckedItem(R.id.nav_events);
+            Log.d(TAG, "onCreate: intent-redirected to settings.");
+        } else {
+            eventsFragment = new EventsFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
+            toolbar.setTitle(R.string.title_events);
+            navView.setCheckedItem(R.id.nav_events);
+            Log.d(TAG, "onCreate: Normal load to events page.");
+        }
+
+        onNavigationItemSelected(navView.getCheckedItem());
+
+        if(isOnline()){
+            initFirebase();
+            initUserData();
+        } else {
+            Log.e(TAG, "onCreate: No network");
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: Resumed");
+        super.onResume();
+
+        Log.d(TAG, "onResume: CheckingNetWork and connecting");
         if(isOnline()){
             initFirebase();
             initUserData();
@@ -131,13 +170,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if(document.exists()) {
                             name.setText(document.getString("firstname") + " " + document.getString("surname"));
                             email.setText(document.getString("email"));
+                            userImageUrl = document.getString("image");
                             Log.d(TAG, "onComplete: ImageUri " + document.getString("image"));
                             try{
                                 FirebaseStorage storage = FirebaseStorage.getInstance();
                                 StorageReference imgRef = storage.getReferenceFromUrl(document.getString("image"));
                                 if(imgRef != null){
                                     Glide.with(getApplicationContext())
-                                            .load(document.getString("image"))
+                                            .load(userImageUrl)
                                             .placeholder(R.drawable.ic_person)
                                             .into(userImage);
                                 }
@@ -236,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d(TAG, "onNavigationItemSelected: Contacts loaded");
                 break;
             case R.id.nav_settings:
-                settingsFragment = new SettingsFragment();
+                settingsFragment = new SettingsFragment(this);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
                 toolbar.setTitle(R.string.title_settings);
                 Log.d(TAG, "onNavigationItemSelected: Settings loaded");
@@ -322,5 +362,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void mCancelChange(View v){
         settingsFragment.cancelChange();
+    }
+
+    @Override
+    public void onUserUpdated() {
+        initUserData();
     }
 }

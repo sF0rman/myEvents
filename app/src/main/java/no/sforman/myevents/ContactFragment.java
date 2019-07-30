@@ -19,10 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -53,9 +51,9 @@ class ContactFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if(container == null){
+        if (container == null) {
             return null;
         }
 
@@ -71,15 +69,16 @@ class ContactFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: OnStart");
         super.onStart();
         userList.clear();
         getContacts();
     }
 
-    private void initFire(){
+    private void initFire() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        if(currentUser == null){
+        if (currentUser == null) {
             Log.d(TAG, "initFire: No user");
             Intent i = new Intent(getContext(), LoginActivity.class);
             startActivity(i);
@@ -89,14 +88,14 @@ class ContactFragment extends Fragment {
 
     }
 
-    private void initFab(){
+    private void initFab() {
         fab = layout.findViewById(R.id.contacts_add_contact_fab);
     }
 
-    private void getContacts(){
+    private void getContacts() {
         progressBar.setVisibility(View.VISIBLE);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        try{
+        try {
             // Get all friends
             db.collection("user")
                     .document(userId)
@@ -106,13 +105,14 @@ class ContactFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
 
                                 Log.d(TAG, "onComplete: Got contacts");
 
-                                for (QueryDocumentSnapshot userDoc : task.getResult()){
-                                    Log.d(TAG, "onComplete: Got document");
+                                // For each person, add to RecyclerView
+                                for (QueryDocumentSnapshot userDoc : task.getResult()) {
                                     String id = userDoc.getId();
+                                    Log.d(TAG, "onComplete: Got document: " + id);
                                     String firstname = userDoc.getString(Keys.FIRSTNAME_KEY);
                                     String surname = userDoc.getString(Keys.SURNAME_KEY);
                                     String email = userDoc.getString(Keys.EMAIL_KEY);
@@ -130,25 +130,23 @@ class ContactFragment extends Fragment {
                                 initRecyclerView();
 
                             } else {
-                                Log.e(TAG, "onComplete: Couldn't get cotacts", task.getException());
+                                Log.e(TAG, "onComplete: Couldn't get contacts", task.getException());
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
                         }
                     });
 
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.e(TAG, "getContacts: Couldn't get contacts", e);
         }
     }
 
 
-    private void initRecyclerView(){
-        Context c = getContext();
+    private void initRecyclerView() {
         recyclerView = layout.findViewById(R.id.contacts_recycler_view);
-        adapter = new UserAdapter(c, userList);
+        adapter = new UserAdapter(getContext(), userList);
         recyclerView.setAdapter(adapter);
-        layoutManager = new LinearLayoutManager(c);
+        layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-
     }
 }
