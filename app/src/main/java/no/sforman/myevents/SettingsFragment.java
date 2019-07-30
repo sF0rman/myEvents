@@ -162,7 +162,7 @@ class SettingsFragment extends Fragment {
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
-                            if (img != null %% profileImage != null) {
+                            if (img != null && profileImage != null) {
                                 Glide.with(getContext())
                                         .load(img)
                                         .placeholder(R.drawable.ic_person)
