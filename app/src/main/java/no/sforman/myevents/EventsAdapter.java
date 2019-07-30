@@ -83,19 +83,15 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private TextView name;
         private TextView location;
         private TextView start;
-        private TextView owner;
         private CardView cardView;
-        private LinearLayout layout;
 
         public EventViewHolder(@NonNull View itemView){
             super(itemView);
 
             this.name = itemView.findViewById(R.id.event_card_event_name);
             this.location = itemView.findViewById(R.id.event_card_event_location);
-            //this.owner = itemView.findViewById(R.id.event_card_event_owner);
             this.start = itemView.findViewById(R.id.event_card_event_start);
-            this.cardView = itemView.findViewById(R.id.event_card_cardlayout);
-            this.layout = itemView.findViewById(R.id.event_card_constraintlayout);
+            this.cardView = itemView.findViewById(R.id.event_card_card_view);
         }
 
     }

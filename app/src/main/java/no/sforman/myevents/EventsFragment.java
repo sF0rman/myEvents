@@ -63,7 +63,6 @@ class EventsFragment extends Fragment {
 
         progressBar = layout.findViewById(R.id.event_fragment_progressbar);
 
-        initRecyclerView();
         initFab();
         initFire();
 
@@ -127,9 +126,18 @@ class EventsFragment extends Fragment {
                                     boolean isOnline = document.getBoolean("online");
                                     long reminderKey = document.getLong("reminderKey");
 
-                                    Event e = new Event(name, owner, description, start, end,
-                                            geoPoint.getLatitude(), geoPoint.getLongitude(),
-                                            location, address, isOnline, reminderKey);
+                                    Event e = new Event(name,
+                                            owner,
+                                            description,
+                                            start,
+                                            end,
+                                            geoPoint.getLatitude(),
+                                            geoPoint.getLongitude(),
+                                            location,
+                                            address,
+                                            isOnline,
+                                            reminderKey);
+
                                     e.addID(id);
                                     eventList.add(e);
                                 }

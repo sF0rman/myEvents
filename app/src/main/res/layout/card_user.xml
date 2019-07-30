@@ -7,6 +7,7 @@
 
     <androidx.cardview.widget.CardView
         style="@style/Card"
+        android:id="@+id/user_card_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -16,6 +17,7 @@
             android:layout_height="wrap_content">
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_card_image"
                 style="@style/Padding"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
@@ -30,12 +32,14 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/user_card_name"
                     style="@style/SubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/loading_name" />
 
                 <TextView
+                    android:id="@+id/user_card_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/loading_email" />
@@ -48,6 +52,7 @@
                     android:weightSum="2">
 
                     <Button
+                        android:id="@+id/user_card_accept"
                         style="@style/PrimaryButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -57,12 +62,13 @@
                         android:visibility="gone" />
 
                     <Button
+                        android:id="@+id/user_card_decline"
                         style="@style/SecondaryButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_weight="1"
-                        android:text="@string/btn_cancel"
+                        android:text="@string/btn_decline"
                         android:visibility="gone" />
                 </LinearLayout>
 
