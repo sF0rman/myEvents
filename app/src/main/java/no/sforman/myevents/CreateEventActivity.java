@@ -607,6 +607,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                         isOnline.setChecked(eventDoc.getBoolean(Keys.ONLINE_KEY));
                         hasReminder.setChecked(false);
                         reminderKey = eventDoc.getLong(Keys.REMINDER_KEY);
+                        placeLatLng = new LatLng(eventGeoPoint.getLatitude(), eventGeoPoint.getLongitude());
+                        mapFragment.setLocationMarkerNoAnim(placeLatLng);
 
                     }
                 }

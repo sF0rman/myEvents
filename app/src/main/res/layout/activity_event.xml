@@ -120,14 +120,6 @@
                 </LinearLayout>
 
 
-                <TextView
-                    android:id="@+id/event_owner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="@string/loading_generic" />
-
-
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

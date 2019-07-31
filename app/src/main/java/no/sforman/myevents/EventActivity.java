@@ -55,7 +55,6 @@ public class EventActivity extends AppCompatActivity {
     private TextView eventLocation;
     private TextView eventAddress;
     private TextView eventReminder;
-    private TextView eventOwner;
 
     private Button eventRsvpGoing;
     private Button eventRsvpMaybe;
@@ -155,7 +154,6 @@ public class EventActivity extends AppCompatActivity {
         eventLocation = findViewById(R.id.event_location);
         eventAddress = findViewById(R.id.event_address);
         eventReminder = findViewById(R.id.event_reminder_time);
-        eventOwner = findViewById(R.id.event_owner);
 
         eventRsvpGoing = findViewById(R.id.event_rsvp_going);
         eventRsvpMaybe = findViewById(R.id.event_rsvp_maybe);
@@ -214,8 +212,6 @@ public class EventActivity extends AppCompatActivity {
                             description = document.getString(Keys.DESCRIPTION_KEY);
                             Log.d(TAG, "onComplete: Description: " + description);
 
-                            owner = document.getString(Keys.OWNER_KEY);
-                            Log.d(TAG, "onComplete: Owner: " + owner);
 
                             startInMillis = (long) document.get("start.timeInMillis");
                             Log.d(TAG, "onComplete: startMillis: " + startInMillis);
@@ -253,7 +249,6 @@ public class EventActivity extends AppCompatActivity {
                         toolbar.setTitle(name);
                         eventName.setText(name);
                         eventDescription.setText(description);
-                        eventOwner.setText(owner);
                         eventStart.setText(dateTimeFormat.format(start.getTime()));
                         eventEnd.setText(dateTimeFormat.format(end.getTime()));
 
