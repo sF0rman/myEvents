@@ -14,4 +14,9 @@ public class Keys {
     public static final String ONLINE_KEY = "online";
     public static final String REMINDER_KEY = "reminderKey";
     public static final String OWNER_KEY = "owner";
+    public static final String START_KEY = "start";
+    public static final String END_KEY = "end";
+
+    public static final String USER_KEY = "user";
+    public static final String EVENT_KEY = "event";
 }

@@ -59,10 +59,6 @@ public class EventActivity extends AppCompatActivity {
 
     private Button eventRsvpGoing;
     private Button eventRsvpMaybe;
-    private Button eventRsvpNotGoing;
-    private Button eventPplGoing;
-    private Button eventPplMaybe;
-    private Button eventPplInvited;
     private Button eventAddReminder;
 
     private Menu contextMenu;
@@ -163,10 +159,6 @@ public class EventActivity extends AppCompatActivity {
 
         eventRsvpGoing = findViewById(R.id.event_rsvp_going);
         eventRsvpMaybe = findViewById(R.id.event_rsvp_maybe);
-        eventRsvpNotGoing = findViewById(R.id.event_rsvp_not_going);
-        eventPplGoing = findViewById(R.id.event_ppl_going);
-        eventPplMaybe = findViewById(R.id.event_ppl_maybe);
-        eventPplInvited = findViewById(R.id.event_ppl_invited);
         eventAddReminder = findViewById(R.id.event_add_reminder);
 
         rsvpCard = findViewById(R.id.event_rsvp_card);
@@ -284,7 +276,7 @@ public class EventActivity extends AppCompatActivity {
                             onlineImg.setVisibility(View.VISIBLE);
                         } else {
                             LatLng loc = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                            mapFragment.setLocationMarker(loc);
+                            mapFragment.setLocationMarkerNoAnim(loc);
                         }
 
                         // Set Remindertime

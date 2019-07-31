@@ -35,9 +35,8 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".EventActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity"/>
-
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".NotificationReceiver" />
 

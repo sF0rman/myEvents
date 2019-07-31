@@ -108,6 +108,7 @@ class SettingsFragment extends Fragment {
         Log.d(TAG, "onStart: Started");
         super.onStart();
         initUI();
+        initFirebase();
 
     }
 
@@ -117,6 +118,19 @@ class SettingsFragment extends Fragment {
         super.onResume();
 
         getUserDetails();
+    }
+
+    private void initFirebase(){
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        if(currentUser != null){
+            userId = currentUser.getUid();
+        } else {
+            Intent noUser = new Intent(getContext(), LoginActivity.class);
+            startActivity(noUser);
+        }
+
     }
 
     private void initUI() {
@@ -150,10 +164,6 @@ class SettingsFragment extends Fragment {
 
     private void getUserDetails() {
         Log.d(TAG, "getUserDetails: Started");
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-
-        userId = currentUser.getUid();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {

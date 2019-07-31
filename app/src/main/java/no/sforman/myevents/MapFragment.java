@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -108,5 +109,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         gMap.clear();
         gMap.addMarker(new MarkerOptions().position(loc).title("Marker"));
         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 12.0f));
+    }
+
+    public void setLocationMarkerNoAnim(LatLng loc){
+        gMap.clear();
+        gMap.addMarker(new MarkerOptions().position(loc).title("Marker"));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12.f));
     }
 }

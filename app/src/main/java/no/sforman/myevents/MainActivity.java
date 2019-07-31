@@ -364,6 +364,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         settingsFragment.cancelChange();
     }
 
+    public void mGetAllEvents(View v) { eventsFragment.getAllEvents(); }
+
+    public void mGetMyEvents(View v) { eventsFragment.getMyEvents(); }
+
+    public void mGetContacts(View v) { contactFragment.getMyContacts(); }
+
+    public void mGetRequests(View v) { contactFragment.getRequests(); }
+
     @Override
     public void onUserUpdated() {
         initUserData();

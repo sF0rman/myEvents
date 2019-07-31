@@ -13,6 +13,7 @@
 
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -22,7 +23,7 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_icon"
+                android:src="@drawable/ic_person"
                 app:civ_border_width="2dp" />
 
             <LinearLayout

@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +38,9 @@ class ContactFragment extends Fragment {
     private FloatingActionButton fab;
     private ConstraintLayout layout;
     private ProgressBar progressBar;
+
+    private TextView subContacts;
+    private TextView subRequests;
 
     // RecyclerView
     private RecyclerView recyclerView;
@@ -60,6 +66,9 @@ class ContactFragment extends Fragment {
         layout = (ConstraintLayout) inflater.inflate(R.layout.fragment_contact, container, false);
 
         progressBar = layout.findViewById(R.id.contacts_progress_bar);
+        subContacts = layout.findViewById(R.id.contacts_sub_menu_contacts);
+        subRequests = layout.findViewById(R.id.contacts_sub_menu_requests);
+
 
         initFab();
         initFire();
@@ -95,50 +104,49 @@ class ContactFragment extends Fragment {
     private void getContacts() {
         progressBar.setVisibility(View.VISIBLE);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        try {
-            // Get all friends
-            db.collection("user")
-                    .document(userId)
-                    .collection("friends")
-                    .orderBy("firstname")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
 
-                                Log.d(TAG, "onComplete: Got contacts");
+        // Get all friends
+        db.collection("user")
+                .document(userId)
+                .collection("friends")
+                .orderBy("firstname")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
 
-                                // For each person, add to RecyclerView
-                                for (QueryDocumentSnapshot userDoc : task.getResult()) {
-                                    String id = userDoc.getId();
-                                    Log.d(TAG, "onComplete: Got document: " + id);
-                                    String firstname = userDoc.getString(Keys.FIRSTNAME_KEY);
-                                    String surname = userDoc.getString(Keys.SURNAME_KEY);
-                                    String email = userDoc.getString(Keys.EMAIL_KEY);
-                                    String image = userDoc.getString(Keys.IMAGE_KEY);
+                            Log.d(TAG, "onComplete: Got contacts");
 
-                                    User u = new User(id,
-                                            firstname,
-                                            surname,
-                                            email,
-                                            image);
+                            // For each person, add to RecyclerView
+                            for (QueryDocumentSnapshot userDoc : task.getResult()) {
+                                String id = userDoc.getId();
+                                Log.d(TAG, "onComplete: Got document: " + id);
+                                String firstname = userDoc.getString(Keys.FIRSTNAME_KEY);
+                                String surname = userDoc.getString(Keys.SURNAME_KEY);
+                                String email = userDoc.getString(Keys.EMAIL_KEY);
+                                String image = userDoc.getString(Keys.IMAGE_KEY);
 
-                                    userList.add(u);
-                                }
+                                User u = new User(id,
+                                        firstname,
+                                        surname,
+                                        email,
+                                        image);
 
-                                initRecyclerView();
-
-                            } else {
-                                Log.e(TAG, "onComplete: Couldn't get contacts", task.getException());
-                                progressBar.setVisibility(View.INVISIBLE);
+                                userList.add(u);
                             }
-                        }
-                    });
 
-        } catch (NullPointerException e) {
-            Log.e(TAG, "getContacts: Couldn't get contacts", e);
-        }
+                            initRecyclerView();
+                            progressBar.setVisibility(View.INVISIBLE);
+
+                        } else {
+                            Log.e(TAG, "onComplete: Couldn't get contacts", task.getException());
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+
+
     }
 
 
@@ -148,5 +156,29 @@ class ContactFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    public void getMyContacts() {
+        subContacts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        subContacts.setTextColor(ContextCompat.getColor(getContext(), R.color.lightPrimary));
+        subRequests.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        subRequests.setTextColor(ContextCompat.getColor(getContext(), R.color.lightSecondary));
+        getContacts();
+    }
+
+    public void getRequests() {
+        progressBar.setVisibility(View.VISIBLE);
+
+        subContacts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        subContacts.setTextColor(ContextCompat.getColor(getContext(), R.color.lightSecondary));
+        subRequests.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        subRequests.setTextColor(ContextCompat.getColor(getContext(), R.color.lightPrimary));
+
+        Log.d(TAG, "getRequests: Started");
+
+        userList.clear();
+
+        
+
     }
 }
