@@ -212,6 +212,9 @@ public class EventActivity extends AppCompatActivity {
                             description = document.getString(Keys.DESCRIPTION_KEY);
                             Log.d(TAG, "onComplete: Description: " + description);
 
+                            owner = document.getString(Keys.OWNER_KEY);
+                            Log.d(TAG, "onComplete: Owner: " + owner);
+
 
                             startInMillis = (long) document.get("start.timeInMillis");
                             Log.d(TAG, "onComplete: startMillis: " + startInMillis);
@@ -392,7 +395,7 @@ public class EventActivity extends AppCompatActivity {
                         rCal.setTimeInMillis(reminderInMillis);
                         if(Calendar.getInstance().before(rCal)){
                             eventReminder.setText(dateTimeFormat.format(rCal.getTime()));
-                            eventAddReminder.setText(R.string.btn_change_reminder);
+                            eventAddReminder.setText(getString(R.string.btn_change_reminder));
                         }
                     }
                 }

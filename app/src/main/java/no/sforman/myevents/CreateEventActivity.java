@@ -478,6 +478,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                             userMap.put("email", userEmail);
                             userMap.put("image", userImage);
                             userMap.put("rsvp", "going");
+                            userMap.put("reminder", reminderCal);
 
                             // Add user to event as going
                             db.collection("event")
@@ -559,7 +560,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 .document(event)
                 .collection("invited")
                 .document(eventOwnerId)
-                .set(reminderMap)
+                .update(reminderMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
