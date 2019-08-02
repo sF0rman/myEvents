@@ -197,19 +197,35 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         });
     }
 
+    private void hideNothingSelected(){
+        if(!selectedUserList.isEmpty()){
+            Log.d(TAG, "selectedUsers: isNotEmpty");
+            nothingSelected.setVisibility(View.GONE);
+            for(User u : selectedUserList){
+                Log.d(TAG, "initSelectedRecyclerView: Got: " + u.getId());
+            }
+        } else {
+            Log.d(TAG, "selectedUsers: isEmpty");
+            nothingSelected.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void initSearchRecyclerView() {
+        hideNothingSelected();
         searchAdapter = new SearchAdapter(this, userList, selectedUserList, this);
         searchResult.setAdapter(searchAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         searchResult.setLayoutManager(layoutManager);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void initSelectedRecyclerView() {
+        hideNothingSelected();
         selectedAdapter = new UserAdapter(this, selectedUserList, "selected", this);
         selectedUsers.setAdapter(selectedAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         selectedUsers.setLayoutManager(layoutManager);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -227,7 +243,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
                         String email = doc.getString(Keys.EMAIL_KEY);
                         String image = doc.getString(Keys.IMAGE_KEY);
 
-                        Log.d(TAG, "onComplete: Found" + id);
+                        Log.d(TAG, "onComplete: Selected: " + id);
 
                         User u = new User(id, firstname, surname, email, image);
                         selectedUserList.add(u);
@@ -252,16 +268,6 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     @Override
     public void selectedUsers(ArrayList<User> users) {
         selectedUserList = users;
-        if(!selectedUserList.isEmpty()){
-            Log.d(TAG, "selectedUsers: isNotEmpty");
-            nothingSelected.setVisibility(View.GONE);
-            for(User u : selectedUserList){
-                Log.d(TAG, "initSelectedRecyclerView: Got: " + u.getId());
-            }
-        } else {
-            Log.d(TAG, "selectedUsers: isEmpty");
-            nothingSelected.setVisibility(View.VISIBLE);
-        }
         initSelectedRecyclerView();
     }
 
