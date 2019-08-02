@@ -495,7 +495,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                                             Log.d(TAG, "onSuccess: SendEventId" + eventId);
                                             addEventToSelf(eventId, event);
 
-                                            Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
+                                            Intent i = new Intent(CreateEventActivity.this, EventActivity.class);
+                                            i.putExtra("eventId", eventId);
                                             startActivity(i);
                                             progressBar.setVisibility(View.INVISIBLE);
                                             finish();

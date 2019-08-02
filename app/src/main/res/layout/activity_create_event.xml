@@ -61,6 +61,7 @@
                     android:indeterminate="true"
                     android:visibility="invisible" />
 
+
                 <LinearLayout
                     style="@style/Padding"
                     android:layout_width="match_parent"

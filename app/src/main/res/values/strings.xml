@@ -19,6 +19,8 @@
     <string name="title_warning">Warning!</string>
     <string name="title_reminder">Reminder</string>
     <string name="title_adding_user">Selected contacts</string>
+    <string name="title_event_details">Event details</string>
+    <string name="title_event_contacts">People</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
