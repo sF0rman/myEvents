@@ -16,6 +16,7 @@ public class Keys {
     public static final String OWNER_KEY = "owner";
     public static final String START_KEY = "start";
     public static final String END_KEY = "end";
+    public static final String RSVP_KEY = "rsvp";
 
     public static final String USER_KEY = "user";
     public static final String EVENT_KEY = "event";
@@ -23,4 +24,5 @@ public class Keys {
     public static final String SENDER_KEY = "sender";
     public static final String REQUEST_KEY = "request";
     public static final String RECIEVER_KEY = "reciever";
+    public static final String INVITED_KEY = "invited";
 }

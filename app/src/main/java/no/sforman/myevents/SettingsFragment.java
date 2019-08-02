@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,7 +168,7 @@ class SettingsFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {
-            final DocumentReference docRef = db.collection("user").document(userId);
+            final DocumentReference docRef = db.collection(Keys.USER_KEY).document(userId);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -178,10 +179,10 @@ class SettingsFragment extends Fragment {
 
                             Log.d(TAG, "onComplete: Got user");
 
-                            f = document.getString("firstname");
-                            s = document.getString("surname");
-                            e = document.getString("email");
-                            img = document.getString("image");
+                            f = document.getString(Keys.FIRSTNAME_KEY);
+                            s = document.getString(Keys.SURNAME_KEY);
+                            e = document.getString(Keys.EMAIL_KEY);
+                            img = document.getString(Keys.IMAGE_KEY);
                             firstnameInput.setText(f);
                             surnameInput.setText(s);
                             emailInput.setText(e);
@@ -259,8 +260,8 @@ class SettingsFragment extends Fragment {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Get every event that you have created!
-        db.collection("event")
-                .whereEqualTo("owner", userId)
+        db.collection(Keys.EVENT_KEY)
+                .whereEqualTo(Keys.OWNER_KEY, userId)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -272,9 +273,9 @@ class SettingsFragment extends Fragment {
                         final String documentId = doc.getId();
 
                         // Get everyone invited to event
-                        db.collection("event")
+                        db.collection(Keys.EVENT_KEY)
                                 .document(documentId)
-                                .collection("invited")
+                                .collection(Keys.INVITED_KEY)
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
@@ -285,16 +286,16 @@ class SettingsFragment extends Fragment {
                                             for (QueryDocumentSnapshot goingDoc : task.getResult()) {
                                                 // Delete event from everyone who has the event.
                                                 String goingId = goingDoc.getId();
-                                                deleteSubDocs("event", documentId, "invited", goingId);
+                                                deleteSubDocs(Keys.EVENT_KEY, documentId, Keys.INVITED_KEY, goingId);
                                             }
                                         }
                                     }
                                 });
 
                         // Get all events under self
-                        db.collection("user")
+                        db.collection(Keys.USER_KEY)
                                 .document(userId)
-                                .collection("event")
+                                .collection(Keys.EVENT_KEY)
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
@@ -306,9 +307,9 @@ class SettingsFragment extends Fragment {
                                             for (QueryDocumentSnapshot subEventDoc : task.getResult()) {
                                                 String subEventId = subEventDoc.getId();
                                                 // For each event delete it.
-                                                deleteSubDocs("user", userId, "event", subEventId);
+                                                deleteSubDocs(Keys.USER_KEY, userId, Keys.EVENT_KEY, subEventId);
                                                 // For each event remove self from invited.
-                                                deleteSubDocs("event", subEventId, "invited", userId);
+                                                deleteSubDocs(Keys.EVENT_KEY, subEventId, Keys.INVITED_KEY, userId);
                                             }
                                         }
                                     }
@@ -328,7 +329,7 @@ class SettingsFragment extends Fragment {
 
     private void deleteEvent(final String id) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("event")
+        db.collection(Keys.EVENT_KEY)
                 .document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -376,9 +377,9 @@ class SettingsFragment extends Fragment {
 
     private void removeUserFromFriends() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("user")
+        db.collection(Keys.USER_KEY)
                 .document(userId)
-                .collection("friends")
+                .collection(Keys.FRIEND_KEY)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -387,7 +388,7 @@ class SettingsFragment extends Fragment {
                             Log.d(TAG, "onComplete: Got all friends");
                             for (QueryDocumentSnapshot friend : task.getResult()) {
                                 String friendId = friend.getId();
-                                deleteSubDocs("user", friendId, "friends", userId);
+                                deleteSubDocs(Keys.USER_KEY, friendId, Keys.FRIEND_KEY, userId);
                             }
                         }
                     }
@@ -396,7 +397,7 @@ class SettingsFragment extends Fragment {
 
     public void deleteUser() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("user")
+        db.collection(Keys.USER_KEY)
                 .document(userId)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -514,7 +515,7 @@ class SettingsFragment extends Fragment {
 
             // Update details in user database
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("user")
+            db.collection(Keys.USER_KEY)
                     .document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -527,9 +528,9 @@ class SettingsFragment extends Fragment {
             });
 
             // Get all friends
-            db.collection("user")
+            db.collection(Keys.USER_KEY)
                     .document(userId)
-                    .collection("friends")
+                    .collection(Keys.FRIEND_KEY)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -539,7 +540,7 @@ class SettingsFragment extends Fragment {
                                 for (QueryDocumentSnapshot friendDoc : task.getResult()) {
                                     // Edit user details in friend sub collection.
                                     String friendId = friendDoc.getId();
-                                    editSubDocs("user", friendId, "friends", userId, userData);
+                                    editSubDocs(Keys.USER_KEY, friendId, Keys.FRIEND_KEY, userId, userData);
                                 }
                             }
                         }
@@ -547,9 +548,9 @@ class SettingsFragment extends Fragment {
 
 
             // Get all events where invited
-            db.collection("user")
+            db.collection(Keys.USER_KEY)
                     .document(userId)
-                    .collection("event")
+                    .collection(Keys.EVENT_KEY)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -561,9 +562,9 @@ class SettingsFragment extends Fragment {
                                     final String eventId = eventDoc.getId();
                                     // Get rsvp reply so it doesn't change
                                     FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-                                    eventDb.collection("event")
+                                    eventDb.collection(Keys.EVENT_KEY)
                                             .document(eventId)
-                                            .collection("invited")
+                                            .collection(Keys.INVITED_KEY)
                                             .document(userId)
                                             .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
@@ -571,9 +572,9 @@ class SettingsFragment extends Fragment {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "onComplete: Got RSVP reply");
                                                 DocumentSnapshot doc = task.getResult();
-                                                String rsvp = doc.getString("rsvp");
-                                                userData.put("rsvp", rsvp);
-                                                editSubDocs("event", eventId, "invited", userId, userData);
+                                                String rsvp = doc.getString(Keys.RSVP_KEY);
+                                                userData.put(Keys.RSVP_KEY, rsvp);
+                                                editSubDocs(Keys.EVENT_KEY, eventId, Keys.INVITED_KEY, userId, userData);
 
                                                 // Display completed message and remove editboxes and progressbar
                                                 Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
