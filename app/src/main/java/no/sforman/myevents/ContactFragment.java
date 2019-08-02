@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -106,11 +105,11 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     private void getContacts() {
         progressBar.setVisibility(View.VISIBLE);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestore contactDb = FirebaseFirestore.getInstance();
 
         Log.d(TAG, "getContacts: Getting contacts...");
         // Get all friends
-        db.collection("user")
+        contactDb.collection("user")
                 .document(userId)
                 .collection(Keys.FRIEND_KEY)
                 .orderBy(Keys.FIRSTNAME_KEY)
@@ -154,10 +153,10 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     private void getRequests() {
         progressBar.setVisibility(View.VISIBLE);
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseFirestore requestDb = FirebaseFirestore.getInstance();
 
         Log.d(TAG, "getRequests: Getting requests...");
-        db.collection(Keys.REQUEST_KEY)
+        requestDb.collection(Keys.REQUEST_KEY)
                 .whereEqualTo(Keys.RECIEVER_KEY, userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -169,8 +168,8 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
                                 final String requestId = doc.getId();
 
                                 Log.d(TAG, "onComplete: Got sender key: " + senderId);
-
-                                db.collection(Keys.USER_KEY)
+                                FirebaseFirestore senderRef = FirebaseFirestore.getInstance();
+                                senderRef.collection(Keys.USER_KEY)
                                         .document(senderId)
                                         .get()
                                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -199,6 +198,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
                             Log.e(TAG, "onComplete: Something went wrong", task.getException());
                             progressBar.setVisibility(View.INVISIBLE);
                         }
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
     }

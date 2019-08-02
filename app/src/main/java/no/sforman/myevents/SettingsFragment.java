@@ -88,11 +88,12 @@ class SettingsFragment extends Fragment {
     private FirebaseUser currentUser;
 
     SettingsListener settingsListener;
+
     public interface SettingsListener {
         public void onUserUpdated();
     }
 
-    SettingsFragment(SettingsListener listener){
+    SettingsFragment(SettingsListener listener) {
         this.settingsListener = listener;
     }
 
@@ -121,11 +122,11 @@ class SettingsFragment extends Fragment {
         getUserDetails();
     }
 
-    private void initFirebase(){
+    private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null){
+        if (currentUser != null) {
             userId = currentUser.getUid();
         } else {
             Intent noUser = new Intent(getContext(), LoginActivity.class);
@@ -513,12 +514,14 @@ class SettingsFragment extends Fragment {
             userData.put(Keys.EMAIL_KEY, newEmail);
             userData.put(Keys.IMAGE_KEY, img);
 
+            Log.d(TAG, "updateUserSettings: Map created");
             // Update details in user database
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection(Keys.USER_KEY)
                     .document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "onComplete: Updating self");
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Changed userData in self");
                     } else {
@@ -535,11 +538,13 @@ class SettingsFragment extends Fragment {
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            Log.d(TAG, "onComplete: updating friends");
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: Got all friends");
                                 for (QueryDocumentSnapshot friendDoc : task.getResult()) {
                                     // Edit user details in friend sub collection.
                                     String friendId = friendDoc.getId();
+                                    Log.d(TAG, "onComplete: Updated for" + friendId);
                                     editSubDocs(Keys.USER_KEY, friendId, Keys.FRIEND_KEY, userId, userData);
                                 }
                             }
@@ -552,44 +557,58 @@ class SettingsFragment extends Fragment {
                     .document(userId)
                     .collection(Keys.EVENT_KEY)
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "onComplete: Got all events where invited");
-                                for (QueryDocumentSnapshot eventDoc : task.getResult()) {
-                                    // Edit user details in event subcollection
-                                    final String eventId = eventDoc.getId();
-                                    // Get rsvp reply so it doesn't change
-                                    FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-                                    eventDb.collection(Keys.EVENT_KEY)
-                                            .document(eventId)
-                                            .collection(Keys.INVITED_KEY)
-                                            .document(userId)
-                                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "onComplete: Got RSVP reply");
-                                                DocumentSnapshot doc = task.getResult();
-                                                String rsvp = doc.getString(Keys.RSVP_KEY);
-                                                userData.put(Keys.RSVP_KEY, rsvp);
-                                                editSubDocs(Keys.EVENT_KEY, eventId, Keys.INVITED_KEY, userId, userData);
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            Log.d(TAG, "onComplete: Got all events where invited");
+                            for (QueryDocumentSnapshot eventDoc : queryDocumentSnapshots) {
 
-                                                // Display completed message and remove editboxes and progressbar
-                                                Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
-                                                cancelChange();
-                                                profileProgressbar.setVisibility(View.GONE);
-                                                getUserDetails();
-                                                settingsListener.onUserUpdated();
+                                // Edit user details in event subcollection
+                                final String eventId = eventDoc.getId();
+                                // Get rsvp reply so it doesn't change
+                                FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                                eventDb.collection(Keys.EVENT_KEY)
+                                        .document(eventId)
+                                        .collection(Keys.INVITED_KEY)
+                                        .document(userId)
+                                        .get()
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot doc) {
+                                                Log.d(TAG, "onComplete: Changing for event: " + eventId);
+                                                if (doc.exists()) {
+                                                    Log.d(TAG, "onComplete: Got RSVP reply");
+                                                    String rsvp = doc.getString(Keys.RSVP_KEY);
+                                                    userData.put(Keys.RSVP_KEY, rsvp);
+                                                    editSubDocs(Keys.EVENT_KEY, eventId, Keys.INVITED_KEY, userId, userData);
 
+                                                    // Display completed message and remove editboxes and progressbar
+                                                    Toast.makeText(context, getString(R.string.msg_success_user_data_change), Toast.LENGTH_SHORT).show();
+                                                    cancelChange();
+                                                    getUserDetails();
+                                                    settingsListener.onUserUpdated();
+                                                    profileProgressbar.setVisibility(View.GONE);
+                                                } else {
+                                                    Log.d(TAG, "onSuccess: No documents");
+                                                    profileProgressbar.setVisibility(View.GONE);
+                                                }
                                             }
-                                        }
-                                    });
-
-                                }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e(TAG, "onFailure: ", e);
+                                        profileProgressbar.setVisibility(View.GONE);
+                                    }
+                                });
 
                             }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "onFailure: ", e);
+                            profileProgressbar.setVisibility(View.GONE);
                         }
                     });
 
