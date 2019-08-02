@@ -67,6 +67,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
         initUI();
         initFire();
+        getUsers();
     }
 
     private void initUI() {
@@ -87,7 +88,13 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 progressBar.setVisibility(View.VISIBLE);
-                initSearch(charSequence.toString());
+                if(charSequence.toString().isEmpty()){
+                    userList.clear();
+                    initSearchRecyclerView();
+                } else {
+                    searchUser(charSequence.toString());
+                }
+
             }
 
             @Override
@@ -138,15 +145,17 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     private void searchUser(String search){
         userList.clear();
-        int limit = 20;
+        int limit = 10;
         int counter = 0;
         for(User u : allUsers){
             if(u.getFullname().contains(search) || u.getEmail().contains(search)){
                 Log.d(TAG, "searchUser: Added user: " + u.getId());
                 userList.add(u);
+                initSearchRecyclerView();
+                progressBar.setVisibility(View.INVISIBLE);
             }
             counter++;
-            if(limit > 20){
+            if(counter >= limit){
                 Log.d(TAG, "searchUser: Reached search limit");
                 break;
             }
@@ -197,14 +206,6 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void initSelectedRecyclerView() {
-        if(!selectedUserList.isEmpty()){
-            nothingSelected.setVisibility(View.GONE);
-            for(User u : selectedUserList){
-                Log.d(TAG, "initSelectedRecyclerView: Got: " + u.getId());
-            }
-        } else {
-            nothingSelected.setVisibility(View.VISIBLE);
-        }
         selectedAdapter = new UserAdapter(this, selectedUserList, "selected", this);
         selectedUsers.setAdapter(selectedAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -251,6 +252,16 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     @Override
     public void selectedUsers(ArrayList<User> users) {
         selectedUserList = users;
+        if(!selectedUserList.isEmpty()){
+            Log.d(TAG, "selectedUsers: isNotEmpty");
+            nothingSelected.setVisibility(View.GONE);
+            for(User u : selectedUserList){
+                Log.d(TAG, "initSelectedRecyclerView: Got: " + u.getId());
+            }
+        } else {
+            Log.d(TAG, "selectedUsers: isEmpty");
+            nothingSelected.setVisibility(View.VISIBLE);
+        }
         initSelectedRecyclerView();
     }
 
