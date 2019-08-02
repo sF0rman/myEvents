@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:indeterminate="true"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
     <ScrollView
         android:layout_width="match_parent"

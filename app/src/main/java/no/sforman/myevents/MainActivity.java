@@ -370,7 +370,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void mGetContacts(View v) { contactFragment.getMyContacts(); }
 
-    public void mGetRequests(View v) { contactFragment.getRequests(); }
+    public void mGetRequests(View v) { contactFragment.getMyRequests(); }
+
+    public void mAddContact(View v){ contactFragment.addContact(); }
 
     @Override
     public void onUserUpdated() {

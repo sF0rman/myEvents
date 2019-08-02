@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,26 +9,16 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="120dp"
             android:orientation="vertical">
 
-
-            <FrameLayout
-                style="@style/Padding"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <AutoCompleteTextView
-                    android:id="@+id/add_contact_search"
-                    style="@style/Input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="hint_search_contact" />
-            </FrameLayout>
 
             <TextView
                 style="@style/TitleLight"
@@ -36,10 +27,11 @@
                 android:text="@string/title_adding_user" />
 
             <TextView
+                android:id="@+id/add_contact_nothing_selected"
                 style="@style/SubTitleLight"
-                android:text="@string/msg_nothing_selected"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/msg_nothing_selected" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/add_contact_selected"
@@ -50,10 +42,11 @@
                 style="@style/Padding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
+                android:layout_gravity="end"
                 android:orientation="horizontal">
 
                 <Button
+                    android:onClick="cancel"
                     android:id="@+id/add_contact_cancel"
                     style="@style/SecondaryButton"
                     android:layout_width="wrap_content"
@@ -61,6 +54,7 @@
                     android:text="@string/btn_cancel" />
 
                 <Button
+                    android:onClick="accept"
                     android:id="@+id/add_contact_accept"
                     style="@style/PrimaryButton"
                     android:layout_width="wrap_content"
@@ -68,11 +62,53 @@
                     android:text="@string/btn_accept" />
 
             </LinearLayout>
-
         </LinearLayout>
 
 
     </ScrollView>
 
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/title_add_contacts" />
+
+            <ProgressBar
+                android:id="@+id/add_contact_progressbar"
+                style="@style/Progressbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                style="@style/Padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/add_contact_search_field"
+                    style="@style/Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_search_contact" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/add_contact_search_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    </FrameLayout>
 
 </FrameLayout>

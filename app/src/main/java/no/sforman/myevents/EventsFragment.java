@@ -72,8 +72,6 @@ class EventsFragment extends Fragment {
         subMine = layout.findViewById(R.id.event_fragment_submenu_mine);
 
         initFab();
-        initFire();
-
 
         return layout;
     }
@@ -82,7 +80,7 @@ class EventsFragment extends Fragment {
     public void onStart() {
         Log.d(TAG, "onStart: Started");
         super.onStart();
-        getEvents();
+        initFire();
     }
 
     @Override
@@ -102,6 +100,7 @@ class EventsFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
+            getEvents();
         } else {
             Intent noUser = new Intent(getContext(), LoginActivity.class);
             startActivity(noUser);

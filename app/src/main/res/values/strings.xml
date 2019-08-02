@@ -21,6 +21,7 @@
     <string name="title_adding_user">Selected contacts</string>
     <string name="title_event_details">Event details</string>
     <string name="title_event_contacts">People</string>
+    <string name="title_add_contacts">Add contacts</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>

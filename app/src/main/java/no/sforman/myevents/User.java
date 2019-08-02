@@ -9,14 +9,14 @@ public class User implements Parcelable {
     private String firstname;
     private String surname;
     private String email;
-    private String imgUrl;
+    private String image;
 
     public User(String id, String firstname, String surname, String email, String imgUrl){
         this.id = id;
         this.firstname = firstname;
         this.surname = surname;
         this.email = email;
-        this.imgUrl = imgUrl;
+        this.image = imgUrl;
     }
 
     public String getId() {
@@ -35,8 +35,8 @@ public class User implements Parcelable {
         return email;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+    public String getImage() {
+        return image;
     }
 
     public String getFullname(){
@@ -50,7 +50,7 @@ public class User implements Parcelable {
         firstname = in.readString();
         surname = in.readString();
         email = in.readString();
-        imgUrl = in.readString();
+        image = in.readString();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class User implements Parcelable {
         dest.writeString(firstname);
         dest.writeString(surname);
         dest.writeString(email);
-        dest.writeString(imgUrl);
+        dest.writeString(image);
     }
 
     @SuppressWarnings("unused")

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,32 +24,61 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public static final String TAG = "UserAdapter";
 
     private Context uCtx;
-    private boolean friendRequest = false;
-    private boolean addUser = false;
+    private String type = "default";
+    private String requestId;
 
     private ArrayList<User> users;
 
-    public UserAdapter(Context context, ArrayList<User> users){
+    /**
+     * @param context <Context>
+     * @param users   <ArrayList of User objects>
+     */
+    public UserAdapter(Context context, ArrayList<User> users) {
         this.uCtx = context;
         this.users = users;
     }
 
-    public UserAdapter(Context context, ArrayList<User> users, boolean friendRequest){
+
+    /**
+     * @param context  <Context>
+     * @param users    <ArrayList of User objects>
+     * @param type     <Type can be request, add or selected. request displays accept/decline buttons, add toggles adding/removing users. selected removes users from list.>
+     * @param listener <RemoveSelectionListener is required if type is defined.>
+     */
+    public UserAdapter(Context context, ArrayList<User> users, String type, ResponseListener listener) {
         this.uCtx = context;
         this.users = users;
-        this.friendRequest = friendRequest;
+        this.type = type;
+        this.onClickListener = listener;
     }
 
-    public UserAdapter(Context context, boolean addUser, ArrayList<User> users){
+    /**
+     * @param context  <Context>
+     * @param users    <ArrayList of User objects>
+     * @param type     <Type can be request, add or selected. request displays accept/decline buttons, add toggles adding/removing users. selected removes users from list.>
+     * @param requestId <requestId from database>
+     * @param listener <RemoveSelectionListener is required if type is defined.>
+     */
+    public UserAdapter(Context context, ArrayList<User> users, String type, String requestId, ResponseListener listener) {
         this.uCtx = context;
         this.users = users;
-        this.addUser = addUser;
+        this.type = type;
+        this.requestId = requestId;
+        this.onClickListener = listener;
+    }
+
+    ResponseListener onClickListener;
+
+    public interface ResponseListener {
+        void respondToRequest(String requestId, boolean wasAccepted);
+        void selectedUsers(ArrayList<User> users);
     }
 
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View userCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_user, parent, false);
+        View userCard = LayoutInflater.from(uCtx)
+                .inflate(R.layout.card_user, parent, false);
         UserViewHolder viewHolder = new UserViewHolder(userCard);
         return viewHolder;
     }
@@ -60,25 +88,29 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         Log.d(TAG, "onBindViewHolder: Started");
 
         final String userId = users.get(i).getId();
+        final User user = users.get(i);
 
-        if(friendRequest){
+        // If type is request, show accept and decline buttons.
+        if (type == "request") {
             holder.acceptBtn.setVisibility(View.VISIBLE);
             holder.declineBtn.setVisibility(View.VISIBLE);
 
             holder.acceptBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "onClick: Accepted friendrequest from: " + userId);
+                    Log.d(TAG, "onClick: Accepted friend request from: " + requestId);
+                    onClickListener.respondToRequest(requestId, true);
                 }
             });
             holder.declineBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "onClick: Cancelled friendrequest from: " + userId);
+                    Log.d(TAG, "onClick: Cancelled friend request from: " + requestId);
+                    onClickListener.respondToRequest(requestId, false);
                 }
             });
-        } else if (addUser) {
-            final ArrayList<String> userIds = new ArrayList<>();
+            //
+        } else if (type == "add") {
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -86,34 +118,49 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
                     // Check if already selected
                     int index = 0;
-                    for (String uId : userIds) {
-                        String id = users.get(i).getId();
-                        if (id.equals(uId)) {
-                            Log.d(TAG, "onClick: removed user: " + userIds.get(index));
-                            userIds.remove(index);
+                    for (User u : users) {
 
-                            // orangeSecondary is #e28016
-                            // = r226 g128 b22
-                            holder.cardView.setBackgroundColor(Color.rgb(226, 128, 22));
+                        if (u.getId().equals(userId)) {
+                            Log.d(TAG, "onClick: removed user: " + u.getId());
+                            users.remove(index);
+
+                            // cardview default is #bdc4ca
+                            // = r189 g196 b202
+                            holder.cardView.setBackgroundColor(Color.rgb(189, 196, 202));
+
                             isSelected = true;
+                            break;
                         }
                         index++;
                     }
 
-                    if(!isSelected){
-                        // cardview default is #bdc4ca
-                        // = r189 g196 b202
-                        holder.cardView.setBackgroundColor(Color.rgb(189, 196, 202));
+                    if (!isSelected) {
+                        // orangeSecondary is #e28016
+                        // = r226 g128 b22
+                        holder.cardView.setBackgroundColor(Color.rgb(226, 128, 22));
                         Log.d(TAG, "onClick: added user: " + users.get(i).getId());
-                        userIds.add(users.get(i).getId());
+                        users.add(users.get(i));
                     }
 
+                    onClickListener.selectedUsers(users);
+
+                }
+            });
+
+            // Remove user from selection.
+        } else if (type == "selected") {
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(TAG, "onClick: Removed user: " + userId);
+                    users.remove(i);
+                    onClickListener.selectedUsers(users);
                 }
             });
         }
 
         Glide.with(uCtx)
-                .load(users.get(i).getImgUrl())
+                .load(users.get(i).getImage())
                 .into(holder.userImage);
 
         holder.userName.setText(users.get(i).getFullname());
@@ -124,7 +171,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public int getItemCount() {
-        if(users != null){
+        if (users != null) {
             return users.size();
         } else {
             return 0;
@@ -140,7 +187,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         private Button declineBtn;
         private CardView cardView;
 
-        public UserViewHolder(@NonNull View itemView){
+        public UserViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.cardView = itemView.findViewById(R.id.user_card_card_view);
@@ -149,7 +196,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             this.userEmail = itemView.findViewById(R.id.user_card_email);
             this.acceptBtn = itemView.findViewById(R.id.user_card_accept);
             this.declineBtn = itemView.findViewById(R.id.user_card_decline);
-
 
 
         }

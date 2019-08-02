@@ -19,4 +19,8 @@ public class Keys {
 
     public static final String USER_KEY = "user";
     public static final String EVENT_KEY = "event";
+    public static final String FRIEND_KEY = "friend";
+    public static final String SENDER_KEY = "sender";
+    public static final String REQUEST_KEY = "request";
+    public static final String RECIEVER_KEY = "reciever";
 }
