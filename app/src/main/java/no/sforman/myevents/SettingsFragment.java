@@ -273,8 +273,9 @@ class SettingsFragment extends Fragment {
                         // Get documentId for event.
                         final String documentId = doc.getId();
 
+                        final FirebaseFirestore docRef = FirebaseFirestore.getInstance();
                         // Get everyone invited to event
-                        db.collection(Keys.EVENT_KEY)
+                        docRef.collection(Keys.EVENT_KEY)
                                 .document(documentId)
                                 .collection(Keys.INVITED_KEY)
                                 .get()
@@ -293,8 +294,9 @@ class SettingsFragment extends Fragment {
                                     }
                                 });
 
+                        final FirebaseFirestore subEvent = FirebaseFirestore.getInstance();
                         // Get all events under self
-                        db.collection(Keys.USER_KEY)
+                        subEvent.collection(Keys.USER_KEY)
                                 .document(userId)
                                 .collection(Keys.EVENT_KEY)
                                 .get()
@@ -329,8 +331,8 @@ class SettingsFragment extends Fragment {
     }
 
     private void deleteEvent(final String id) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Keys.EVENT_KEY)
+        FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+        eventDb.collection(Keys.EVENT_KEY)
                 .document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -343,8 +345,8 @@ class SettingsFragment extends Fragment {
     }
 
     private void deleteSubDocs(final String col, final String docId, final String subCol, final String subDocId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(col)
+        FirebaseFirestore subDb = FirebaseFirestore.getInstance();
+        subDb.collection(col)
                 .document(docId)
                 .collection(subCol)
                 .document(subDocId)
@@ -377,8 +379,8 @@ class SettingsFragment extends Fragment {
     }
 
     private void removeUserFromFriends() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Keys.USER_KEY)
+        FirebaseFirestore friendDb = FirebaseFirestore.getInstance();
+        friendDb.collection(Keys.USER_KEY)
                 .document(userId)
                 .collection(Keys.FRIEND_KEY)
                 .get()
@@ -397,8 +399,8 @@ class SettingsFragment extends Fragment {
     }
 
     public void deleteUser() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Keys.USER_KEY)
+        FirebaseFirestore userDb = FirebaseFirestore.getInstance();
+        userDb.collection(Keys.USER_KEY)
                 .document(userId)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
