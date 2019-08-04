@@ -162,7 +162,11 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         }
     }
 
-
+    /*
+    Initial search method used, but required exact matching name instead of character by
+    character search. New method handles search in-app. May cause problems if database gets big
+    enough?
+     */
     private void initSearch(String search) {
         userList.clear();
 
