@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 
 public class NoticeFragment extends Fragment {
 
-    public static final String TAG = "NoticeFragment";
-    View view;
+    private static final String TAG = "NoticeFragment";
+    private View view;
     private String noticeText;
     private TextView noticeHolder;
 

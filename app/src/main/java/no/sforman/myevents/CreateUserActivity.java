@@ -39,12 +39,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CreateUserActivity extends AppCompatActivity {
 
-    public static final String TAG = "CreateUserActivity";
-    public static final int PICK_IMAGE = 1;
+    private static final String TAG = "CreateUserActivity";
+    private static final int PICK_IMAGE = 1;
 
     // Connectivity
     private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
 
     // UI
@@ -122,7 +122,7 @@ public class CreateUserActivity extends AppCompatActivity {
         storageRef = mStorage.getReference();
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -141,7 +141,7 @@ public class CreateUserActivity extends AppCompatActivity {
         return connected;
     }
 
-    public void initUserData(FirebaseUser u) {
+    private void initUserData(FirebaseUser u) {
         Log.d(TAG, "initUserData: ");
         Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
         progressBar.setVisibility(View.INVISIBLE);
@@ -230,7 +230,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
     private boolean isValidEmail(String e) {
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 

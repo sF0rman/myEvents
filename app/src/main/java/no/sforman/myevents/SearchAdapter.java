@@ -19,7 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
-    public static final String TAG = "SearchAdapter";
+    private static final String TAG = "SearchAdapter";
 
     private Context sCtx;
     private ArrayList<User> users;
@@ -32,7 +32,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         this.selectionListener = listener;
     }
 
-    SelectionListener selectionListener;
+    private SelectionListener selectionListener;
     public interface SelectionListener{
         void userSelected(String uId);
     }
@@ -44,8 +44,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View searchCard = LayoutInflater.from(sCtx)
                 .inflate(R.layout.card_search, parent, false);
-        SearchViewHolder viewHolder = new SearchViewHolder(searchCard);
-        return viewHolder;
+        return new SearchViewHolder(searchCard);
     }
 
     @Override

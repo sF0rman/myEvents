@@ -39,11 +39,9 @@ import java.util.Map;
 
 public class AddContactActivity extends AppCompatActivity implements SearchAdapter.SelectionListener, UserAdapter.ResponseListener {
 
-    public static final String TAG = "AddContactActivity";
+    private static final String TAG = "AddContactActivity";
 
-    // Connectivity
-    private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
     // UI
     private EditText searchBar;
@@ -51,20 +49,20 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     private TextView nothingSelected;
     private RecyclerView selectedUsers;
     private RecyclerView searchResult;
-    private Button cancelBtn;
     private Button acceptBtn;
+    private Button cancelBtn;
 
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
     private String userId;
-    SearchAdapter searchAdapter;
-    UserAdapter selectedAdapter;
+    private SearchAdapter searchAdapter;
+    private UserAdapter selectedAdapter;
 
     // users
-    private ArrayList<User> allUsers = new ArrayList<>();
-    private ArrayList<User> userList = new ArrayList<>();
+    private final ArrayList<User> allUsers = new ArrayList<>();
+    private final ArrayList<User> userList = new ArrayList<>();
     private ArrayList<User> selectedUserList = new ArrayList<>();
 
     @Override
@@ -358,13 +356,14 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         finish();
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        connected = (networkInfo != null && networkInfo.isConnected());
+        // Connectivity
+        boolean connected = (networkInfo != null && networkInfo.isConnected());
         if (!connected) {
             getSupportFragmentManager()
                     .beginTransaction()

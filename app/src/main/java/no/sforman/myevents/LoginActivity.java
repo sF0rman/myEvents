@@ -23,11 +23,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final String TAG = "LoginActivity";
+    private static final String TAG = "LoginActivity";
 
     // Connectivity
     private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
     // UI
     private EditText emailInput;
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -140,17 +140,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isValidEmail(String e) {
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
     private boolean inputPassword(String p) {
         Log.d(TAG, "inputPassword: ");
-        if (p.length() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return p.length() > 0;
     }
 
     private void login(String email, String password) {

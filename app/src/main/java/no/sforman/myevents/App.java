@@ -8,11 +8,11 @@ import android.util.Log;
 
 public class App extends Application {
 
-    public static final String TAG = "App";
+    private static final String TAG = "App";
 
-    public static final String EVENT_CHANNEL = "event";
-    public static final String INVITE_CHANNEL = "invite";
-    public static final String FRIEND_CHANNEL = "friend";
+    private static final String EVENT_CHANNEL = "event";
+    private static final String INVITE_CHANNEL = "invite";
+    private static final String FRIEND_CHANNEL = "friend";
 
     @Override
     public void onCreate() {

@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
-    public static final String TAG = "DatePickerFragment";
+    private static final String TAG = "DatePickerFragment";
 
     private OnDateChosenListener dListener = null;
     public interface OnDateChosenListener {

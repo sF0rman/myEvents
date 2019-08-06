@@ -49,68 +49,69 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CreateEventActivity extends AppCompatActivity implements WarningDialogFragment.WarningListener {
 
-    public static final String TAG = "CreateEventActivity";
+    private static final String TAG = "CreateEventActivity";
 
-    Intent intent;
-    String eventId;
+    private Intent intent;
+    private String eventId;
 
     // Connectivity
     private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
     //UI
-    FrameLayout layout;
-    ProgressBar progressBar;
-    MapFragment mapFragment;
-    EditText name;
-    EditText description;
-    EditText startDate;
-    EditText startTime;
-    EditText endDate;
-    EditText endTime;
-    EditText location;
-    EditText reminderDate;
-    EditText reminderTime;
-    CheckBox isOnline;
-    CheckBox hasReminder;
-    TextView nameError;
-    TextView descriptionError;
-    TextView timeError;
-    TextView locationError;
-    TextView reminderError;
-    TextView isOnlineError;
-    FrameLayout onlineImg;
-    Button createEvent;
-    Button deleteEvent;
+    private FrameLayout layout;
+    private ProgressBar progressBar;
+    private MapFragment mapFragment;
+    private EditText name;
+    private EditText description;
+    private EditText startDate;
+    private EditText startTime;
+    private EditText endDate;
+    private EditText endTime;
+    private EditText location;
+    private EditText reminderDate;
+    private EditText reminderTime;
+    private CheckBox isOnline;
+    private CheckBox hasReminder;
+    private TextView nameError;
+    private TextView descriptionError;
+    private TextView timeError;
+    private TextView locationError;
+    private TextView reminderError;
+    private TextView isOnlineError;
+    private FrameLayout onlineImg;
+    private Button createEvent;
+    private Button deleteEvent;
 
     // Places
-    public static final int AUTOCOMPLETE_REQUEST_CODE = 1;
-    LatLng placeLatLng;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private LatLng placeLatLng;
 
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
     //Event variables
-    String eventOwnerId;
-    String eventName;
-    String eventDescription;
-    String eventLocation;
-    String eventAddress;
-    Calendar reminderCal = Calendar.getInstance();
-    long reminderKey;
-    Calendar startCal = Calendar.getInstance();
-    Calendar endCal = Calendar.getInstance();
-    Calendar today = Calendar.getInstance();
-    GeoPoint eventGeoPoint;
+    private String eventOwnerId;
+    private String eventName;
+    private String eventDescription;
+    private String eventLocation;
+    private String eventAddress;
+    private Calendar reminderCal = Calendar.getInstance();
+    private long reminderKey;
+    private Calendar startCal = Calendar.getInstance();
+    private Calendar endCal = Calendar.getInstance();
+    private Calendar today = Calendar.getInstance();
+    private GeoPoint eventGeoPoint;
 
-    DateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy");
-    DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-    DateFormat dateTimeFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm");
+    private DateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy", Locale.getDefault());
+    private DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private DateFormat dateTimeFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +148,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         super.onResume();
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -303,7 +304,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     }
 
-    public boolean validInput() {
+    private boolean validInput() {
         Log.d(TAG, "validInput: ");
         clearErrors();
         eventName = name.getText().toString();
@@ -360,7 +361,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         return isOk;
     }
 
-    public void clearErrors() {
+    private void clearErrors() {
         Log.d(TAG, "clearErrors: ");
         nameError.setText("");
         descriptionError.setText("");
@@ -399,10 +400,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         }
     }
 
-    public void showDatePickerDialog(final EditText text, final Calendar cal) {
+    private void showDatePickerDialog(final EditText text, final Calendar cal) {
         Log.d(TAG, "showDatePickerDialog: Open");
-        DialogFragment datePicker = new DatePickerFragment();
-        ((DatePickerFragment) datePicker).setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
+        DatePickerFragment datePicker = new DatePickerFragment();
+        datePicker.setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
             @Override
             public void onDateChosen(int year, int month, int day) {
                 //text.setText(String.format("%02d/%02d/%04d", day, month+1, year));
@@ -421,10 +422,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         datePicker.show(getSupportFragmentManager(), "DatePicker");
     }
 
-    public void showTimePickerDialog(final EditText text, final Calendar cal) {
+    private void showTimePickerDialog(final EditText text, final Calendar cal) {
         Log.d(TAG, "showTimePickerDialog: Open");
-        DialogFragment timePicker = new TimePickerFragment();
-        ((TimePickerFragment) timePicker).setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
+        TimePickerFragment timePicker = new TimePickerFragment();
+        timePicker.setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
             @Override
             public void onTimeChosen(int hour, int min) {
                 cal.set(Calendar.HOUR_OF_DAY, hour);
@@ -449,13 +450,13 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
 
-    public void createEvent() {
+    private void createEvent() {
         Log.d(TAG, "createEventObject: Started");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Create event object
         final Event event;
-        final long rid = (long) today.getTimeInMillis();
+        final long rid = today.getTimeInMillis();
         if (isOnline.isChecked()) {
             event = new Event(eventName,
                     eventOwnerId,
@@ -573,7 +574,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 });
     }
 
-    public void makeReminder(String event, long reminder) {
+    private void makeReminder(String event, long reminder) {
         Log.d(TAG, "makeReminder: Started");
 
         Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
@@ -583,7 +584,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         i.putExtra("name", eventName);
         i.putExtra("channel", "event");
 
-        PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
+        PendingIntent nIntent = PendingIntent.getBroadcast(
                 getApplicationContext(),
                 (int) reminder, i,
                 PendingIntent.FLAG_CANCEL_CURRENT
@@ -768,7 +769,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         Log.d(TAG, "onCompleted: ");
     }
 
-    public void deleteSubCollection(final String id) {
+    private void deleteSubCollection(final String id) {
         Log.d(TAG, "deleteSubCollection: ");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("event")

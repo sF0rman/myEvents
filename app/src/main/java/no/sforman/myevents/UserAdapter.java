@@ -21,7 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-    public static final String TAG = "UserAdapter";
+    private static final String TAG = "UserAdapter";
 
     private Context uCtx;
     private String type = "default";
@@ -67,7 +67,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         this.onClickListener = listener;
     }
 
-    ResponseListener onClickListener;
+    private ResponseListener onClickListener;
 
     public interface ResponseListener {
         void respondToRequest(String requestId, boolean wasAccepted);
@@ -80,8 +80,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View userCard = LayoutInflater.from(uCtx)
                 .inflate(R.layout.card_user, parent, false);
-        UserViewHolder viewHolder = new UserViewHolder(userCard);
-        return viewHolder;
+        return new UserViewHolder(userCard);
     }
 
     @Override

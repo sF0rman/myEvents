@@ -23,11 +23,11 @@ public class User implements Parcelable {
         return id;
     }
 
-    public String getFirstname() {
+    private String getFirstname() {
         return firstname;
     }
 
-    public String getSurname() {
+    private String getSurname() {
         return surname;
     }
 
@@ -45,7 +45,7 @@ public class User implements Parcelable {
 
 
 
-    protected User(Parcel in) {
+    private User(Parcel in) {
         id = in.readString();
         firstname = in.readString();
         surname = in.readString();

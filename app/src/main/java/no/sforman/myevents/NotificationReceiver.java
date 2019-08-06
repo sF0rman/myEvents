@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "NotificationReciever";
+    private static final String TAG = "NotificationReciever";
 
     private String id;
     private String reminder;

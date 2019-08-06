@@ -116,23 +116,6 @@
     </style>
 
 
-    <style name="AcceptButton" parent="TextAppearance.AppCompat.Widget.Button">
-        <item name="android:textColor">@color/darkColor</item>
-        <item name="android:icon">@drawable/ic_check</item>
-        <item name="android:background">@drawable/btn_green</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:layout_margin">2dp</item>
-    </style>
-
-
-    <style name="CancelButton" parent="TextAppearance.AppCompat.Widget.Button">
-        <item name="android:textColor">@color/darkColor</item>
-        <item name="android:icon">@drawable/ic_cancel</item>
-        <item name="android:background">@drawable/btn_red</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:layout_margin">2dp</item>
-    </style>
-
     <style name="Progressbar" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:color">@color/orangePrimary</item>
         <item name="android:layout_marginTop">-6dp</item>

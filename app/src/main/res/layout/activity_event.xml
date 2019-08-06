@@ -26,7 +26,6 @@
             android:layout_height="wrap_content" />
 
         <ProgressBar
-            android:id="@+id/event_progress_bar"
             style="@style/Progressbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,6 +39,7 @@
             android:visibility="gone">
 
             <ImageView
+                android:contentDescription="Placeholder for offline events"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_gravity="center_vertical"
@@ -72,6 +72,7 @@
                     android:text="@string/loading_event" />
 
                 <LinearLayout
+                    android:baselineAligned="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="1">
@@ -87,7 +88,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:gravity="left"
+                            android:gravity="start"
                             android:text="@string/loading_generic" />
 
                         <TextView
@@ -95,7 +96,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:gravity="left"
+                            android:gravity="start"
                             android:text="@string/loading_generic" />
 
                     </LinearLayout>
@@ -111,14 +112,14 @@
                             android:id="@+id/event_start_time"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="right"
+                            android:gravity="end"
                             android:text="@string/loading_generic" />
 
                         <TextView
                             android:id="@+id/event_end_time"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="right"
+                            android:gravity="end"
                             android:text="@string/loading_generic" />
                     </LinearLayout>
 
@@ -147,7 +148,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -155,7 +156,6 @@
                         android:id="@+id/event_reminder_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:text="@string/msg_not_set" />
 
@@ -165,6 +165,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="setReminder"
+                        android:gravity="end"
                         android:text="@string/btn_add_reminder" />
 
                 </LinearLayout>
@@ -222,7 +223,6 @@
                         android:text="@string/btn_maybe" />
 
                     <Button
-                        android:id="@+id/event_rsvp_not_going"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -289,7 +289,6 @@
                     android:layout_weight="1">
 
                     <Button
-                        android:id="@+id/event_ppl_going"
                         style="@style/PrimaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -297,7 +296,6 @@
                         android:text="@string/btn_going" />
 
                     <Button
-                        android:id="@+id/event_ppl_maybe"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -305,7 +303,6 @@
                         android:text="@string/btn_maybe" />
 
                     <Button
-                        android:id="@+id/event_ppl_invited"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -315,25 +312,21 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/event_going_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/temp_ppl_going" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_recycler_people_going"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_recycler_people_maybe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_recycler_people_invited"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />

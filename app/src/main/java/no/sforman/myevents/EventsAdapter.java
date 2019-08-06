@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
-    public static final String TAG = "EventsAdapter";
+    private static final String TAG = "EventsAdapter";
     private Context mCtx;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm", Locale.getDefault());
 
     private ArrayList<Event> events;
 
@@ -34,8 +35,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View eventCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_events, parent, false);
-        EventViewHolder viewHolder = new EventViewHolder(eventCard);
-        return viewHolder;
+        return new EventViewHolder(eventCard);
     }
 
     @Override

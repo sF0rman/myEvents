@@ -38,17 +38,18 @@ import com.google.firebase.firestore.GeoPoint;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class EventActivity extends AppCompatActivity {
 
-    public static final String TAG = "EventActivity";
+    private static final String TAG = "EventActivity";
 
-    SimpleDateFormat dateTimeFormat = new SimpleDateFormat("E, dd. MMM yyyy HH:mm");
-    Intent intent;
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("E, dd. MMM yyyy HH:mm", Locale.getDefault());
+    private Intent intent;
 
     // Connectivity
     private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
     // UI Widgets
     private MapFragment mapFragment;
@@ -81,7 +82,7 @@ public class EventActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
-    String userId;
+    private String userId;
 
     // Event variables
     private String eventId;
@@ -91,17 +92,17 @@ public class EventActivity extends AppCompatActivity {
     private Calendar end = Calendar.getInstance();
     private String owner;
     private long reminderKey;
-    String reminderTime;
-    Calendar reminderCal;
+    private String reminderTime;
+    private Calendar reminderCal;
     private String location;
     private String address;
     private static final String isOnlineText = "Online event";
     private long startInMillis;
     private long endInMillies;
-    boolean isOnline;
-    ArrayList goingPeople = new ArrayList();
-    ArrayList maybePeople = new ArrayList();
-    ArrayList invitedPeople = new ArrayList();
+    private boolean isOnline;
+    private ArrayList goingPeople = new ArrayList();
+    private ArrayList maybePeople = new ArrayList();
+    private ArrayList invitedPeople = new ArrayList();
 
     private GeoPoint geoPoint;
 
@@ -388,7 +389,7 @@ public class EventActivity extends AppCompatActivity {
         i.putExtra("name", name);
         i.putExtra("channel", "event");
 
-        PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
+        PendingIntent nIntent = PendingIntent.getBroadcast(
                 getApplicationContext(),
                 (int) reminderKey, i,
                 PendingIntent.FLAG_CANCEL_CURRENT
@@ -566,7 +567,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="12px">
+        android:paddingBottom="12dp">
 
 
         <androidx.cardview.widget.CardView
@@ -30,7 +31,6 @@
                     android:text="@string/title_notifications" />
 
                 <Button
-                    android:id="@+id/settings_notification_settings"
                     style="@style/PrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -46,7 +46,6 @@
                     android:weightSum="3">
 
                     <Button
-                        android:id="@+id/settings_event_channel"
                         style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -56,7 +55,6 @@
                         android:text="@string/btn_events" />
 
                     <Button
-                        android:id="@+id/settings_invite_channel"
                         style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -66,7 +64,6 @@
                         android:text="@string/btn_invites" />
 
                     <Button
-                        android:id="@+id/settings_friend_channel"
                         style="@style/SecondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -157,7 +154,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_first_name"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:inputType="textPersonName"
+                    android:importantForAutofill="no"
+                    tools:targetApi="o" />
 
                 <TextView
                     android:id="@+id/settings_firstname_error"
@@ -172,7 +172,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_surname"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:inputType="textPersonName" />
 
                 <TextView
                     android:id="@+id/settings_surname_error"
@@ -187,7 +188,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_email"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:inputType="textEmailAddress" />
 
                 <TextView
                     android:id="@+id/settings_email_error"
@@ -262,7 +264,6 @@
 
 
                 <LinearLayout
-                    android:id="@+id/settings_confirm_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"

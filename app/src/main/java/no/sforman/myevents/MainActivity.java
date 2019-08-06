@@ -10,10 +10,12 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -40,12 +42,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.SettingsListener {
 
-    Intent intent;
-    public static final String TAG = "MainActivity";
+    private Intent intent;
+    private static final String TAG = "MainActivity";
 
     // Connectivity
     private boolean connected = true;
-    NoticeFragment noInternetWarning;
+    private NoticeFragment noInternetWarning;
 
     //UI
     private DrawerLayout drawer;
@@ -70,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private StorageReference storageRef;
 
     // Fragments
-    EventsFragment eventsFragment;
-    SettingsFragment settingsFragment;
-    ContactFragment contactFragment;
+    private EventsFragment eventsFragment;
+    private SettingsFragment settingsFragment;
+    private ContactFragment contactFragment;
 
 
     @Override
@@ -174,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -235,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void signOut() {
         Log.d(TAG, "signOut: ");
-        mAuth.getInstance().signOut();
+        FirebaseAuth.getInstance().signOut();
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
         finish();
@@ -292,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         finish();
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     public void notificationSettings(View v) {
         Log.d(TAG, "notificationSettings: ");
         Intent i = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
@@ -332,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "testChannelFriends: testing friend channel");
     }
 
-    public void sendNotification(NotificationCompat.Builder build) {
+    private void sendNotification(NotificationCompat.Builder build) {
         Log.d(TAG, "sendNotification: ");
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         managerCompat.notify(0, build.build());

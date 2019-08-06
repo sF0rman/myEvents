@@ -34,7 +34,7 @@ import java.util.Map;
 
 class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
-    public static final String TAG = "ContactFragment";
+    private static final String TAG = "ContactFragment";
 
     // Connectivity
     boolean connected = true;
@@ -52,12 +52,12 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    private ArrayList<User> userList = new ArrayList<>();
+    private final ArrayList<User> userList = new ArrayList<>();
 
     // Firebase
-    FirebaseAuth mAuth;
-    FirebaseUser currentUser;
-    String userId;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private String userId;
 
 
     @Nullable

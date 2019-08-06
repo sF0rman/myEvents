@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    public static final String TAG = "MapFragment";
+    private static final String TAG = "MapFragment";
 
 
     private String mapKey;
@@ -38,7 +38,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-    public void initMap(Bundle savedInstanceState){
+    private void initMap(Bundle savedInstanceState){
         Log.d(TAG, "initMap: ");
         mapKey = getString(R.string.events_maps_key);
         Log.d(TAG, "initMap: got key: " + mapKey);

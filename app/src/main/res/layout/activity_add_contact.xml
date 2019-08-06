@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="120dp"
             android:orientation="vertical">
 
@@ -68,10 +68,6 @@
     </ScrollView>
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -103,7 +99,10 @@
                     style="@style/Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_search_contact" />
+                    android:hint="@string/hint_search_contact"
+                    android:inputType="text"
+                    android:importantForAutofill="no"
+                    tools:targetApi="o" />
             </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -114,6 +113,5 @@
         </LinearLayout>
 
 
-    </FrameLayout>
 
 </FrameLayout>

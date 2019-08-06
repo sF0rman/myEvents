@@ -16,8 +16,8 @@
         android:layout_gravity="center_vertical"
         android:id="@+id/notice_text"
         android:text="@string/msg_temp"
-        android:textSize="16dp"
-        android:layout_marginLeft="8dp"
+        android:textSize="16sp"
+        android:layout_marginStart="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

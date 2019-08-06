@@ -34,8 +34,8 @@ import java.util.Calendar;
 
 class EventsFragment extends Fragment {
 
-    public static final String TAG = "EventsFragment";
-    Calendar today = Calendar.getInstance();
+    private static final String TAG = "EventsFragment";
+    private Calendar today = Calendar.getInstance();
 
     //UI
     private FloatingActionButton fab;
@@ -49,13 +49,13 @@ class EventsFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    private ArrayList<Event> eventList = new ArrayList<Event>();
+    private ArrayList<Event> eventList = new ArrayList<>();
 
     // Firebase
-    FirebaseFirestore db;
-    FirebaseAuth mAuth;
-    FirebaseUser currentUser;
-    String userId;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private String userId;
 
     @Nullable
     @Override
@@ -64,7 +64,7 @@ class EventsFragment extends Fragment {
         if (container == null) {
             return null;
         }
-
+        eventList.clear();
         layout = (ConstraintLayout) inflater.inflate(R.layout.fragment_event, container, false);
 
         progressBar = layout.findViewById(R.id.event_fragment_progressbar);

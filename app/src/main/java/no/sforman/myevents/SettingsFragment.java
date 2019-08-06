@@ -40,10 +40,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 class SettingsFragment extends Fragment {
 
-    public static final String TAG = "SettingsFragment";
+    private static final String TAG = "SettingsFragment";
 
     // UI
-    View view;
+    private View view;
     private Button userEdit;
     private Button userChangePassword;
 
@@ -85,7 +85,7 @@ class SettingsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    SettingsListener settingsListener;
+    private SettingsListener settingsListener;
 
     public interface SettingsListener {
         void onUserUpdated();
@@ -262,7 +262,7 @@ class SettingsFragment extends Fragment {
         warning.show(getFragmentManager(), "WarningDeleteEvents");
     }
 
-    public void deleteAllEvents() {
+    private void deleteAllEvents() {
         Log.d(TAG, "deleteAllEvents: Started");
         Log.d(TAG, "onCompleted: User confirmed!");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -414,7 +414,7 @@ class SettingsFragment extends Fragment {
                 });
     }
 
-    public void deleteUser() {
+    private void deleteUser() {
         Log.d(TAG, "deleteUser: ");
         FirebaseFirestore userDb = FirebaseFirestore.getInstance();
         userDb.collection(Keys.USER_KEY)
@@ -742,7 +742,7 @@ class SettingsFragment extends Fragment {
 
     private boolean isValidEmail(String e) {
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
