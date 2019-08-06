@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.DatePicker;
 
 import androidx.fragment.app.DialogFragment;
@@ -12,17 +13,21 @@ import androidx.fragment.app.DialogFragment;
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
+    public static final String TAG = "DatePickerFragment";
+
     private OnDateChosenListener dListener = null;
     public interface OnDateChosenListener {
         void onDateChosen(int year, int month, int day);
     }
 
     public void setOnDateChosenListener(OnDateChosenListener listener){
+        Log.d(TAG, "setOnDateChosenListener: ");
         dListener = listener;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateDialog: ");
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);

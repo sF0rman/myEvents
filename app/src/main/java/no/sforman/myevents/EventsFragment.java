@@ -60,7 +60,7 @@ class EventsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ");
+        Log.d(TAG, "onCreateView: Lifecycle");
         if (container == null) {
             return null;
         }
@@ -78,24 +78,26 @@ class EventsFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart:");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         initFire();
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume:");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     @Override
     public void onStop() {
+        Log.d(TAG, "onStop: Lifecycle");
         super.onStop();
     }
 
 
     private void initFire() {
+        Log.d(TAG, "initFire: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -109,6 +111,7 @@ class EventsFragment extends Fragment {
     }
 
     private void getEvents() {
+        Log.d(TAG, "getEvents: ");
         eventList.clear();
         progressBar.setVisibility(View.VISIBLE);
         db = FirebaseFirestore.getInstance();
@@ -168,6 +171,7 @@ class EventsFragment extends Fragment {
     }
 
     private void initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: ");
         recyclerView = layout.findViewById(R.id.events_fragment_recycler_view);
         adapter = new EventsAdapter(getContext(), eventList);
         recyclerView.setAdapter(adapter);
@@ -176,11 +180,13 @@ class EventsFragment extends Fragment {
     }
 
     private void initFab() {
+        Log.d(TAG, "initFab: ");
         fab = layout.findViewById(R.id.event_add_event_fab);
 
     }
 
     public void getMyEvents() {
+        Log.d(TAG, "getMyEvents: ");
         subAll.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         subAll.setTextColor(ContextCompat.getColor(getContext(), R.color.lightSecondary));
         subMine.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
@@ -243,6 +249,7 @@ class EventsFragment extends Fragment {
     }
 
     public void getAllEvents() {
+        Log.d(TAG, "getAllEvents: ");
         subAll.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         subAll.setTextColor(ContextCompat.getColor(getContext(), R.color.lightPrimary));
         subMine.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);

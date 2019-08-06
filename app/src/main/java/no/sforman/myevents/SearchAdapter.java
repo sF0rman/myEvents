@@ -41,6 +41,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View searchCard = LayoutInflater.from(sCtx)
                 .inflate(R.layout.card_search, parent, false);
         SearchViewHolder viewHolder = new SearchViewHolder(searchCard);
@@ -49,6 +50,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int i) {
+        Log.d(TAG, "onBindViewHolder: Lifecycle");
         final String userId = users.get(i).getId();
         final String name = users.get(i).getFullname();
         final String email = users.get(i).getEmail();
@@ -80,6 +82,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: ");
         if(users != null){
             return users.size();
         } else {
@@ -97,6 +100,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
+            Log.d(TAG, "SearchViewHolder: Lifecycle");
 
             this.card = itemView.findViewById(R.id.search_card_card_view);
             this.image = itemView.findViewById(R.id.search_card_image);

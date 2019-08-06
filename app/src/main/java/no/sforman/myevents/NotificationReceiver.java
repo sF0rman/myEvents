@@ -22,6 +22,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive: Lifecycle");
 
         id = intent.getStringExtra("id");
         reminder = intent.getStringExtra("reminder");

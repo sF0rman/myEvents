@@ -3,12 +3,12 @@ package no.sforman.myevents;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.Log;
 
 public class App extends Application {
+
+    public static final String TAG = "App";
 
     public static final String EVENT_CHANNEL = "event";
     public static final String INVITE_CHANNEL = "invite";
@@ -22,6 +22,7 @@ public class App extends Application {
     }
 
     private void createNotificationChannel() {
+        Log.d(TAG, "createNotificationChannel: Lifecycle");
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

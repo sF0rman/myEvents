@@ -114,7 +114,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -125,7 +125,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         if (isOnline()) {
             initFirebase();
@@ -143,11 +143,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -166,12 +167,14 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     private void initFirebase() {
+        Log.d(TAG, "initFirebase: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         eventOwnerId = currentUser.getUid();
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         layout = findViewById(R.id.create_event_layout);
         progressBar = findViewById(R.id.create_event_progress);
         name = findViewById(R.id.create_event_name_text);
@@ -234,6 +237,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     private void initPlaces() {
+        Log.d(TAG, "initPlaces: ");
         String mapKey = getString(R.string.events_maps_key);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.create_event_map_fragment);
         Places.initialize(getApplicationContext(), mapKey);
@@ -241,6 +245,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     public void findLocation(View v) {
+        Log.d(TAG, "findLocation: ");
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.ADDRESS);
 
@@ -253,6 +258,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
@@ -298,6 +304,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     public boolean validInput() {
+        Log.d(TAG, "validInput: ");
         clearErrors();
         eventName = name.getText().toString();
         eventDescription = description.getText().toString();
@@ -354,6 +361,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     public void clearErrors() {
+        Log.d(TAG, "clearErrors: ");
         nameError.setText("");
         descriptionError.setText("");
         timeError.setText("");
@@ -363,6 +371,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     public void setDateTime(View v) {
+        Log.d(TAG, "setDateTime: ");
         switch (v.getId()) {
             case R.id.create_event_reminder_date:
                 showDatePickerDialog(reminderDate, reminderCal);
@@ -605,6 +614,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
     private void getEventData(String id) {
+        Log.d(TAG, "getEventData: ");
         hasReminder.setVisibility(View.GONE);
         reminderError.setVisibility(View.GONE);
         deleteEvent.setVisibility(View.VISIBLE);
@@ -705,6 +715,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     public void onCompleted(boolean b) {
+        Log.d(TAG, "onCompleted: ");
         if (b) {
             Log.d(TAG, "onDialogPositiveClick: Accepted");
             final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -754,10 +765,11 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     public void onCompleted(boolean b, String email) {
-
+        Log.d(TAG, "onCompleted: ");
     }
 
     public void deleteSubCollection(final String id) {
+        Log.d(TAG, "deleteSubCollection: ");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("event")
                 .document(eventId)

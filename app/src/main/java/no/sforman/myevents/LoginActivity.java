@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         if (isOnline()) {
             initFirebase();
@@ -61,11 +61,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         progressBar = findViewById(R.id.login_progress);
         emailInput = findViewById(R.id.login_input_email);
         passwordInput = findViewById(R.id.login_input_password);
@@ -73,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
         super.onBackPressed();
         Intent exit = new Intent(Intent.ACTION_MAIN);
         exit.addCategory(Intent.CATEGORY_HOME);
@@ -82,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -100,12 +103,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initFirebase() {
+        Log.d(TAG, "initFirebase: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         updateUserData(currentUser);
     }
 
     private void updateUserData(FirebaseUser user) {
+        Log.d(TAG, "updateUserData: ");
         if (user != null) {
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
@@ -116,6 +121,7 @@ public class LoginActivity extends AppCompatActivity {
     // Handle buttons
 
     public void onLogin(View v) {
+        Log.d(TAG, "onLogin: ");
         if (isOnline()) {
             progressBar.setVisibility(View.VISIBLE);
             String e = emailInput.getText().toString();
@@ -133,11 +139,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private boolean isValidEmail(String e) {
+        Log.d(TAG, "isValidEmail: ");
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
     private boolean inputPassword(String p) {
+        Log.d(TAG, "inputPassword: ");
         if (p.length() > 0) {
             return true;
         } else {
@@ -146,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(String email, String password) {
+        Log.d(TAG, "login: ");
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -168,12 +177,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onCreateUser(View v) {
+        Log.d(TAG, "onCreateUser: ");
         progressBar.setVisibility(View.VISIBLE);
         Intent i = new Intent(LoginActivity.this, CreateUserActivity.class);
         startActivity(i);
     }
 
     public void onForgotPassword(View v) {
+        Log.d(TAG, "onForgotPassword: ");
         if (isOnline()) {
             WarningDialogFragment warning = new WarningDialogFragment(true, new WarningDialogFragment.WarningListener() {
                 @Override

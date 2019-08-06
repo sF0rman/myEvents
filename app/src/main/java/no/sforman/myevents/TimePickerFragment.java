@@ -5,12 +5,15 @@ import android.app.TimePickerDialog;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.TimePicker;
 
 import androidx.fragment.app.DialogFragment;
 
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
+
+    public static final String TAG = "TimePickerFragment";
 
     private OnTimeChosenListener tListener = null;
     public interface OnTimeChosenListener {
@@ -23,6 +26,7 @@ public class TimePickerFragment extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateDialog: Lifecycle");
         // Use the current time as the default values for the picker
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -34,6 +38,7 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        Log.d(TAG, "onTimeSet: ");
         if(tListener != null){
             tListener.onTimeChosen(hourOfDay, minute);
         }

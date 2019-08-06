@@ -107,7 +107,7 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -118,7 +118,7 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         if (isOnline()) {
             initFire();
@@ -137,12 +137,13 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu: ");
         contextMenu = menu;
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.event_menu, menu);
@@ -151,6 +152,7 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: ");
         if (item.getItemId() == R.id.event_edit_event) {
             Intent editEvent = new Intent(this, CreateEventActivity.class);
             editEvent.putExtra("eventId", eventId);
@@ -162,12 +164,14 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
         Intent back = new Intent(this, MainActivity.class);
         startActivity(back);
         finish();
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map_fragment);
@@ -209,6 +213,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void initFire() {
+        Log.d(TAG, "initFire: ");
         mAuth = FirebaseAuth.getInstance();
         try {
             currentUser = mAuth.getCurrentUser();
@@ -220,6 +225,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void getEvent(String id) {
+        Log.d(TAG, "getEvent: ");
         DocumentReference eventRef = db.collection("event").document(id);
         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -398,11 +404,13 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private boolean hasReminder(long id) {
+        Log.d(TAG, "hasReminder: ");
         Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
         return PendingIntent.getBroadcast(getApplicationContext(), (int) id, i, PendingIntent.FLAG_NO_CREATE) != null;
     }
 
     private void getReminder(long id) {
+        Log.d(TAG, "getReminder: ");
         DocumentReference reminderRef = db.collection("event")
                 .document(eventId)
                 .collection("invited")
@@ -428,6 +436,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void getRsvp() {
+        Log.d(TAG, "getRsvp: ");
         final FirebaseFirestore rsvp = FirebaseFirestore.getInstance();
         rsvp.collection("event")
                 .document(eventId)
@@ -558,6 +567,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

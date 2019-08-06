@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initUI();
         initNavigation();
 
-        
+
         // Don't reload fragment if device is rotated.
         if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")) {
             contactFragment = new ContactFragment();
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
 
         // Don't reload fragment if device is rotated.
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initUserData() {
+        Log.d(TAG, "initUserData: ");
         if (currentUser != null) {
             final String uId = currentUser.getUid();
 
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -215,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         intent = getIntent();
 
         drawer = findViewById(R.id.main_drawer);
@@ -230,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initNavigation() {
+        Log.d(TAG, "initNavigation: ");
         setSupportActionBar(toolbar);
         navView.setNavigationItemSelectedListener(this);
 
@@ -239,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initFirebase() {
+        Log.d(TAG, "initFirebase: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance();
@@ -252,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void signOut() {
+        Log.d(TAG, "signOut: ");
         mAuth.getInstance().signOut();
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
@@ -261,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -275,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Navigation Listener
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Log.d(TAG, "onNavigationItemSelected: ");
         switch (menuItem.getItemId()) {
             case R.id.nav_events:
                 eventsFragment = new EventsFragment();
@@ -303,18 +311,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void onAddEvent(View v) {
+        Log.d(TAG, "onAddEvent: ");
         Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
         startActivity(i);
+        finish();
     }
 
     public void notificationSettings(View v) {
-        Log.d(TAG, "notificationSettings: Opening notification settings...");
+        Log.d(TAG, "notificationSettings: ");
         Intent i = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         i.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
         startActivity(i);
     }
 
     public void testChannelEvent(View v) {
+        Log.d(TAG, "testChannelEvent: ");
         NotificationCompat.Builder eventBuild = new NotificationCompat.Builder(this, getString(R.string.channel_event))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_event))
@@ -325,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void testChannelInvite(View v) {
+        Log.d(TAG, "testChannelInvite: ");
         NotificationCompat.Builder inviteBuild = new NotificationCompat.Builder(this, getString(R.string.channel_invite))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_invite))
@@ -335,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void testChannelFriends(View v) {
+        Log.d(TAG, "testChannelFriends: ");
         NotificationCompat.Builder friendBuild = new NotificationCompat.Builder(this, getString(R.string.channel_friend))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_friends))
@@ -345,19 +358,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void sendNotification(NotificationCompat.Builder build) {
+        Log.d(TAG, "sendNotification: ");
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         managerCompat.notify(0, build.build());
     }
 
     public void mEditUser(View v) {
+        Log.d(TAG, "mEditUser: ");
         settingsFragment.editUser();
     }
 
     public void mChangePassword(View v) {
+        Log.d(TAG, "mChangePassword: ");
         settingsFragment.changePassword();
     }
 
     public void mGetAllData(View v) {
+        Log.d(TAG, "mGetAllData: ");
         if (isOnline()) {
             settingsFragment.getAllData();
         } else {
@@ -366,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mDeleteAllEvents(View v) {
+        Log.d(TAG, "mDeleteAllEvents: ");
         if (isOnline()) {
             settingsFragment.callDeleteAllEvents();
         } else {
@@ -374,6 +392,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mDeleteAccount(View v) {
+        Log.d(TAG, "mDeleteAccount: ");
         if (isOnline()) {
             settingsFragment.deleteAccount();
         } else {
@@ -382,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mAcceptChange(View v) {
+        Log.d(TAG, "mAcceptChange: ");
         if (isOnline()) {
             settingsFragment.acceptChange();
         } else {
@@ -391,10 +411,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mCancelChange(View v) {
+        Log.d(TAG, "mCancelChange: ");
         settingsFragment.cancelChange();
     }
 
     public void mGetAllEvents(View v) {
+        Log.d(TAG, "mGetAllEvents: ");
         if (isOnline()) {
             eventsFragment.getAllEvents();
         } else {
@@ -403,6 +425,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mGetMyEvents(View v) {
+        Log.d(TAG, "mGetMyEvents: ");
         if (isOnline()) {
             eventsFragment.getMyEvents();
         } else {
@@ -411,6 +434,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mGetContacts(View v) {
+        Log.d(TAG, "mGetContacts: ");
         if (isOnline()) {
             contactFragment.getMyContacts();
         } else {
@@ -419,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mGetRequests(View v) {
+        Log.d(TAG, "mGetRequests: ");
         if (isOnline()) {
             contactFragment.getMyRequests();
         } else {
@@ -427,11 +452,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mAddContact(View v) {
+        Log.d(TAG, "mAddContact: ");
         contactFragment.addContact();
     }
 
     @Override
     public void onUserUpdated() {
+        Log.d(TAG, "onUserUpdated: ");
         initUserData();
     }
 }

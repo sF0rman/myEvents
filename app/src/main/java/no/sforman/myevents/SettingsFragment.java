@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,7 @@ class SettingsFragment extends Fragment {
     SettingsListener settingsListener;
 
     public interface SettingsListener {
-        public void onUserUpdated();
+        void onUserUpdated();
     }
 
     SettingsFragment(SettingsListener listener) {
@@ -99,14 +98,14 @@ class SettingsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: CreateView");
+        Log.d(TAG, "onCreateView: Lifecycle");
         view = inflater.inflate(R.layout.fragment_settings, container, false);
         return view;
     }
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: Started");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         initUI();
         initFirebase();
@@ -115,13 +114,14 @@ class SettingsFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume: Resumed");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
 
         getUserDetails();
     }
 
     private void initFirebase() {
+        Log.d(TAG, "initFirebase: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
@@ -135,6 +135,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         userEdit = view.findViewById(R.id.settings_edit_user);
         userChangePassword = view.findViewById(R.id.settings_change_password);
         userChangeAccept = view.findViewById(R.id.settings_user_accept);
@@ -164,7 +165,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void getUserDetails() {
-        Log.d(TAG, "getUserDetails: Started");
+        Log.d(TAG, "getUserDetails: ");
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         try {
@@ -203,6 +204,7 @@ class SettingsFragment extends Fragment {
 
 
     public void editUser() {
+        Log.d(TAG, "editUser: ");
         clearErrors();
         editUser = true;
         firstnameInput.setVisibility(View.VISIBLE);
@@ -224,6 +226,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void changePassword() {
+        Log.d(TAG, "changePassword: ");
         clearErrors();
         changePassword = true;
         oldPasswordInput.setVisibility(View.VISIBLE);
@@ -244,6 +247,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void callDeleteAllEvents() {
+        Log.d(TAG, "callDeleteAllEvents: ");
         WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_all_events), new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
@@ -260,7 +264,6 @@ class SettingsFragment extends Fragment {
 
     public void deleteAllEvents() {
         Log.d(TAG, "deleteAllEvents: Started");
-
         Log.d(TAG, "onCompleted: User confirmed!");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -335,6 +338,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void deleteEvent(final String id) {
+        Log.d(TAG, "deleteEvent: ");
         FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
         eventDb.collection(Keys.EVENT_KEY)
                 .document(id)
@@ -349,6 +353,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void deleteSubDocs(final String col, final String docId, final String subCol, final String subDocId) {
+        Log.d(TAG, "deleteSubDocs: ");
         FirebaseFirestore subDb = FirebaseFirestore.getInstance();
         subDb.collection(col)
                 .document(docId)
@@ -369,6 +374,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void deleteAccount() {
+        Log.d(TAG, "deleteAccount: ");
         final WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_account), true, new WarningDialogFragment.WarningListener() {
             @Override
             public void onCompleted(boolean b) {
@@ -388,6 +394,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void removeUserFromFriends() {
+        Log.d(TAG, "removeUserFromFriends: ");
         FirebaseFirestore friendDb = FirebaseFirestore.getInstance();
         friendDb.collection(Keys.USER_KEY)
                 .document(userId)
@@ -408,6 +415,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void deleteUser() {
+        Log.d(TAG, "deleteUser: ");
         FirebaseFirestore userDb = FirebaseFirestore.getInstance();
         userDb.collection(Keys.USER_KEY)
                 .document(userId)
@@ -436,6 +444,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void acceptChange() {
+        Log.d(TAG, "acceptChange: ");
         clearErrors();
 
         if (editUser) {
@@ -450,6 +459,7 @@ class SettingsFragment extends Fragment {
     }
 
     public void cancelChange() {
+        Log.d(TAG, "cancelChange: ");
         clearErrors();
         editUser = false;
         changePassword = false;
@@ -477,6 +487,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void updateUserSettings() {
+        Log.d(TAG, "updateUserSettings: ");
         profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         String newFirstname = firstnameInput.getText().toString();
@@ -628,6 +639,7 @@ class SettingsFragment extends Fragment {
 
 
     private void editSubDocs(final String col, final String docId, final String subCol, final String subDocId, Map<Object, String> data) {
+        Log.d(TAG, "editSubDocs: ");
         FirebaseFirestore esdDb = FirebaseFirestore.getInstance();
         esdDb.collection(col)
                 .document(docId)
@@ -646,6 +658,7 @@ class SettingsFragment extends Fragment {
     }
 
     private void changeUserPassword() {
+        Log.d(TAG, "changeUserPassword: ");
         profileProgressbar.setVisibility(View.VISIBLE);
         final Context context = getContext();
         final String oldPassword = oldPasswordInput.getText().toString();
@@ -700,6 +713,7 @@ class SettingsFragment extends Fragment {
     }
 
     private boolean verifyInput(String f, String s, String e) {
+        Log.d(TAG, "verifyInput: ");
         boolean inputOk = true;
         if (!isValidEmail(e)) {
             inputOk = false;
@@ -727,11 +741,13 @@ class SettingsFragment extends Fragment {
     }
 
     private boolean isValidEmail(String e) {
+        Log.d(TAG, "isValidEmail: ");
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
     private void clearErrors() {
+        Log.d(TAG, "clearErrors: ");
         firstnameError.setText("");
         surnameError.setText("");
         emailError.setText("");

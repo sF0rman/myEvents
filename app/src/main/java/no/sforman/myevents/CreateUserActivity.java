@@ -19,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -73,7 +72,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_user);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -82,7 +81,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         if (isOnline()) {
             initFirebase();
@@ -93,11 +92,12 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         imageUri = null;
         image = findViewById(R.id.create_user_image);
         firstname = findViewById(R.id.create_user_firstname);
@@ -116,12 +116,14 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void initFirebase() {
+        Log.d(TAG, "initFirebase: ");
         mAuth = FirebaseAuth.getInstance();
         mStorage = FirebaseStorage.getInstance();
         storageRef = mStorage.getReference();
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -140,6 +142,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     public void initUserData(FirebaseUser u) {
+        Log.d(TAG, "initUserData: ");
         Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
         progressBar.setVisibility(View.INVISIBLE);
         startActivity(i);
@@ -147,6 +150,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void clearErrors() {
+        Log.d(TAG, "clearErrors: ");
         firstnameError.setText("");
         surnameError.setText("");
         emailError.setText("");
@@ -156,6 +160,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     public void onCreateUser(View v) {
+        Log.d(TAG, "onCreateUser: ");
         if (isOnline()) {
             progressBar.setVisibility(View.VISIBLE);
             clearErrors();
@@ -186,6 +191,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
     private boolean isValidInput(String firstname, String surname, String email, String password,
                                  String password2) {
+        Log.d(TAG, "isValidInput: ");
         boolean isOk = true;
 
         if (firstname.length() < 2) {
@@ -223,11 +229,13 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private boolean isValidEmail(String e) {
+        Log.d(TAG, "isValidEmail: ");
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
     private void createAccount(final String f, final String s, final String e, final String pw) {
+        Log.d(TAG, "createAccount: ");
         mAuth.createUserWithEmailAndPassword(e, pw)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -305,6 +313,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
 
     private void sendEmail(FirebaseUser currentUser) {
+        Log.d(TAG, "sendEmail: ");
         // send email verification
         currentUser.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -318,6 +327,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void populateDatabase(final String f, final String s, final String e, final String uId, final String imageUrl) {
+        Log.d(TAG, "populateDatabase: ");
         // Add user to Firestore database (for use with friends/contacts)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -345,6 +355,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
 
     public void createSetImage(View v) {
+        Log.d(TAG, "createSetImage: ");
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -353,6 +364,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         if (requestCode == PICK_IMAGE) {
             try {
                 imageUri = data.getData();

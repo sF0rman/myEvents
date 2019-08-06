@@ -77,6 +77,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View userCard = LayoutInflater.from(uCtx)
                 .inflate(R.layout.card_user, parent, false);
         UserViewHolder viewHolder = new UserViewHolder(userCard);
@@ -85,7 +86,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final UserViewHolder holder, final int i) {
-        Log.d(TAG, "onBindViewHolder: Started");
+        Log.d(TAG, "onBindViewHolder: Lifecycle");
 
         final String userId = users.get(i).getId();
         final User user = users.get(i);
@@ -171,6 +172,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: ");
         if (users != null) {
             return users.size();
         } else {
@@ -189,6 +191,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
+            Log.d(TAG, "UserViewHolder: Lifecycle");
 
             this.cardView = itemView.findViewById(R.id.user_card_card_view);
             this.userImage = itemView.findViewById(R.id.user_card_image);

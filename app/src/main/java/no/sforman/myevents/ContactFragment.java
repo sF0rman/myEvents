@@ -63,6 +63,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: Lifecycle");
 
         if (container == null) {
             return null;
@@ -83,7 +84,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
         userList.clear();
         getContacts();
@@ -91,11 +92,12 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
     }
 
     private void initFire() {
+        Log.d(TAG, "initFire: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
@@ -109,10 +111,12 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     private void initFab() {
+        Log.d(TAG, "initFab: ");
         fab = layout.findViewById(R.id.contacts_add_contact_fab);
     }
 
     private void getContacts() {
+        Log.d(TAG, "getContacts: ");
         progressBar.setVisibility(View.VISIBLE);
         FirebaseFirestore contactDb = FirebaseFirestore.getInstance();
 
@@ -161,6 +165,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     private void getRequests() {
+        Log.d(TAG, "getRequests: ");
         progressBar.setVisibility(View.VISIBLE);
         final FirebaseFirestore requestDb = FirebaseFirestore.getInstance();
 
@@ -214,6 +219,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
 
     private void initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: ");
         recyclerView = layout.findViewById(R.id.contacts_recycler_view);
         adapter = new UserAdapter(getContext(), userList);
         recyclerView.setAdapter(adapter);
@@ -222,6 +228,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     private void initRequestView(String requestId) {
+        Log.d(TAG, "initRequestView: ");
         recyclerView = layout.findViewById(R.id.contacts_recycler_view);
         adapter = new UserAdapter(getContext(), userList, "request", requestId, this);
         recyclerView.setAdapter(adapter);
@@ -230,6 +237,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     public void getMyContacts() {
+        Log.d(TAG, "getMyContacts: ");
         subContacts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         subContacts.setTextColor(ContextCompat.getColor(getContext(), R.color.lightPrimary));
         subRequests.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
@@ -242,6 +250,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     public void getMyRequests() {
+        Log.d(TAG, "getMyRequests: ");
         subContacts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         subContacts.setTextColor(ContextCompat.getColor(getContext(), R.color.lightSecondary));
         subRequests.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
@@ -254,12 +263,14 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     public void addContact() {
+        Log.d(TAG, "addContact: ");
         Intent add = new Intent(getContext(), AddContactActivity.class);
         startActivity(add);
     }
 
     @Override
     public void respondToRequest(final String rId, boolean wasAccepted) {
+        Log.d(TAG, "respondToRequest: ");
         progressBar.setVisibility(View.VISIBLE);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (wasAccepted) {
@@ -299,6 +310,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
     }
 
     private void addFriend(final String rId, final String id) {
+        Log.d(TAG, "addFriend: ");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         final Map<Object, String> self = new HashMap<>();
@@ -374,6 +386,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     @Override
     public void selectedUsers(ArrayList<User> users) {
+        Log.d(TAG, "selectedUsers: ");
         // Select users from contact list.
     }
 }

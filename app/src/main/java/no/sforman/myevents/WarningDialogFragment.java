@@ -1,9 +1,7 @@
 package no.sforman.myevents;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +19,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -76,6 +73,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateDialog: Lifecycle");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -191,6 +189,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
     }
 
     private boolean isValidEmail(String e){
+        Log.d(TAG, "isValidEmail: ");
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }

@@ -29,7 +29,7 @@ public class NoticeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ");
+        Log.d(TAG, "onCreateView: Lifecycle");
         view = inflater.inflate(R.layout.fragment_notice, container, false);
         noticeHolder = view.findViewById(R.id.notice_text);
         noticeText = getString(R.string.error_no_internet);
@@ -39,7 +39,7 @@ public class NoticeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         noticeHolder.setText(noticeText);
     }
 }

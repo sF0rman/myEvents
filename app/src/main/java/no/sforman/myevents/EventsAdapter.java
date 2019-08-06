@@ -6,17 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +32,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: Lifecycle");
         View eventCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_events, parent, false);
         EventViewHolder viewHolder = new EventViewHolder(eventCard);
         return viewHolder;
@@ -45,7 +40,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int i) {
-        Log.d(TAG, "onBindViewHolder: Started");
+        Log.d(TAG, "onBindViewHolder: Lifecycle");
 
         holder.name.setText(events.get(i).getName());
         if(events.get(i).getLocation().equals("none")){
@@ -65,6 +60,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     }
 
     private void openEvent(String eventId){
+        Log.d(TAG, "openEvent: ");
         Intent i = new Intent(mCtx, EventActivity.class);
         i.putExtra("eventId", eventId);
         mCtx.startActivity(i);
@@ -72,6 +68,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: ");
         if(events != null) {
             return events.size();
         } else {
@@ -92,6 +89,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         public EventViewHolder(@NonNull View itemView){
             super(itemView);
+            Log.d(TAG, "EventViewHolder: Lifecycle");
 
             this.name = itemView.findViewById(R.id.event_card_event_name);
             this.location = itemView.findViewById(R.id.event_card_event_location);

@@ -59,7 +59,6 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
     private String userId;
-    Map<Object, String> self;
     SearchAdapter searchAdapter;
     UserAdapter selectedAdapter;
 
@@ -70,7 +69,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: Lifecycle");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
         noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
@@ -80,13 +79,13 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
         if (isOnline()) {
             initFire();
@@ -95,6 +94,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void initUI() {
+        Log.d(TAG, "initUI: ");
         searchBar = findViewById(R.id.add_contact_search_field);
         nothingSelected = findViewById(R.id.add_contact_nothing_selected);
         progressBar = findViewById(R.id.add_contact_progressbar);
@@ -106,11 +106,13 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d(TAG, "beforeTextChanged: ");
 
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d(TAG, "onTextChanged: ");
                 progressBar.setVisibility(View.VISIBLE);
                 if (charSequence.toString().isEmpty()) {
                     userList.clear();
@@ -123,6 +125,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
             @Override
             public void afterTextChanged(Editable editable) {
+                Log.d(TAG, "afterTextChanged: ");
 
             }
         });
@@ -130,6 +133,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void initFire() {
+        Log.d(TAG, "initFire: ");
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
@@ -144,6 +148,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void getUsers() {
+        Log.d(TAG, "getUsers: ");
         db.collection(Keys.USER_KEY).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -168,6 +173,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void searchUser(String search) {
+        Log.d(TAG, "searchUser: ");
         userList.clear();
         int limit = 10;
         int counter = 0;
@@ -192,6 +198,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     enough?
      */
     private void initSearch(String search) {
+        Log.d(TAG, "initSearch: ");
         userList.clear();
 
         Query query = db.collection(Keys.USER_KEY)
@@ -226,6 +233,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void hideNothingSelected() {
+        Log.d(TAG, "hideNothingSelected: ");
         if (!selectedUserList.isEmpty()) {
             Log.d(TAG, "selectedUsers: isNotEmpty");
             nothingSelected.setVisibility(View.GONE);
@@ -239,6 +247,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void initSearchRecyclerView() {
+        Log.d(TAG, "initSearchRecyclerView: ");
         hideNothingSelected();
         searchAdapter = new SearchAdapter(this, userList, selectedUserList, this);
         searchResult.setAdapter(searchAdapter);
@@ -248,6 +257,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void initSelectedRecyclerView() {
+        Log.d(TAG, "initSelectedRecyclerView: ");
         hideNothingSelected();
         selectedAdapter = new UserAdapter(this, selectedUserList, "selected", this);
         selectedUsers.setAdapter(selectedAdapter);
@@ -290,16 +300,19 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     @Override
     public void respondToRequest(String uId, boolean wasAccepted) {
+        Log.d(TAG, "respondToRequest: ");
         // DO NOTHING HERE
     }
 
     @Override
     public void selectedUsers(ArrayList<User> users) {
+        Log.d(TAG, "selectedUsers: ");
         selectedUserList = users;
         initSelectedRecyclerView();
     }
 
     private void addContacts() {
+        Log.d(TAG, "addContacts: ");
         for (User u : selectedUserList) {
             final String id = u.getId();
 
@@ -319,6 +332,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     public void accept(View v) {
+        Log.d(TAG, "accept: ");
         if (isOnline()) {
             progressBar.setVisibility(View.VISIBLE);
             addContacts();
@@ -328,6 +342,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     public void cancel(View v) {
+        Log.d(TAG, "cancel: ");
         if (isOnline()) {
             done();
         } else {
@@ -336,6 +351,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     private void done() {
+        Log.d(TAG, "done: ");
         Intent done = new Intent(AddContactActivity.this, MainActivity.class);
         progressBar.setVisibility(View.INVISIBLE);
         startActivity(done);
@@ -343,6 +359,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     public boolean isOnline() {
+        Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
