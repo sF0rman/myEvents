@@ -85,29 +85,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initUI();
         initNavigation();
 
-
-        // Don't reload fragment if device is rotated.
-        if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")) {
-            contactFragment = new ContactFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
-            toolbar.setTitle(R.string.title_contacts);
-            navView.setCheckedItem(R.id.nav_contacts);
-            Log.d(TAG, "onCreate: intent-redirected to contacts.");
-        } else if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")) {
-            settingsFragment = new SettingsFragment(this);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
-            toolbar.setTitle(R.string.title_settings);
-            navView.setCheckedItem(R.id.nav_events);
-            Log.d(TAG, "onCreate: intent-redirected to settings.");
-        } else {
-            eventsFragment = new EventsFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
-            toolbar.setTitle(R.string.title_events);
-            navView.setCheckedItem(R.id.nav_events);
-            Log.d(TAG, "onCreate: Normal load to events page.");
-        }
-
-        onNavigationItemSelected(navView.getCheckedItem());
+        contactFragment = new ContactFragment();
+        settingsFragment = new SettingsFragment(this);
+        eventsFragment = new EventsFragment();
 
     }
 
@@ -119,19 +99,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Don't reload fragment if device is rotated.
         if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")) {
-            contactFragment = new ContactFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             toolbar.setTitle(R.string.title_contacts);
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
         } else if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")) {
-            settingsFragment = new SettingsFragment(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             toolbar.setTitle(R.string.title_settings);
             navView.setCheckedItem(R.id.nav_events);
             Log.d(TAG, "onCreate: intent-redirected to settings.");
         } else {
-            eventsFragment = new EventsFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
             toolbar.setTitle(R.string.title_events);
             navView.setCheckedItem(R.id.nav_events);
@@ -283,21 +260,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Log.d(TAG, "onNavigationItemSelected: ");
+        isOnline();
         switch (menuItem.getItemId()) {
             case R.id.nav_events:
-                eventsFragment = new EventsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
                 toolbar.setTitle(R.string.title_events);
                 Log.d(TAG, "onNavigationItemSelected: Events loaded");
                 break;
             case R.id.nav_contacts:
-                contactFragment = new ContactFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
                 toolbar.setTitle(R.string.title_contacts);
                 Log.d(TAG, "onNavigationItemSelected: Contacts loaded");
                 break;
             case R.id.nav_settings:
-                settingsFragment = new SettingsFragment(this);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
                 toolbar.setTitle(R.string.title_settings);
                 Log.d(TAG, "onNavigationItemSelected: Settings loaded");
