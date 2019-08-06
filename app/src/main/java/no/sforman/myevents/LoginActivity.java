@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onForgotPassword(View v) {
         Log.d(TAG, "onForgotPassword: ");
         if (isOnline()) {
-            WarningDialogFragment warning = new WarningDialogFragment(true, new WarningDialogFragment.WarningListener() {
+            final WarningDialogFragment warning = new WarningDialogFragment(true, new WarningDialogFragment.WarningListener() {
                 @Override
                 public void onCompleted(boolean b) {
                     // Do nothing
@@ -190,16 +190,20 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onCompleted(boolean b, String email) {
-                    updateUserData(null);
-                    mAuth.sendPasswordResetEmail(email)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d(TAG, "Email sent.");
+                    if(b){
+                        updateUserData(null);
+                        mAuth.sendPasswordResetEmail(email)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "Email sent.");
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    } else {
+                        Log.d(TAG, "onCompleted: nothing");
+                    }
                 }
             });
             warning.show(getSupportFragmentManager(), "ForgotPassword");

@@ -18,9 +18,6 @@ public class NoticeFragment extends Fragment {
     private String noticeText;
     private TextView noticeHolder;
 
-    NoticeFragment() {
-    } // Empty constructor
-
     NoticeFragment(String msg) {
         this.noticeText = msg;
     }

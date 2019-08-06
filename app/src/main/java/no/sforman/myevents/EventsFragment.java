@@ -64,7 +64,6 @@ class EventsFragment extends Fragment {
         if (container == null) {
             return null;
         }
-        eventList.clear();
         layout = (ConstraintLayout) inflater.inflate(R.layout.fragment_event, container, false);
 
         progressBar = layout.findViewById(R.id.event_fragment_progressbar);
@@ -98,6 +97,7 @@ class EventsFragment extends Fragment {
 
     private void initFire() {
         Log.d(TAG, "initFire: ");
+        eventList.clear();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {

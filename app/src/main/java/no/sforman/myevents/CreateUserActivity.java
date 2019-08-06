@@ -141,7 +141,7 @@ public class CreateUserActivity extends AppCompatActivity {
         return connected;
     }
 
-    private void initUserData(FirebaseUser u) {
+    private void initUserData() {
         Log.d(TAG, "initUserData: ");
         Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
         progressBar.setVisibility(View.INVISIBLE);
@@ -272,7 +272,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                                             // Send email
                                                             // sendEmail(user); // No active use for sendEmail. Not necessary
 
-                                                            initUserData(user);
+                                                            initUserData();
 
                                                         }
                                                     });
@@ -289,7 +289,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                         // Send email
                                         sendEmail(user);
 
-                                        initUserData(user);
+                                        initUserData();
                                     }
 
                                 }
@@ -305,7 +305,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                 Toast.makeText(CreateUserActivity.this, "An error occurred: " + task.getException().toString(), Toast.LENGTH_SHORT).show();
                             }
 
-                            initUserData(null);
+                            initUserData();
                         }
                     }
                 });

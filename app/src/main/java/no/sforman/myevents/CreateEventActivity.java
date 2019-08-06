@@ -3,7 +3,6 @@ package no.sforman.myevents;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.AlarmManager;
@@ -309,7 +308,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         clearErrors();
         eventName = name.getText().toString();
         eventDescription = description.getText().toString();
-        Boolean isOk = true;
+        boolean isOk = true;
 
         if (eventName.length() < 2) {
             nameError.setText(getString(R.string.error_invalid_input));
