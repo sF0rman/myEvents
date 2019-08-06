@@ -8,6 +8,11 @@
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat.Light">
 
+    <FrameLayout
+        android:id="@+id/login_notice_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ImageView
         android:id="@+id/login_logo"
         android:layout_width="match_parent"

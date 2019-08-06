@@ -2,19 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/orangePrimary">
+    android:background="@color/orangePrimary"
+    android:padding="8dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_warning"
-        android:tint="@color/lightPrimary"/>
+        android:tint="@color/lightPrimary"
+        android:layout_gravity="center_vertical"/>
 
     <TextView
         android:layout_gravity="center_vertical"
         android:id="@+id/notice_text"
         android:text="@string/msg_temp"
         android:textSize="16dp"
+        android:layout_marginLeft="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

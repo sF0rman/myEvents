@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -57,6 +58,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     Intent intent;
     String eventId;
 
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
+
     //UI
     FrameLayout layout;
     ProgressBar progressBar;
@@ -109,11 +114,20 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
         initUI();
-        if(isOnline()){
+
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+        if (isOnline()) {
             initFirebase();
             initPlaces();
         } else {
@@ -121,28 +135,43 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         }
 
         intent = getIntent();
-        if(intent.hasExtra("eventId")){
+        if (intent.hasExtra("eventId")) {
             eventId = intent.getStringExtra("eventId");
             getEventData(eventId);
         }
-
     }
 
-        public boolean isOnline() {
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    public boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        return (networkInfo != null && networkInfo.isConnected());
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.create_event_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning).commit();
+        }
+        return connected;
     }
 
-    private void initFirebase(){
+    private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         eventOwnerId = currentUser.getUid();
     }
 
-    private void initUI(){
+    private void initUI() {
         layout = findViewById(R.id.create_event_layout);
         progressBar = findViewById(R.id.create_event_progress);
         name = findViewById(R.id.create_event_name_text);
@@ -169,7 +198,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         hasReminder.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+                if (b) {
                     reminderDate.setVisibility(View.VISIBLE);
                     reminderTime.setVisibility(View.VISIBLE);
                     reminderError.setVisibility(View.VISIBLE);
@@ -184,7 +213,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         isOnline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+                if (b) {
                     mapFragment.getView().setVisibility(View.GONE);
                     onlineImg.setVisibility(View.VISIBLE);
                     location.setVisibility(View.GONE);
@@ -204,14 +233,14 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     }
 
-    private void initPlaces(){
+    private void initPlaces() {
         String mapKey = getString(R.string.events_maps_key);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.create_event_map_fragment);
         Places.initialize(getApplicationContext(), mapKey);
         PlacesClient pClient = Places.createClient(this);
     }
 
-    public void findLocation(View v){
+    public void findLocation(View v) {
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
                 Place.Field.LAT_LNG, Place.Field.ADDRESS);
 
@@ -224,92 +253,97 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "onActivityResult: Place" + place.getName() + ", " + place.getLatLng());
                 placeLatLng = place.getLatLng();
                 eventGeoPoint = new GeoPoint(placeLatLng.latitude, placeLatLng.longitude);
                 eventLocation = place.getName();
                 eventAddress = place.getAddress();
-                if(eventAddress.contains(eventLocation)){
+                if (eventAddress.contains(eventLocation)) {
                     // strip everything up to the first comma and the following space.
-                    eventAddress = eventAddress.substring(eventAddress.indexOf(",")+2);
+                    eventAddress = eventAddress.substring(eventAddress.indexOf(",") + 2);
                 }
                 // Add line breaks
                 location.setText(eventLocation + " " + eventAddress);
 
-                if(mapFragment != null){
+                if (mapFragment != null) {
                     mapFragment.setLocationMarker(placeLatLng);
                 }
             }
         }
     }
 
-    public void onSubmitEvent(View v){
+    public void onSubmitEvent(View v) {
         Log.d(TAG, "onSubmitEvent: Submit clicked");
+        if (isOnline()) {
 
-        progressBar.setVisibility(View.VISIBLE);
-
-        if(validInput()){
-            if(intent.hasExtra("eventId")){
-                editEvent();
+            progressBar.setVisibility(View.VISIBLE);
+            if (validInput()) {
+                if (intent.hasExtra("eventId")) {
+                    editEvent();
+                } else {
+                    createEvent();
+                }
             } else {
-                createEvent();
+                progressBar.setVisibility(View.INVISIBLE);
             }
 
         } else {
-            progressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
-    public boolean validInput(){
+    public boolean validInput() {
         clearErrors();
         eventName = name.getText().toString();
         eventDescription = description.getText().toString();
         Boolean isOk = true;
 
-        if(eventName.length() < 2){
+        if (eventName.length() < 2) {
             nameError.setText(getString(R.string.error_invalid_input));
             isOk = false;
             Log.e(TAG, "validInput: Name not long enough");
         }
-        if(startCal.after(endCal)){
+        if (startCal.after(endCal)) {
             timeError.setText(R.string.error_event_end_early);
             isOk = false;
             Log.e(TAG, "validInput: Event ends before it starts");
         }
 
-        if(startCal.before(today)){
+        if (startCal.before(today)) {
             timeError.setText(R.string.error_event_early);
             isOk = false;
             Log.e(TAG, "validInput: Event starts before today");
         }
 
-        if(!isOnline.isChecked()){
-            if(eventGeoPoint == null){
+        if (!isOnline.isChecked()) {
+            if (eventGeoPoint == null) {
                 locationError.setText(getString(R.string.error_no_location));
                 isOk = false;
                 Log.e(TAG, "validInput: No location set");
             }
         }
 
-        if(eventDescription.length() < 5){
+        if (eventDescription.length() < 5) {
             descriptionError.setText(R.string.error_invalid_input);
             isOk = false;
             Log.e(TAG, "validInput: Description too short");
         }
 
-        if(hasReminder.isChecked()){
-            if(reminderDate.getText().toString().matches("")) {
+        if (hasReminder.isChecked()) {
+            if (reminderDate.getText().toString().matches("")) {
                 reminderError.setText(R.string.error_no_reminder);
                 isOk = false;
                 Log.e(TAG, "validInput: No reminder set");
-            } else if (reminderCal.before(today)){
+            } else if (reminderCal.before(today)) {
                 reminderError.setText(R.string.error_reminder_early);
                 isOk = false;
                 Log.e(TAG, "validInput: Reminder too early " + reminderCal.toString());
-            }  else if(reminderCal.after(startCal)){
+            } else if (reminderCal.after(startCal)) {
                 reminderError.setText(R.string.error_reminder_late);
                 isOk = false;
                 Log.e(TAG, "validInput: Reminder too late");
@@ -319,7 +353,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         return isOk;
     }
 
-    public void clearErrors(){
+    public void clearErrors() {
         nameError.setText("");
         descriptionError.setText("");
         timeError.setText("");
@@ -328,8 +362,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         isOnlineError.setText("");
     }
 
-    public void setDateTime(View v){
-        switch (v.getId()){
+    public void setDateTime(View v) {
+        switch (v.getId()) {
             case R.id.create_event_reminder_date:
                 showDatePickerDialog(reminderDate, reminderCal);
                 break;
@@ -356,7 +390,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         }
     }
 
-    public void showDatePickerDialog(final EditText text, final Calendar cal){
+    public void showDatePickerDialog(final EditText text, final Calendar cal) {
         Log.d(TAG, "showDatePickerDialog: Open");
         DialogFragment datePicker = new DatePickerFragment();
         ((DatePickerFragment) datePicker).setOnDateChosenListener(new DatePickerFragment.OnDateChosenListener() {
@@ -366,11 +400,11 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 cal.set(year, month, day);
                 text.setText(dateFormat.format(cal.getTime()));
 
-                if(text == startDate){
+                if (text == startDate) {
                     showTimePickerDialog(startTime, startCal);
-                } else if (text == endDate){
+                } else if (text == endDate) {
                     showTimePickerDialog(endTime, endCal);
-                } else if (text == reminderDate){
+                } else if (text == reminderDate) {
                     showTimePickerDialog(reminderTime, reminderCal);
                 }
             }
@@ -378,7 +412,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         datePicker.show(getSupportFragmentManager(), "DatePicker");
     }
 
-    public void showTimePickerDialog(final EditText text, final Calendar cal){
+    public void showTimePickerDialog(final EditText text, final Calendar cal) {
         Log.d(TAG, "showTimePickerDialog: Open");
         DialogFragment timePicker = new TimePickerFragment();
         ((TimePickerFragment) timePicker).setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
@@ -390,7 +424,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 cal.set(Calendar.MILLISECOND, 0);
                 text.setText(timeFormat.format(cal.getTime()));
 
-                if(text == startTime){
+                if (text == startTime) {
                     endCal.setTimeInMillis(startCal.getTimeInMillis());
                     endCal.add(Calendar.HOUR_OF_DAY, 2);
                     endDate.setText(dateFormat.format(endCal.getTime()));
@@ -406,15 +440,14 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     }
 
 
-
-    public void createEvent(){
+    public void createEvent() {
         Log.d(TAG, "createEventObject: Started");
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Create event object
         final Event event;
         final long rid = (long) today.getTimeInMillis();
-        if(isOnline.isChecked()){
+        if (isOnline.isChecked()) {
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
@@ -444,76 +477,76 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         db.collection("event")
                 .add(event)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
-                final String eventId = documentReference.getId();
-                event.addID(eventId);
-                if(hasReminder.isChecked()){
-                    makeReminder(eventId, rid);
-                }
-
-
-                db.collection("user")
-                        .document(eventOwnerId)
-                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: Got owner information");
-                            DocumentSnapshot userDoc = task.getResult();
-                            String userFirstname;
-                            String userSurname;
-                            String userImage;
-                            String userEmail;
-                            userFirstname = userDoc.getString(Keys.FIRSTNAME_KEY);
-                            userSurname = userDoc.getString(Keys.SURNAME_KEY);
-                            userImage = userDoc.getString(Keys.IMAGE_KEY);
-                            userEmail = userDoc.getString(Keys.EMAIL_KEY);
-
-                            // Create user map
-                            Map<String, Object> userMap = new HashMap<>();
-                            userMap.put("firstname", userFirstname);
-                            userMap.put("surname", userSurname);
-                            userMap.put("email", userEmail);
-                            userMap.put("image", userImage);
-                            userMap.put("rsvp", "going");
-                            userMap.put("reminder", reminderCal);
-
-                            // Add user to event as going
-                            db.collection("event")
-                                    .document(eventId)
-                                    .collection("invited")
-                                    .document(eventOwnerId)
-                                    .set(userMap)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "onSuccess: Owner added as going");
-                                            Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
-
-                                            Log.d(TAG, "onSuccess: SendEventId" + eventId);
-                                            addEventToSelf(eventId, event);
-
-                                            Intent i = new Intent(CreateEventActivity.this, EventActivity.class);
-                                            i.putExtra("eventId", eventId);
-                                            startActivity(i);
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            finish();
-                                        }
-                                    });
-
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
+                        final String eventId = documentReference.getId();
+                        event.addID(eventId);
+                        if (hasReminder.isChecked()) {
+                            makeReminder(eventId, rid);
                         }
+
+
+                        db.collection("user")
+                                .document(eventOwnerId)
+                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "onComplete: Got owner information");
+                                    DocumentSnapshot userDoc = task.getResult();
+                                    String userFirstname;
+                                    String userSurname;
+                                    String userImage;
+                                    String userEmail;
+                                    userFirstname = userDoc.getString(Keys.FIRSTNAME_KEY);
+                                    userSurname = userDoc.getString(Keys.SURNAME_KEY);
+                                    userImage = userDoc.getString(Keys.IMAGE_KEY);
+                                    userEmail = userDoc.getString(Keys.EMAIL_KEY);
+
+                                    // Create user map
+                                    Map<String, Object> userMap = new HashMap<>();
+                                    userMap.put("firstname", userFirstname);
+                                    userMap.put("surname", userSurname);
+                                    userMap.put("email", userEmail);
+                                    userMap.put("image", userImage);
+                                    userMap.put("rsvp", "going");
+                                    userMap.put("reminder", reminderCal);
+
+                                    // Add user to event as going
+                                    db.collection("event")
+                                            .document(eventId)
+                                            .collection("invited")
+                                            .document(eventOwnerId)
+                                            .set(userMap)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "onSuccess: Owner added as going");
+                                                    Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
+
+                                                    Log.d(TAG, "onSuccess: SendEventId" + eventId);
+                                                    addEventToSelf(eventId, event);
+
+                                                    Intent i = new Intent(CreateEventActivity.this, EventActivity.class);
+                                                    i.putExtra("eventId", eventId);
+                                                    startActivity(i);
+                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                    finish();
+                                                }
+                                            });
+
+                                }
+                            }
+                        });
+
                     }
                 });
 
-            }
-        });
-
 
     }
-    
-    private void addEventToSelf(String eventId, Event event){
+
+    private void addEventToSelf(String eventId, Event event) {
         Log.d(TAG, "addEventToSelf: Recieved eventId " + eventId);
         FirebaseFirestore eDb = FirebaseFirestore.getInstance();
         eDb.collection("user")
@@ -524,17 +557,17 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Event added to self");
                         }
                     }
                 });
     }
 
-    public void makeReminder(String event, long reminder){
+    public void makeReminder(String event, long reminder) {
         Log.d(TAG, "makeReminder: Started");
 
-        Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
+        Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
         i.putExtra("id", event);
         i.putExtra("reminder", reminder);
         i.putExtra("message", "You have an upcoming event on " + dateTimeFormat.format(startCal.getTime()));
@@ -543,7 +576,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
         PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
                 getApplicationContext(),
-                (int)reminder, i,
+                (int) reminder, i,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
 
@@ -556,7 +589,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> reminderMap = new HashMap<>();
         reminderMap.put("reminder", reminderCal);
-        
+
         db.collection("event")
                 .document(event)
                 .collection("invited")
@@ -571,7 +604,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     }
 
-    private void getEventData(String id){
+    private void getEventData(String id) {
         hasReminder.setVisibility(View.GONE);
         reminderError.setVisibility(View.GONE);
         deleteEvent.setVisibility(View.VISIBLE);
@@ -582,9 +615,9 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     DocumentSnapshot eventDoc = task.getResult();
-                    if(eventDoc.exists()){
+                    if (eventDoc.exists()) {
                         name.setText(eventDoc.getString(Keys.NAME_KEY));
                         description.setText(eventDoc.getString(Keys.DESCRIPTION_KEY));
                         long startInMillis = eventDoc.getLong("start.timeInMillis");
@@ -598,9 +631,9 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                         eventGeoPoint = eventDoc.getGeoPoint(Keys.GEOPONT_KEY);
                         eventAddress = eventDoc.getString(Keys.ADDRESS_KEY);
                         eventLocation = eventDoc.getString(Keys.LOCATION_KEY);
-                        if(eventAddress.contains(eventLocation)){
+                        if (eventAddress.contains(eventLocation)) {
                             // strip everything up to the first comma and the following space.
-                            eventAddress = eventAddress.substring(eventAddress.indexOf(",")+2);
+                            eventAddress = eventAddress.substring(eventAddress.indexOf(",") + 2);
                         }
                         // Add line breaks
                         location.setText(eventLocation + " " + eventAddress);
@@ -618,12 +651,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         });
     }
 
-    private void editEvent(){
+    private void editEvent() {
         Log.d(TAG, "createEventObject: Started");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         final Event event;
-        if(isOnline.isChecked()){
+        if (isOnline.isChecked()) {
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
@@ -663,7 +696,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         });
     }
 
-    public void deleteEvent(View v){
+    public void deleteEvent(View v) {
         Log.d(TAG, "deleteEvent: Started");
 
         WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_delete_event), this);
@@ -672,7 +705,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
     @Override
     public void onCompleted(boolean b) {
-        if(b){
+        if (b) {
             Log.d(TAG, "onDialogPositiveClick: Accepted");
             final FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("event")
@@ -691,10 +724,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                            if(task.isSuccessful()){
+                                            if (task.isSuccessful()) {
                                                 Log.d(TAG, "onComplete: Got sub collection");
 
-                                                for(QueryDocumentSnapshot subDoc : task.getResult()){
+                                                for (QueryDocumentSnapshot subDoc : task.getResult()) {
                                                     String subDocId = subDoc.getId();
                                                     deleteSubCollection(subDocId);
                                                 }
@@ -719,7 +752,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         }
     }
 
-    public void deleteSubCollection(final String id){
+    @Override
+    public void onCompleted(boolean b, String email) {
+
+    }
+
+    public void deleteSubCollection(final String id) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("event")
                 .document(eventId)

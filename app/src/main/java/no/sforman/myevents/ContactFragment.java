@@ -36,6 +36,9 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     public static final String TAG = "ContactFragment";
 
+    // Connectivity
+    boolean connected = true;
+
     // UI
     private FloatingActionButton fab;
     private ConstraintLayout layout;
@@ -80,10 +83,16 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: OnStart");
+        Log.d(TAG, "onStart: ");
         super.onStart();
         userList.clear();
         getContacts();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
     }
 
     private void initFire() {

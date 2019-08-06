@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Intent intent;
     public static final String TAG = "MainActivity";
+
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
 
     //UI
     private DrawerLayout drawer;
@@ -71,21 +77,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: Create");
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
         initUI();
         initNavigation();
 
+        
         // Don't reload fragment if device is rotated.
-        if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")){
+        if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")) {
             contactFragment = new ContactFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             toolbar.setTitle(R.string.title_contacts);
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
-        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")){
+        } else if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")) {
             settingsFragment = new SettingsFragment(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             toolbar.setTitle(R.string.title_settings);
@@ -106,17 +114,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: Started");
+        Log.d(TAG, "onStart: ");
         super.onStart();
 
         // Don't reload fragment if device is rotated.
-        if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")){
+        if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("contacts")) {
             contactFragment = new ContactFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, contactFragment).commit();
             toolbar.setTitle(R.string.title_contacts);
             navView.setCheckedItem(R.id.nav_contacts);
             Log.d(TAG, "onCreate: intent-redirected to contacts.");
-        } else if(intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")){
+        } else if (intent.hasExtra("dir") && intent.getStringExtra("dir").equals("settings")) {
             settingsFragment = new SettingsFragment(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, settingsFragment).commit();
             toolbar.setTitle(R.string.title_settings);
@@ -132,21 +140,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         onNavigationItemSelected(navView.getCheckedItem());
 
-        if(isOnline()){
-            initFirebase();
-            initUserData();
-        } else {
-            Log.e(TAG, "onCreate: No network");
-        }
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: Resumed");
+        Log.d(TAG, "onResume: ");
         super.onResume();
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
         Log.d(TAG, "onResume: CheckingNetWork and connecting");
-        if(isOnline()){
+        if (isOnline()) {
             initFirebase();
             initUserData();
         } else {
@@ -154,8 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void initUserData(){
-        if(currentUser != null){
+    private void initUserData() {
+        if (currentUser != null) {
             final String uId = currentUser.getUid();
 
             db = FirebaseFirestore.getInstance();
@@ -165,23 +168,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         final DocumentSnapshot document = task.getResult();
-                        if(document.exists()) {
+                        if (document.exists()) {
                             name.setText(document.getString("firstname") + " " + document.getString("surname"));
                             email.setText(document.getString("email"));
                             userImageUrl = document.getString("image");
                             Log.d(TAG, "onComplete: ImageUri " + document.getString("image"));
-                            try{
+                            try {
                                 FirebaseStorage storage = FirebaseStorage.getInstance();
                                 StorageReference imgRef = storage.getReferenceFromUrl(document.getString("image"));
-                                if(imgRef != null){
+                                if (imgRef != null) {
                                     Glide.with(getApplicationContext())
                                             .load(userImageUrl)
                                             .placeholder(R.drawable.ic_person)
                                             .into(userImage);
                                 }
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 Log.e(TAG, "onComplete: userImage: ", e);
                             }
 
@@ -198,10 +201,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        return (networkInfo != null && networkInfo.isConnected());
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning).commit();
+        }
+        return connected;
     }
 
-    private void initUI(){
+    private void initUI() {
         intent = getIntent();
 
         drawer = findViewById(R.id.main_drawer);
@@ -216,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userImage = navHeader.findViewById(R.id.nav_header_image);
     }
 
-    private void initNavigation(){
+    private void initNavigation() {
         setSupportActionBar(toolbar);
         navView.setNavigationItemSelectedListener(this);
 
@@ -225,12 +238,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
-    private void initFirebase(){
+    private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-        if(currentUser == null) {
+        if (currentUser == null) {
             Log.e(TAG, "initUserData: No user logged on");
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
@@ -238,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void signOut(){
+    private void signOut() {
         mAuth.getInstance().signOut();
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
@@ -247,8 +260,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     @Override
-    public void onBackPressed(){
-        if(drawer.isDrawerOpen(GravityCompat.START)){
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             Intent exit = new Intent(Intent.ACTION_MAIN);
@@ -262,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Navigation Listener
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.nav_events:
                 eventsFragment = new EventsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content_container, eventsFragment).commit();
@@ -289,19 +302,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void onAddEvent(View v){
+    public void onAddEvent(View v) {
         Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
         startActivity(i);
     }
 
-    public void notificationSettings(View v){
+    public void notificationSettings(View v) {
         Log.d(TAG, "notificationSettings: Opening notification settings...");
         Intent i = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         i.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
         startActivity(i);
     }
 
-    public void testChannelEvent(View v){
+    public void testChannelEvent(View v) {
         NotificationCompat.Builder eventBuild = new NotificationCompat.Builder(this, getString(R.string.channel_event))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_event))
@@ -311,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "testChannelEvent: testing event channel");
     }
 
-    public void testChannelInvite(View v){
+    public void testChannelInvite(View v) {
         NotificationCompat.Builder inviteBuild = new NotificationCompat.Builder(this, getString(R.string.channel_invite))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_invite))
@@ -321,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "testChannelInvite: testing invite channel");
     }
 
-    public void testChannelFriends(View v){
+    public void testChannelFriends(View v) {
         NotificationCompat.Builder friendBuild = new NotificationCompat.Builder(this, getString(R.string.channel_friend))
                 .setSmallIcon(R.drawable.ic_icon)
                 .setContentTitle(getString(R.string.msg_friends))
@@ -331,48 +344,91 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "testChannelFriends: testing friend channel");
     }
 
-    public void sendNotification(NotificationCompat.Builder build){
+    public void sendNotification(NotificationCompat.Builder build) {
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         managerCompat.notify(0, build.build());
     }
 
-    public void mEditUser(View v){
+    public void mEditUser(View v) {
         settingsFragment.editUser();
     }
 
-    public void mChangePassword(View v){
+    public void mChangePassword(View v) {
         settingsFragment.changePassword();
     }
 
-    public void mGetAllData(View v){
-        settingsFragment.getAllData();
+    public void mGetAllData(View v) {
+        if (isOnline()) {
+            settingsFragment.getAllData();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void mDeleteAllEvents(View v){
-        settingsFragment.callDeleteAllEvents();
+    public void mDeleteAllEvents(View v) {
+        if (isOnline()) {
+            settingsFragment.callDeleteAllEvents();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void mDeleteAccount(View v){
-        settingsFragment.deleteAccount();
+    public void mDeleteAccount(View v) {
+        if (isOnline()) {
+            settingsFragment.deleteAccount();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void mAcceptChange(View v){
-        settingsFragment.acceptChange();
+    public void mAcceptChange(View v) {
+        if (isOnline()) {
+            settingsFragment.acceptChange();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+
     }
 
-    public void mCancelChange(View v){
+    public void mCancelChange(View v) {
         settingsFragment.cancelChange();
     }
 
-    public void mGetAllEvents(View v) { eventsFragment.getAllEvents(); }
+    public void mGetAllEvents(View v) {
+        if (isOnline()) {
+            eventsFragment.getAllEvents();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
 
-    public void mGetMyEvents(View v) { eventsFragment.getMyEvents(); }
+    public void mGetMyEvents(View v) {
+        if (isOnline()) {
+            eventsFragment.getMyEvents();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
 
-    public void mGetContacts(View v) { contactFragment.getMyContacts(); }
+    public void mGetContacts(View v) {
+        if (isOnline()) {
+            contactFragment.getMyContacts();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
 
-    public void mGetRequests(View v) { contactFragment.getMyRequests(); }
+    public void mGetRequests(View v) {
+        if (isOnline()) {
+            contactFragment.getMyRequests();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
 
-    public void mAddContact(View v){ contactFragment.addContact(); }
+    public void mAddContact(View v) {
+        contactFragment.addContact();
+    }
 
     @Override
     public void onUserUpdated() {

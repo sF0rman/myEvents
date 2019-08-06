@@ -10,9 +10,12 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/title_create_user">
+        app:title="@string/title_create_user" />
 
-    </androidx.appcompat.widget.Toolbar>
+    <FrameLayout
+        android:id="@+id/create_user_notice_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ProgressBar
         android:id="@+id/create_user_progress"

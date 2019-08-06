@@ -20,30 +20,35 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
 public class WarningDialogFragment extends androidx.fragment.app.DialogFragment {
     
     public static final String TAG = "WarningDialogFragment";
 
-    String message;
-    boolean password = false;
+    private String message;
+    private boolean password = false;
+    private boolean emailOnly = false;
 
-    View view;
-    TextView messageField;
-    Button acceptBtn;
-    Button cancelBtn;
-    EditText emailField;
-    EditText passwordField;
-    ProgressBar progressBar;
+    private View view;
+    private TextView messageField;
+    private Button acceptBtn;
+    private Button cancelBtn;
+    private EditText emailField;
+    private EditText passwordField;
+    private ProgressBar progressBar;
 
-    WarningListener listener = null;
+    private WarningListener listener = null;
 
     public interface WarningListener {
         void onCompleted(boolean b);
+        void onCompleted(boolean b, String email);
     }
 
     public WarningDialogFragment(WarningListener l){
@@ -62,8 +67,9 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
         this.password = requiresPassword;
     }
 
-    public WarningDialogFragment(boolean requiresPassword, WarningListener l){
-        this.message = getString(R.string.msg_warning_default);
+    public WarningDialogFragment(boolean emailOnly, WarningListener l){
+        this.message = "Input your email!";
+        this.emailOnly = emailOnly;
         this.listener = l;
     }
 
@@ -90,6 +96,8 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
         if(password){
             emailField.setVisibility(View.VISIBLE);
             passwordField.setVisibility(View.VISIBLE);
+        } else if (emailOnly) {
+            emailField.setVisibility(View.VISIBLE);
         }
 
         acceptBtn.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +106,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
                 progressBar.setVisibility(View.VISIBLE);
                 if(password){
                     Log.d(TAG, "onClick: Verifying password!");
-                    String email = emailField.getText().toString();
+                    final String email = emailField.getText().toString();
                     String password = passwordField.getText().toString();
                     if(verifyInput(email, password)){
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -116,6 +124,25 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
                                         } else {
                                             Toast.makeText(getContext(), getString(R.string.error_incorrect_password), Toast.LENGTH_SHORT).show();
                                             Log.d(TAG, "onComplete: Incorrect username and password" + task.getException());
+                                        }
+                                    }
+                                });
+                    } else if (emailOnly) {
+                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, "")
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if(!task.isSuccessful()){
+                                            try{
+                                                throw task.getException();
+                                            } catch (FirebaseAuthInvalidUserException invalidEmail){
+                                                Toast.makeText(getContext(), R.string.error_invalid_email, Toast.LENGTH_SHORT).show();
+                                            } catch (FirebaseAuthInvalidCredentialsException invalidPassword){
+                                                listener.onCompleted(true, email);
+                                            } catch (Exception e){
+                                                Log.e(TAG, "onComplete: ", e);
+                                                Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     }
                                 });

@@ -2,10 +2,14 @@ package no.sforman.myevents;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,6 +41,10 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     public static final String TAG = "AddContactActivity";
 
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
+
     // UI
     private EditText searchBar;
     private ProgressBar progressBar;
@@ -62,12 +70,28 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
         initUI();
-        initFire();
-        getUsers();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+        if (isOnline()) {
+            initFire();
+            getUsers();
+        }
     }
 
     private void initUI() {
@@ -88,7 +112,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 progressBar.setVisibility(View.VISIBLE);
-                if(charSequence.toString().isEmpty()){
+                if (charSequence.toString().isEmpty()) {
                     userList.clear();
                     initSearchRecyclerView();
                 } else {
@@ -119,13 +143,13 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         }
     }
 
-    private void getUsers(){
+    private void getUsers() {
         db.collection(Keys.USER_KEY).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Log.d(TAG, "onComplete: Got all users");
-                    for(QueryDocumentSnapshot doc : task.getResult()){
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
                         String id = doc.getId();
                         String firstname = doc.getString(Keys.FIRSTNAME_KEY);
                         String surname = doc.getString(Keys.SURNAME_KEY);
@@ -143,19 +167,19 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         });
     }
 
-    private void searchUser(String search){
+    private void searchUser(String search) {
         userList.clear();
         int limit = 10;
         int counter = 0;
-        for(User u : allUsers){
-            if(u.getFullname().contains(search) || u.getEmail().contains(search)){
+        for (User u : allUsers) {
+            if (u.getFullname().contains(search) || u.getEmail().contains(search)) {
                 Log.d(TAG, "searchUser: Added user: " + u.getId());
                 userList.add(u);
                 initSearchRecyclerView();
                 progressBar.setVisibility(View.INVISIBLE);
             }
             counter++;
-            if(counter >= limit){
+            if (counter >= limit) {
                 Log.d(TAG, "searchUser: Reached search limit");
                 break;
             }
@@ -201,11 +225,11 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         });
     }
 
-    private void hideNothingSelected(){
-        if(!selectedUserList.isEmpty()){
+    private void hideNothingSelected() {
+        if (!selectedUserList.isEmpty()) {
             Log.d(TAG, "selectedUsers: isNotEmpty");
             nothingSelected.setVisibility(View.GONE);
-            for(User u : selectedUserList){
+            for (User u : selectedUserList) {
                 Log.d(TAG, "initSelectedRecyclerView: Got: " + u.getId());
             }
         } else {
@@ -295,12 +319,20 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     }
 
     public void accept(View v) {
-        progressBar.setVisibility(View.VISIBLE);
-        addContacts();
+        if (isOnline()) {
+            progressBar.setVisibility(View.VISIBLE);
+            addContacts();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void cancel(View v) {
-        done();
+        if (isOnline()) {
+            done();
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void done() {
@@ -308,5 +340,23 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         progressBar.setVisibility(View.INVISIBLE);
         startActivity(done);
         finish();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.add_contact_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning).commit();
+        }
+        return connected;
     }
 }

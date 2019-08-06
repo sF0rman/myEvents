@@ -23,7 +23,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -250,6 +249,11 @@ class SettingsFragment extends Fragment {
             public void onCompleted(boolean b) {
                 deleteAllEvents();
             }
+
+            @Override
+            public void onCompleted(boolean b, String email) {
+                // Do nothing
+            }
         });
         warning.show(getFragmentManager(), "WarningDeleteEvents");
     }
@@ -373,6 +377,11 @@ class SettingsFragment extends Fragment {
                     deleteAllEvents();
                     deleteUser();
                 }
+            }
+
+            @Override
+            public void onCompleted(boolean b, String email) {
+                // Do nothing
             }
         });
         warning.show(getFragmentManager(), "WarningDeleteAccount");

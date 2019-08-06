@@ -20,6 +20,11 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <FrameLayout
+            android:id="@+id/event_notice_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <ProgressBar
             android:id="@+id/event_progress_bar"
             style="@style/Progressbar"

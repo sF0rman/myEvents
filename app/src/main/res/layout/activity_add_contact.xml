@@ -82,6 +82,11 @@
                 android:layout_height="wrap_content"
                 app:title="@string/title_add_contacts" />
 
+            <FrameLayout
+                android:id="@+id/add_contact_notice_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <ProgressBar
                 android:id="@+id/add_contact_progressbar"
                 style="@style/Progressbar"

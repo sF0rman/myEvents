@@ -2,6 +2,7 @@ package no.sforman.myevents;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +24,10 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG = "LoginActivity";
+
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
 
     // UI
     private EditText emailInput;
@@ -37,25 +41,31 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
         initUI();
-
-        if(isOnline()){
-            initFirebase();
-        } else {
-            Log.e(TAG, "onCreate: No network");
-        }
-
     }
 
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart: ");
         super.onStart();
+        if (isOnline()) {
+            initFirebase();
+        } else {
+            Log.e(TAG, "onCreate: No network");
+        }
     }
 
-    private void initUI(){
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    private void initUI() {
         progressBar = findViewById(R.id.login_progress);
         emailInput = findViewById(R.id.login_input_email);
         passwordInput = findViewById(R.id.login_input_password);
@@ -76,17 +86,27 @@ public class LoginActivity extends AppCompatActivity {
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        return (networkInfo != null && networkInfo.isConnected());
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.login_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning).commit();
+        }
+        return connected;
     }
 
-    private void initFirebase(){
+    private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         updateUserData(currentUser);
     }
 
-    private void updateUserData(FirebaseUser user){
-        if(user != null){
+    private void updateUserData(FirebaseUser user) {
+        if (user != null) {
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
             finish();
@@ -95,33 +115,37 @@ public class LoginActivity extends AppCompatActivity {
 
     // Handle buttons
 
-    public void onLogin(View v){
-        progressBar.setVisibility(View.VISIBLE);
-        String e = emailInput.getText().toString();
-        String p = passwordInput.getText().toString();
-        if(isValidEmail(e) && inputPassword(p)){
-            login(e, p);
+    public void onLogin(View v) {
+        if (isOnline()) {
+            progressBar.setVisibility(View.VISIBLE);
+            String e = emailInput.getText().toString();
+            String p = passwordInput.getText().toString();
+            if (isValidEmail(e) && inputPassword(p)) {
+                login(e, p);
+            } else {
+                Toast.makeText(LoginActivity.this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
         } else {
-            Toast.makeText(LoginActivity.this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
-            progressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    private boolean isValidEmail(String e){
+    private boolean isValidEmail(String e) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 
-    private boolean inputPassword(String p){
-        if(p.length() > 0){
+    private boolean inputPassword(String p) {
+        if (p.length() > 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    private void login(String email, String password){
+    private void login(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -143,27 +167,41 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    public void onCreateUser(View v){
+    public void onCreateUser(View v) {
         progressBar.setVisibility(View.VISIBLE);
         Intent i = new Intent(LoginActivity.this, CreateUserActivity.class);
         startActivity(i);
     }
 
-    public void onForgotPassword(View v){
-        String emailAddress = emailInput.getText().toString();
-        updateUserData(null);
-        mAuth.sendPasswordResetEmail(emailAddress)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Email sent.");
-                        }
-                    }
-                });
+    public void onForgotPassword(View v) {
+        if (isOnline()) {
+            WarningDialogFragment warning = new WarningDialogFragment(true, new WarningDialogFragment.WarningListener() {
+                @Override
+                public void onCompleted(boolean b) {
+                    // Do nothing
+                }
+
+                @Override
+                public void onCompleted(boolean b, String email) {
+                    updateUserData(null);
+                    mAuth.sendPasswordResetEmail(email)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Email sent.");
+                                    }
+                                }
+                            });
+                }
+            });
+            warning.show(getSupportFragmentManager(), "ForgotPassword");
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+
 
     }
-
 
 
 }

@@ -3,6 +3,7 @@ package no.sforman.myevents;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,11 @@ public class CreateUserActivity extends AppCompatActivity {
     public static final String TAG = "CreateUserActivity";
     public static final int PICK_IMAGE = 1;
 
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
+
+
     // UI
     private EditText firstname;
     private EditText surname;
@@ -67,19 +73,31 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_user);
-
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
         initUI();
+    }
 
-        if(isOnline()){
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+        if (isOnline()) {
             initFirebase();
         } else {
             Log.e(TAG, "onCreate: No network");
         }
     }
 
-    private void initUI(){
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    private void initUI() {
         imageUri = null;
         image = findViewById(R.id.create_user_image);
         firstname = findViewById(R.id.create_user_firstname);
@@ -97,7 +115,7 @@ public class CreateUserActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.create_user_progress);
     }
 
-    private void initFirebase(){
+    private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
         mStorage = FirebaseStorage.getInstance();
         storageRef = mStorage.getReference();
@@ -108,17 +126,27 @@ public class CreateUserActivity extends AppCompatActivity {
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        return (networkInfo != null && networkInfo.isConnected());
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.create_user_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning).commit();
+        }
+        return connected;
     }
 
-    public void initUserData(FirebaseUser u){
+    public void initUserData(FirebaseUser u) {
         Intent i = new Intent(CreateUserActivity.this, MainActivity.class);
         progressBar.setVisibility(View.INVISIBLE);
         startActivity(i);
         finish();
     }
 
-    private void clearErrors(){
+    private void clearErrors() {
         firstnameError.setText("");
         surnameError.setText("");
         emailError.setText("");
@@ -127,60 +155,65 @@ public class CreateUserActivity extends AppCompatActivity {
         termsError.setText("");
     }
 
-    public void onCreateUser(View v){
-        progressBar.setVisibility(View.VISIBLE);
-        clearErrors();
+    public void onCreateUser(View v) {
+        if (isOnline()) {
+            progressBar.setVisibility(View.VISIBLE);
+            clearErrors();
 
-        Log.d(TAG, "onCreateUser: Started user creation");
-        String f = firstname.getText().toString();
-        String s = surname.getText().toString();
-        String e = email.getText().toString();
-        String pw = password.getText().toString();
-        String pw2 = passwordRepeat.getText().toString();
-        if(imageUri != null){
-            String img = imageUri.toString();
-        }
+            Log.d(TAG, "onCreateUser: Started user creation");
+            String f = firstname.getText().toString();
+            String s = surname.getText().toString();
+            String e = email.getText().toString();
+            String pw = password.getText().toString();
+            String pw2 = passwordRepeat.getText().toString();
+            if (imageUri != null) {
+                String img = imageUri.toString();
+            }
 
 
-        if(isValidInput(f, s, e, pw, pw2)){
-            Log.d(TAG, "onCreateUser: Input ok");
-            createAccount(f, s, e, pw);
+            if (isValidInput(f, s, e, pw, pw2)) {
+                Log.d(TAG, "onCreateUser: Input ok");
+                createAccount(f, s, e, pw);
+            } else {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
         } else {
-            progressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
         }
+
     }
 
 
     private boolean isValidInput(String firstname, String surname, String email, String password,
-                                 String password2){
+                                 String password2) {
         boolean isOk = true;
 
-        if(firstname.length() < 2){
+        if (firstname.length() < 2) {
             Log.e(TAG, "isValidInput: Firstname too short");
             firstnameError.setText(R.string.error_invalid_input);
             isOk = false;
         }
-        if(surname.length() < 2){
+        if (surname.length() < 2) {
             Log.e(TAG, "isValidInput: Surname too short");
             surnameError.setText(R.string.error_invalid_input);
             isOk = false;
         }
-        if(!isValidEmail(email)){
+        if (!isValidEmail(email)) {
             Log.e(TAG, "isValidInput: Email not valid");
             emailError.setText(R.string.error_invalid_email);
             isOk = false;
         }
-        if(!terms.isChecked()){
+        if (!terms.isChecked()) {
             Log.e(TAG, "isValidInput: Terms not agreed to");
             termsError.setText(R.string.error_terms_not_checked);
             isOk = false;
         }
-        if(password.length() < 5){
+        if (password.length() < 5) {
             Log.e(TAG, "isValidInput: Password too short");
             passwordError.setText(R.string.error_invalid_password);
             isOk = false;
         }
-        if(!password.equals(password2)){
+        if (!password.equals(password2)) {
             Log.e(TAG, "isValidInput: Passwords don't match---");
             passwordRepeatError.setText(R.string.error_password_dont_match);
             isOk = false;
@@ -189,12 +222,12 @@ public class CreateUserActivity extends AppCompatActivity {
         return isOk;
     }
 
-    private boolean isValidEmail(String e){
-            String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-            return e.matches(regex);
+    private boolean isValidEmail(String e) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return e.matches(regex);
     }
 
-    private void createAccount(final String f, final String s, final String e, final String pw){
+    private void createAccount(final String f, final String s, final String e, final String pw) {
         mAuth.createUserWithEmailAndPassword(e, pw)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -214,13 +247,13 @@ public class CreateUserActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Log.d(TAG, "DisplayNameAdded: success");
 
-                                    if(imageUri != null){
+                                    if (imageUri != null) {
                                         // Upload profile image
                                         final StorageReference imgRef = storageRef.child("images/" + userId + ".jpg");
                                         imgRef.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                                if(task.isSuccessful()){
+                                                if (task.isSuccessful()) {
                                                     imgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                         @Override
                                                         public void onSuccess(Uri uri) {
@@ -229,7 +262,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                                             // Update database data
                                                             populateDatabase(f, s, e, userId, downloadUrl);
                                                             // Send email
-                                                            sendEmail(user);
+                                                            // sendEmail(user); // No active use for sendEmail. Not necessary
 
                                                             initUserData(user);
 
@@ -258,7 +291,7 @@ public class CreateUserActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            if(task.getException().toString().contains("The email address is already in use by another account.")){
+                            if (task.getException().toString().contains("The email address is already in use by another account.")) {
                                 Toast.makeText(CreateUserActivity.this, "User with that email already exists!", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(CreateUserActivity.this, "An error occurred: " + task.getException().toString(), Toast.LENGTH_SHORT).show();
@@ -271,20 +304,20 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
 
-    private void sendEmail(FirebaseUser currentUser){
+    private void sendEmail(FirebaseUser currentUser) {
         // send email verification
         currentUser.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Log.d(TAG, "createAccount: sendEmailVerification success.");
                         }
                     }
                 });
     }
 
-    private void populateDatabase(final String f, final String s, final String e, final String uId, final String imageUrl){
+    private void populateDatabase(final String f, final String s, final String e, final String uId, final String imageUrl) {
         // Add user to Firestore database (for use with friends/contacts)
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -293,7 +326,6 @@ public class CreateUserActivity extends AppCompatActivity {
         user.put(Keys.SURNAME_KEY, s.trim());
         user.put(Keys.EMAIL_KEY, e);
         user.put(Keys.IMAGE_KEY, imageUrl);
-
 
 
         db.collection("user").document(uId).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -312,8 +344,7 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
 
-
-    public void createSetImage(View v){
+    public void createSetImage(View v) {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -322,12 +353,12 @@ public class CreateUserActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == PICK_IMAGE){
+        if (requestCode == PICK_IMAGE) {
             try {
                 imageUri = data.getData();
                 image.setImageURI(imageUri);
                 Log.d(TAG, "onActivityResult: ImageURI: " + imageUri.toString());
-            } catch (RuntimeException e){
+            } catch (RuntimeException e) {
                 Log.e(TAG, "onActivityResult: No image was selected", e);
             }
         }

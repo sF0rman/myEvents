@@ -60,7 +60,7 @@ class EventsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: CreateView");
+        Log.d(TAG, "onCreateView: ");
         if (container == null) {
             return null;
         }
@@ -78,14 +78,14 @@ class EventsFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: Started");
+        Log.d(TAG, "onStart:");
         super.onStart();
         initFire();
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume: Resumed");
+        Log.d(TAG, "onResume:");
         super.onResume();
     }
 

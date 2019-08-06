@@ -4,11 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -41,6 +45,10 @@ public class EventActivity extends AppCompatActivity {
 
     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("E, dd. MMM yyyy HH:mm");
     Intent intent;
+
+    // Connectivity
+    private boolean connected = true;
+    NoticeFragment noInternetWarning;
 
     // UI Widgets
     private MapFragment mapFragment;
@@ -99,21 +107,38 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+        noInternetWarning = new NoticeFragment(getString(R.string.error_no_internet));
 
         intent = getIntent();
-        initFire();
         initUI();
-        if(intent.hasExtra("eventId")){
-            eventId = intent.getStringExtra("eventId");
-            Log.d(TAG, "onCreate: got Event:" + eventId);
-        } else {
-            Log.e(TAG, "onCreate: No Event found");
-            startActivity(new Intent(this, MainActivity.class));
-        }
+    }
 
-        getEvent(eventId);
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+        if (isOnline()) {
+            initFire();
+            if (intent.hasExtra("eventId")) {
+                eventId = intent.getStringExtra("eventId");
+                Log.d(TAG, "onCreate: got Event:" + eventId);
+            } else {
+                Log.e(TAG, "onCreate: No Event found");
+                Toast.makeText(this, R.string.error_no_event, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, MainActivity.class));
+            }
+
+            getEvent(eventId);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
     }
 
     @Override
@@ -126,7 +151,7 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.event_edit_event){
+        if (item.getItemId() == R.id.event_edit_event) {
             Intent editEvent = new Intent(this, CreateEventActivity.class);
             editEvent.putExtra("eventId", eventId);
             startActivity(editEvent);
@@ -142,7 +167,7 @@ public class EventActivity extends AppCompatActivity {
         finish();
     }
 
-    private void initUI(){
+    private void initUI() {
         toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
         mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map_fragment);
@@ -165,48 +190,48 @@ public class EventActivity extends AppCompatActivity {
 
     }
 
-    private void adjustForOwner(){
+    private void adjustForOwner() {
         Log.d(TAG, "adjustForOwner: userId: " + userId + " owner: " + owner);
-        if(userId.equals(owner)){
+        if (userId.equals(owner)) {
             Log.d(TAG, "adjustForOwner: Cannot rsvp for own event");
             rsvpCard.setVisibility(View.GONE);
         } else {
             rsvpCard.setVisibility(View.VISIBLE);
         }
-        if(!userId.equals(owner)){
+        if (!userId.equals(owner)) {
             Log.d(TAG, "adjustForOwner: Hide menu");
             contextMenu.getItem(0).setVisible(false);
         }
-        if(goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()){
+        if (goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()) {
             peopleCard.setVisibility(View.GONE);
         }
         Log.d(TAG, "adjustForOwner: " + currentUser.getUid());
     }
 
-    private void initFire(){
+    private void initFire() {
         mAuth = FirebaseAuth.getInstance();
-        try{
+        try {
             currentUser = mAuth.getCurrentUser();
             userId = currentUser.getUid();
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             startActivity(new Intent(this, LoginActivity.class));
         }
         db = FirebaseFirestore.getInstance();
     }
 
-    private void getEvent(String id){
+    private void getEvent(String id) {
         DocumentReference eventRef = db.collection("event").document(id);
         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Log.d(TAG, "onComplete: Got document");
                     DocumentSnapshot document = task.getResult();
-                    if(document.exists()){
+                    if (document.exists()) {
                         Log.d(TAG, "onComplete: Document data" + document.getData());
 
                         // Get document fields
-                        try{
+                        try {
                             name = document.getString(Keys.NAME_KEY);
                             Log.d(TAG, "onComplete: Name: " + name);
                             description = document.getString(Keys.DESCRIPTION_KEY);
@@ -228,7 +253,7 @@ public class EventActivity extends AppCompatActivity {
                             isOnline = (boolean) document.get(Keys.ONLINE_KEY);
                             Log.d(TAG, "onComplete: isOnline: " + isOnline);
 
-                            if(isOnline){
+                            if (isOnline) {
                                 location = getString(R.string.msg_event_online);
                                 geoPoint = null;
                                 address = "";
@@ -243,7 +268,7 @@ public class EventActivity extends AppCompatActivity {
 
                             reminderKey = document.getLong(Keys.REMINDER_KEY);
 
-                        } catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             Log.e(TAG, "onComplete: Missing field", e);
                         }
 
@@ -258,9 +283,9 @@ public class EventActivity extends AppCompatActivity {
                         // Some addresses that don't contain a name use the street as location
                         // Which causes a duplicate in displaying them.
                         eventLocation.setText(location);
-                        if(address.contains(location)){
+                        if (address.contains(location)) {
                             // strip everything up to the first comma and the following space.
-                            address = address.substring(address.indexOf(",")+2);
+                            address = address.substring(address.indexOf(",") + 2);
                         }
                         // Add line breaks
                         address = address.replaceAll(", ", "\n");
@@ -269,7 +294,7 @@ public class EventActivity extends AppCompatActivity {
                         eventAddress.setText(address);
 
                         // Set map position
-                        if(isOnline){
+                        if (isOnline) {
                             mapFragment.getView().setVisibility(View.GONE);
                             onlineImg.setVisibility(View.VISIBLE);
                         } else {
@@ -278,7 +303,7 @@ public class EventActivity extends AppCompatActivity {
                         }
 
                         // Set Remindertime
-                        if(hasReminder(reminderKey)) {
+                        if (hasReminder(reminderKey)) {
                             Log.d(TAG, "onComplete: Has reminder with id: " + reminderKey);
                             getReminder(reminderKey);
                         } else {
@@ -294,7 +319,7 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-    public void setReminder(View v){
+    public void setReminder(View v) {
         Log.d(TAG, "setReminder: Setting reminder!");
         reminderCal = Calendar.getInstance();
         DatePickerFragment datePickerFragment = new DatePickerFragment();
@@ -312,7 +337,7 @@ public class EventActivity extends AppCompatActivity {
                         reminderCal.set(Calendar.SECOND, 0);
                         reminderCal.set(Calendar.MILLISECOND, 0);
 
-                        if(Calendar.getInstance().before(reminderCal)){
+                        if (Calendar.getInstance().before(reminderCal)) {
                             addReminder(reminderCal);
                         } else {
                             Toast.makeText(EventActivity.this, "You cannot set reminder before current date!", Toast.LENGTH_SHORT).show();
@@ -327,10 +352,9 @@ public class EventActivity extends AppCompatActivity {
         datePickerFragment.show(getSupportFragmentManager(), "DatePicker");
 
 
-
     }
 
-    private void addReminder(final Calendar reminder){
+    private void addReminder(final Calendar reminder) {
         Log.d(TAG, "addReminder: Adding reminder to database");
         reminderTime = dateTimeFormat.format(reminderCal.getTime());
         eventReminder.setText(reminderTime);
@@ -339,7 +363,7 @@ public class EventActivity extends AppCompatActivity {
                 .document(eventId)
                 .collection("invited")
                 .document(currentUser.getUid());
-        
+
         docRef.update("reminder", reminder).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -350,7 +374,7 @@ public class EventActivity extends AppCompatActivity {
 
         Log.d(TAG, "makeReminder: Started");
 
-        Intent i = new Intent (getApplicationContext(), NotificationReceiver.class);
+        Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
         i.putExtra("id", eventId);
         i.putExtra("reminder", reminder);
         i.putExtra("reminderTime", reminderCal.getTimeInMillis());
@@ -360,7 +384,7 @@ public class EventActivity extends AppCompatActivity {
 
         PendingIntent nIntent = (PendingIntent) PendingIntent.getBroadcast(
                 getApplicationContext(),
-                (int)reminderKey, i,
+                (int) reminderKey, i,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
 
@@ -373,12 +397,12 @@ public class EventActivity extends AppCompatActivity {
 
     }
 
-    private boolean hasReminder(long id){
+    private boolean hasReminder(long id) {
         Intent i = new Intent(getApplicationContext(), NotificationReceiver.class);
-        return PendingIntent.getBroadcast(getApplicationContext(), (int)id, i, PendingIntent.FLAG_NO_CREATE) != null;
+        return PendingIntent.getBroadcast(getApplicationContext(), (int) id, i, PendingIntent.FLAG_NO_CREATE) != null;
     }
 
-    private void getReminder(long id){
+    private void getReminder(long id) {
         DocumentReference reminderRef = db.collection("event")
                 .document(eventId)
                 .collection("invited")
@@ -387,13 +411,13 @@ public class EventActivity extends AppCompatActivity {
         reminderRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if(document.exists()){
+                    if (document.exists()) {
                         long reminderInMillis = document.getLong("reminder.timeInMillis");
                         Calendar rCal = Calendar.getInstance();
                         rCal.setTimeInMillis(reminderInMillis);
-                        if(Calendar.getInstance().before(rCal)){
+                        if (Calendar.getInstance().before(rCal)) {
                             eventReminder.setText(dateTimeFormat.format(rCal.getTime()));
                             eventAddReminder.setText(getString(R.string.btn_change_reminder));
                         }
@@ -403,7 +427,7 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-    private void getRsvp(){
+    private void getRsvp() {
         final FirebaseFirestore rsvp = FirebaseFirestore.getInstance();
         rsvp.collection("event")
                 .document(eventId)
@@ -413,11 +437,11 @@ public class EventActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             DocumentSnapshot doc = task.getResult();
                             String rsvpStatus = doc.getString("rsvp");
                             Log.d(TAG, "onComplete: Got RSVP status: " + rsvpStatus);
-                            if(rsvpStatus.equals("going")){
+                            if (rsvpStatus.equals("going")) {
                                 Log.d(TAG, "onComplete: RSVP status: Going");
                                 eventRsvpGoing.setBackgroundResource(R.drawable.btn_orange);
                                 eventRsvpMaybe.setBackgroundResource(R.drawable.btn_light);
@@ -433,84 +457,121 @@ public class EventActivity extends AppCompatActivity {
                 });
     }
 
-    public void setGoing(View v){
+    public void setGoing(View v) {
         Log.d(TAG, "setGoing: Selected");
-        FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-        eventDb.collection("event")
-                .document(eventId)
-                .collection("invited")
-                .document(userId)
-                .update("rsvp", "going")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: Set rsvp to going");
-                            getRsvp();
-                        }
-                    }
-                });
-    }
-
-    public void setMaybe(View v){
-        Log.d(TAG, "setMaybe: Selected");
-        FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-        eventDb.collection("event")
-                .document(eventId)
-                .collection("invited")
-                .document(userId)
-                .update("rsvp", "maybe")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: Set rsvp to maybe");
-                            getRsvp();
-                        }
-                    }
-                });
-    }
-
-    public void setNotGoing(View v){
-        Log.d(TAG, "setNotGoing: Selected");
-        WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_not_going), new WarningDialogFragment.WarningListener() {
-            @Override
-            public void onCompleted(boolean b) {
-                final FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-                eventDb.collection("event")
-                        .document(eventId)
-                        .collection("invited")
-                        .document(userId)
-                        .delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    Log.d(TAG, "onComplete: Deleted reference to self in event");
-                                    eventDb.collection("user")
-                                            .document(userId)
-                                            .collection("event")
-                                            .document(eventId)
-                                            .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                Log.d(TAG, "onComplete: Removed event from self");
-                                                Toast.makeText(EventActivity.this, "You have set not going and have removed yourself from the event!", Toast.LENGTH_SHORT).show();
-                                                Intent notGoing = new Intent(EventActivity.this, MainActivity.class);
-                                                startActivity(notGoing);
-                                                finish();
-                                            }
-                                        }
-                                    });
-
-
-                                }
+        if (isOnline()) {
+            FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+            eventDb.collection("event")
+                    .document(eventId)
+                    .collection("invited")
+                    .document(userId)
+                    .update("rsvp", "going")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: Set rsvp to going");
+                                getRsvp();
                             }
-                        });
+                        }
+                    });
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
 
-            }
-        });
-        warning.show(getSupportFragmentManager(), "NotGoingWarning");
+    }
+
+    public void setMaybe(View v) {
+        Log.d(TAG, "setMaybe: Selected");
+        if (isOnline()) {
+            FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+            eventDb.collection("event")
+                    .document(eventId)
+                    .collection("invited")
+                    .document(userId)
+                    .update("rsvp", "maybe")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: Set rsvp to maybe");
+                                getRsvp();
+                            }
+                        }
+                    });
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void setNotGoing(View v) {
+        if (isOnline()) {
+            Log.d(TAG, "setNotGoing: Selected");
+            WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_not_going), new WarningDialogFragment.WarningListener() {
+                @Override
+                public void onCompleted(boolean b) {
+                    final FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                    eventDb.collection("event")
+                            .document(eventId)
+                            .collection("invited")
+                            .document(userId)
+                            .delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "onComplete: Deleted reference to self in event");
+                                        eventDb.collection("user")
+                                                .document(userId)
+                                                .collection("event")
+                                                .document(eventId)
+                                                .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "onComplete: Removed event from self");
+                                                    Toast.makeText(EventActivity.this, "You have set not going and have removed yourself from the event!", Toast.LENGTH_SHORT).show();
+                                                    Intent notGoing = new Intent(EventActivity.this, MainActivity.class);
+                                                    startActivity(notGoing);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+
+
+                                    }
+                                }
+                            });
+
+                }
+
+                @Override
+                public void onCompleted(boolean b, String email) {
+                    // Do nothing
+                }
+            });
+            warning.show(getSupportFragmentManager(), "NotGoingWarning");
+        } else {
+            Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        connected = (networkInfo != null && networkInfo.isConnected());
+        if (!connected) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.event_notice_container, noInternetWarning)
+                    .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().remove(noInternetWarning);
+        }
+        return connected;
     }
 }

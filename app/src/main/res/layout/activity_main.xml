@@ -20,18 +20,19 @@
             android:layout_height="wrap_content"
             android:elevation="4dp"/>
 
+
         <FrameLayout
             android:id="@+id/main_notice_container"
             android:name="no.sforman.ezevents.NoticeFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/main_content_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-        </FrameLayout>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
