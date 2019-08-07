@@ -95,6 +95,14 @@
         <item name="android:textColor">@color/lightSecondary</item>
     </style>
 
+    <style name="TitleDark" parent="TitleLight">
+        <item name="android:textColor">@color/darkColor</item>
+    </style>
+
+    <style name="SubTitleDark" parent="SubTitleLight">
+        <item name="android:textColor">@color/darkSecondary</item>
+    </style>
+
     <style name="ErrorText" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/redPrimary</item>
     </style>

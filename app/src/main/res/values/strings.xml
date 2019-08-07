@@ -19,6 +19,7 @@
     <string name="title_friend_requests">Friend requests</string>
     <string name="title_all">All</string>
     <string name="title_my_events">My events</string>
+    <string name="title_details">Details</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>

@@ -28,6 +28,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private String requestId;
 
     private ArrayList<User> users;
+    private ArrayList<User> selectedUsers = new ArrayList<>();
 
     /**
      * @param context <Context>
@@ -114,35 +115,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean isSelected = false;
 
-                    // Check if already selected
-                    int index = 0;
-                    for (User u : users) {
-
-                        if (u.getId().equals(userId)) {
-                            Log.d(TAG, "onClick: removed user: " + u.getId());
-                            users.remove(index);
-
-                            // cardview default is #bdc4ca
-                            // = r189 g196 b202
-                            holder.cardView.setBackgroundColor(Color.rgb(189, 196, 202));
-
-                            isSelected = true;
-                            break;
-                        }
-                        index++;
-                    }
-
-                    if (!isSelected) {
+                    if (!selectedUsers.contains(user)) {
                         // orangeSecondary is #e28016
                         // = r226 g128 b22
-                        holder.cardView.setBackgroundColor(Color.rgb(226, 128, 22));
-                        Log.d(TAG, "onClick: added user: " + users.get(i).getId());
-                        users.add(users.get(i));
-                    }
+                        holder.cardView.setCardBackgroundColor(Color.rgb(226, 128, 22));
+                        Log.d(TAG, "onClick: added user: " + user.getId());
+                        selectedUsers.add(user);
+                    } else {
+                        // cardview default is #bdc4ca
+                        // = r189 g196 b202
+                        holder.cardView.setCardBackgroundColor(Color.rgb(189, 196, 202));
+                        Log.d(TAG, "onClick: removed user" + user.getId());
 
-                    onClickListener.selectedUsers(users);
+                        selectedUsers.remove(user);
+                    }
+                    onClickListener.selectedUsers(selectedUsers);
 
                 }
             });

@@ -70,6 +70,7 @@ class EventsFragment extends Fragment {
         subAll = layout.findViewById(R.id.event_fragment_submenu_all);
         subMine = layout.findViewById(R.id.event_fragment_submenu_mine);
 
+        eventList.clear();
         initFab();
 
         return layout;
@@ -97,7 +98,6 @@ class EventsFragment extends Fragment {
 
     private void initFire() {
         Log.d(TAG, "initFire: ");
-        eventList.clear();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {

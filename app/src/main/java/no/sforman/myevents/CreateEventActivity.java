@@ -3,7 +3,10 @@ package no.sforman.myevents;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,12 +16,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +49,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -51,7 +57,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CreateEventActivity extends AppCompatActivity implements WarningDialogFragment.WarningListener {
+public class CreateEventActivity extends AppCompatActivity implements WarningDialogFragment.WarningListener, UserAdapter.ResponseListener {
 
     private static final String TAG = "CreateEventActivity";
 
@@ -87,6 +93,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     private Button createEvent;
     private Button deleteEvent;
 
+    private TextView detailsTitle;
+    private TextView peopleTitle;
+    private LinearLayout detailsLayout;
+    private LinearLayout peopleLayout;
+    private RecyclerView peopleRecycler;
+
     // Places
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private LatLng placeLatLng;
@@ -108,6 +120,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     private Calendar today = Calendar.getInstance();
     private GeoPoint eventGeoPoint;
 
+    private ArrayList<User> friendList = new ArrayList<>();
+    private ArrayList<User> invitedUsers = new ArrayList<>();
+
+    // Date formatting
     private DateFormat dateFormat = new SimpleDateFormat("E, dd MMMM yyyy", Locale.getDefault());
     private DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private DateFormat dateTimeFormat = new SimpleDateFormat("E, dd MMMM yyyy @ HH:mm", Locale.getDefault());
@@ -130,6 +146,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         if (isOnline()) {
             initFirebase();
             initPlaces();
+            getFriends();
         } else {
             Log.e(TAG, "onCreate: No network");
         }
@@ -233,6 +250,12 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         createEvent = findViewById(R.id.create_event_submit_button);
         deleteEvent = findViewById(R.id.create_event_delete_button);
 
+        detailsTitle = findViewById(R.id.create_event_details_title);
+        peopleTitle = findViewById(R.id.create_event_people_title);
+        detailsLayout = findViewById(R.id.create_event_details);
+        peopleLayout = findViewById(R.id.create_event_people);
+        peopleRecycler = findViewById(R.id.create_event_people_recycler);
+
 
     }
 
@@ -279,6 +302,45 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 }
             }
         }
+    }
+
+    private void getFriends(){
+        final FirebaseFirestore friendDb = FirebaseFirestore.getInstance();
+
+        friendDb.collection(Keys.USER_KEY)
+                .document(currentUser.getUid())
+                .collection(Keys.FRIEND_KEY)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Got all friends");
+                            for (QueryDocumentSnapshot friendDoc : task.getResult()){
+
+                                String id = friendDoc.getId();
+                                String firstname = friendDoc.getString(Keys.FIRSTNAME_KEY);
+                                String surname = friendDoc.getString(Keys.SURNAME_KEY);
+                                String email = friendDoc.getString(Keys.EMAIL_KEY);
+                                String image = friendDoc.getString(Keys.IMAGE_KEY);
+
+                                User u = new User(id, firstname, surname, email, image);
+                                friendList.add(u);
+
+                                initRecyclerView();
+
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void initRecyclerView(){
+        Log.d(TAG, "initRecyclerView: ");
+        RecyclerView.Adapter adapter = new UserAdapter(this, friendList, "add", this );
+        peopleRecycler.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        peopleRecycler.setLayoutManager(layoutManager);
     }
 
     public void onSubmitEvent(View v) {
@@ -355,6 +417,10 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                 isOk = false;
                 Log.e(TAG, "validInput: Reminder too late");
             }
+        }
+
+        if(!isOk){
+            showDetails(detailsTitle);
         }
 
         return isOk;
@@ -551,6 +617,13 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
                     }
                 });
+
+        // All invited users to event
+        if(!invitedUsers.isEmpty()){
+            for (User u : invitedUsers){
+                Log.d(TAG, "createEvent: Inviting " + u.getId() + "Name: " + u.getFullname());
+            }
+        }
 
 
     }
@@ -782,5 +855,41 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                         Log.d(TAG, "onSuccess: deleted subcollection id: " + id);
                     }
                 });
+    }
+
+    public void showPeople(View v){
+        Log.d(TAG, "showPeople: ");
+        peopleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        peopleTitle.setTextColor(ContextCompat.getColor(this, R.color.darkColor));
+        detailsTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        detailsTitle.setTextColor(ContextCompat.getColor(this, R.color.darkSecondary));
+
+        peopleLayout.setVisibility(View.VISIBLE);
+        detailsLayout.setVisibility(View.GONE);
+    }
+
+    public void showDetails(View v){
+        Log.d(TAG, "showDetails: ");
+        peopleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        peopleTitle.setTextColor(ContextCompat.getColor(this, R.color.darkSecondary));
+        detailsTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        detailsTitle.setTextColor(ContextCompat.getColor(this, R.color.darkColor));
+
+        peopleLayout.setVisibility(View.GONE);
+        detailsLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void respondToRequest(String requestId, boolean wasAccepted) {
+        // Do nothing here
+    }
+
+    @Override
+    public void selectedUsers(ArrayList<User> users) {
+        this.invitedUsers = users;
+        for(User u : invitedUsers){
+            Log.d(TAG, "selectedUsers: " + u.getId());
+        }
+
     }
 }
