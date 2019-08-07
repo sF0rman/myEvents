@@ -101,6 +101,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 public void onClick(View view) {
                     Log.d(TAG, "onClick: Accepted friend request from: " + requestId);
                     onClickListener.respondToRequest(requestId, true);
+                    holder.cardView.setVisibility(View.GONE);
                 }
             });
             holder.declineBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +109,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 public void onClick(View view) {
                     Log.d(TAG, "onClick: Cancelled friend request from: " + requestId);
                     onClickListener.respondToRequest(requestId, false);
+                    holder.cardView.setVisibility(View.GONE);
                 }
             });
             //

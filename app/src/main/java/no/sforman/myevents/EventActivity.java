@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +78,10 @@ public class EventActivity extends AppCompatActivity {
     private CardView rsvpCard;
     private CardView peopleCard;
 
+    private Button showGoingBtn;
+    private Button showMaybeBtn;
+    private Button showInvitedBtn;
+
     private RecyclerView goingRv;
     private RecyclerView maybeRv;
     private RecyclerView invitedRv;
@@ -96,7 +104,6 @@ public class EventActivity extends AppCompatActivity {
     private Calendar reminderCal;
     private String location;
     private String address;
-    private static final String isOnlineText = "Online event";
     private long startInMillis;
     private long endInMillies;
     private boolean isOnline;
@@ -126,6 +133,7 @@ public class EventActivity extends AppCompatActivity {
             if (intent.hasExtra("eventId")) {
                 eventId = intent.getStringExtra("eventId");
                 Log.d(TAG, "onCreate: got Event:" + eventId);
+                getRsvpUsers();
             } else {
                 Log.e(TAG, "onCreate: No Event found");
                 Toast.makeText(this, R.string.error_no_event, Toast.LENGTH_SHORT).show();
@@ -192,6 +200,13 @@ public class EventActivity extends AppCompatActivity {
         rsvpCard = findViewById(R.id.event_rsvp_card);
         peopleCard = findViewById(R.id.event_people_card);
 
+        showGoingBtn = findViewById(R.id.event_going_view);
+        showMaybeBtn = findViewById(R.id.event_maybe_view);
+        showInvitedBtn = findViewById(R.id.event_invited_view);
+
+        goingRv = findViewById(R.id.event_going_recycler);
+        maybeRv = findViewById(R.id.event_maybe_recycler);
+        invitedRv = findViewById(R.id.event_invited_recycler);
 
     }
 
@@ -206,9 +221,6 @@ public class EventActivity extends AppCompatActivity {
         if (!userId.equals(owner)) {
             Log.d(TAG, "adjustForOwner: Hide menu");
             contextMenu.getItem(0).setVisible(false);
-        }
-        if (goingPeople.isEmpty() && maybePeople.isEmpty() && invitedPeople.isEmpty()) {
-            peopleCard.setVisibility(View.GONE);
         }
         Log.d(TAG, "adjustForOwner: " + currentUser.getUid());
     }
@@ -490,7 +502,7 @@ public class EventActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
         }
-
+        getRsvpUsers();
     }
 
     public void setMaybe(View v) {
@@ -514,7 +526,7 @@ public class EventActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_SHORT).show();
         }
-
+        getRsvpUsers();
     }
 
     public void setNotGoing(View v) {
@@ -591,5 +603,92 @@ public class EventActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().remove(noInternetWarning);
         }
         return connected;
+    }
+
+    private void getRsvpUsers(){
+        Log.d(TAG, "getRsvpUsers: ");
+
+        goingPeople.clear();
+        maybePeople.clear();
+        invitedPeople.clear();
+
+        // Get all users invited to event.
+        FirebaseFirestore rsvpDb = FirebaseFirestore.getInstance();
+        rsvpDb.collection(Keys.EVENT_KEY)
+                .document(eventId)
+                .collection(Keys.INVITED_KEY)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot rsvpQuery : task.getResult()){
+                                String eventUserId = rsvpQuery.getId();
+                                String eventUserFn = rsvpQuery.getString(Keys.FIRSTNAME_KEY);
+                                String eventUserSn = rsvpQuery.getString(Keys.SURNAME_KEY);
+                                String eventUserEm = rsvpQuery.getString(Keys.EMAIL_KEY);
+                                String eventUserIm = rsvpQuery.getString(Keys.IMAGE_KEY);
+                                String eventUserRsvp = rsvpQuery.getString(Keys.RSVP_KEY);
+
+                                User u = new User(eventUserId, eventUserFn, eventUserSn, eventUserEm, eventUserIm);
+                                if(eventUserRsvp.equals("going")){
+                                    goingPeople.add(u);
+                                } else if(eventUserRsvp.equals("maybe")){
+                                    maybePeople.add(u);
+                                } else if(eventUserRsvp.equals("invited")){
+                                    invitedPeople.add(u);
+                                } else {
+                                    Log.e(TAG, "onComplete: RSVP not found.");
+                                }
+                                initRecyclerView();
+                            }
+                        }
+                    }
+                });
+
+    }
+
+    private void initRecyclerView(){
+        RecyclerView.Adapter goingAdapter = new UserAdapter(this, goingPeople);
+        goingRv.setAdapter(goingAdapter);
+        LinearLayoutManager goingLayoutManager = new LinearLayoutManager(this);
+        goingRv.setLayoutManager(goingLayoutManager);
+
+        RecyclerView.Adapter maybeAdapter = new UserAdapter(this, maybePeople);
+        maybeRv.setAdapter(maybeAdapter);
+        LinearLayoutManager maybeLayoutManager = new LinearLayoutManager(this);
+        maybeRv.setLayoutManager(maybeLayoutManager);
+
+        RecyclerView.Adapter invitedAdapter = new UserAdapter(this, invitedPeople);
+        invitedRv.setAdapter(invitedAdapter);
+        LinearLayoutManager invitedLayoutManager = new LinearLayoutManager(this);
+        invitedRv.setLayoutManager(invitedLayoutManager);
+    }
+
+    public void showGoing(View v){
+        showGoingBtn.setBackgroundResource(R.drawable.btn_orange);
+        showMaybeBtn.setBackgroundResource(R.drawable.btn_light);
+        showInvitedBtn.setBackgroundResource(R.drawable.btn_light);
+        goingRv.setVisibility(View.VISIBLE);
+        maybeRv.setVisibility(View.GONE);
+        invitedRv.setVisibility(View.GONE);
+    }
+
+    public void showMaybe(View v){
+        showGoingBtn.setBackgroundResource(R.drawable.btn_light);
+        showMaybeBtn.setBackgroundResource(R.drawable.btn_orange);
+        showInvitedBtn.setBackgroundResource(R.drawable.btn_light);
+        goingRv.setVisibility(View.GONE);
+        maybeRv.setVisibility(View.VISIBLE);
+        invitedRv.setVisibility(View.GONE);
+    }
+
+    public void showInvited(View v){
+        showGoingBtn.setBackgroundResource(R.drawable.btn_light);
+        showMaybeBtn.setBackgroundResource(R.drawable.btn_light);
+        showInvitedBtn.setBackgroundResource(R.drawable.btn_orange);
+        goingRv.setVisibility(View.GONE);
+        maybeRv.setVisibility(View.GONE);
+        invitedRv.setVisibility(View.VISIBLE);
     }
 }

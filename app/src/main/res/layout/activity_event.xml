@@ -271,7 +271,7 @@
             style="@style/Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -290,6 +290,8 @@
                     android:layout_weight="1">
 
                     <Button
+                        android:id="@+id/event_going_view"
+                        android:onClick="showGoing"
                         style="@style/PrimaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -297,6 +299,8 @@
                         android:text="@string/btn_going" />
 
                     <Button
+                        android:id="@+id/event_maybe_view"
+                        android:onClick="showMaybe"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -304,6 +308,8 @@
                         android:text="@string/btn_maybe" />
 
                     <Button
+                        android:id="@+id/event_invited_view"
+                        android:onClick="showInvited"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -312,24 +318,23 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/temp_ppl_going" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/event_going_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/event_maybe_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="350dp"
                     android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/event_invited_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="350dp"
                     android:visibility="gone" />
 
             </LinearLayout>
