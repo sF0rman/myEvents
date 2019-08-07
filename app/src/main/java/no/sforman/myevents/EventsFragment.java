@@ -79,13 +79,13 @@ class EventsFragment extends Fragment {
     public void onStart() {
         Log.d(TAG, "onStart: Lifecycle");
         super.onStart();
-        initFire();
     }
 
     @Override
     public void onResume() {
         Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
+        initFire();
     }
 
     @Override
@@ -118,8 +118,8 @@ class EventsFragment extends Fragment {
         db.collection("user")
                 .document(userId)
                 .collection("event")
-                .orderBy("start", Query.Direction.ASCENDING)
-                .startAt(today)
+                .orderBy(Keys.START_KEY, Query.Direction.ASCENDING)
+                .startAt(today.getTimeInMillis())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -134,8 +134,8 @@ class EventsFragment extends Fragment {
                                 String description = document.getString("description");
                                 Calendar start = Calendar.getInstance();
                                 Calendar end = Calendar.getInstance();
-                                long stime = document.getLong("start.timeInMillis");
-                                long etime = document.getLong("end.timeInMillis");
+                                long stime = document.getLong("start");
+                                long etime = document.getLong("end");
                                 start.setTimeInMillis(stime);
                                 end.setTimeInMillis(etime);
                                 GeoPoint geoPoint = document.getGeoPoint("geoPoint");
@@ -148,8 +148,8 @@ class EventsFragment extends Fragment {
                                 Event e = new Event(name,
                                         owner,
                                         description,
-                                        start,
-                                        end,
+                                        stime,
+                                        etime,
                                         geoPoint.getLatitude(),
                                         geoPoint.getLongitude(),
                                         location,
@@ -199,7 +199,7 @@ class EventsFragment extends Fragment {
                 .collection("event")
                 .whereEqualTo(Keys.OWNER_KEY, userId)
                 .orderBy(Keys.START_KEY, Query.Direction.ASCENDING)
-                .startAt(today)
+                .startAt(today.getTimeInMillis())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -214,8 +214,8 @@ class EventsFragment extends Fragment {
                                 String description = document.getString("description");
                                 Calendar start = Calendar.getInstance();
                                 Calendar end = Calendar.getInstance();
-                                long stime = document.getLong("start.timeInMillis");
-                                long etime = document.getLong("end.timeInMillis");
+                                long stime = document.getLong("start");
+                                long etime = document.getLong("end");
                                 start.setTimeInMillis(stime);
                                 end.setTimeInMillis(etime);
                                 GeoPoint geoPoint = document.getGeoPoint("geoPoint");
@@ -228,8 +228,8 @@ class EventsFragment extends Fragment {
                                 Event e = new Event(name,
                                         owner,
                                         description,
-                                        start,
-                                        end,
+                                        stime,
+                                        etime,
                                         geoPoint.getLatitude(),
                                         geoPoint.getLongitude(),
                                         location,

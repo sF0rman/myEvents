@@ -14,8 +14,8 @@ public class Event implements Parcelable {
     private String name;
     private String description;
     private long reminderKey;
-    private Calendar start;
-    private Calendar end;
+    private long start;
+    private long end;
     private Double latitude;
     private Double longitude;
     private String location;
@@ -26,8 +26,8 @@ public class Event implements Parcelable {
     public Event(String name,
                  String owner,
                  String description,
-                 Calendar startDate,
-                 Calendar endDate,
+                 long startDate,
+                 long endDate,
                  double latitude,
                  double longitude,
                  String location,
@@ -68,11 +68,11 @@ public class Event implements Parcelable {
         return description;
     }
 
-    public Calendar getStart() {
+    public long getStart() {
         return start;
     }
 
-    public Calendar getEnd() {
+    public long getEnd() {
         return end;
     }
 
@@ -102,8 +102,8 @@ public class Event implements Parcelable {
         owner = in.readString();
         description = in.readString();
         reminderKey = in.readLong();
-        start = (Calendar) in.readValue(Calendar.class.getClassLoader());
-        end = (Calendar) in.readValue(Calendar.class.getClassLoader());
+        start = in.readLong();
+        end = in.readLong();
         latitude = in.readDouble();
         longitude = in.readDouble();
         location = in.readString();
@@ -123,8 +123,8 @@ public class Event implements Parcelable {
         dest.writeString(owner);
         dest.writeString(description);
         dest.writeLong(reminderKey);
-        dest.writeValue(start);
-        dest.writeValue(end);
+        dest.writeLong(start);
+        dest.writeLong(end);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeString(location);

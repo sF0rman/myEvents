@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 
@@ -49,7 +50,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             holder.location.setText(events.get(i).getLocation());
         }
 
-        holder.start.setText(dateFormat.format(events.get(i).getStart().getTime()));
+        Calendar start = Calendar.getInstance();
+        start.setTimeInMillis(events.get(i).getStart());
+        holder.start.setText(dateFormat.format(start.getTime()));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

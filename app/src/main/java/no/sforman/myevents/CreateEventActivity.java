@@ -460,8 +460,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
-                    startCal,
-                    endCal,
+                    startCal.getTimeInMillis(),
+                    endCal.getTimeInMillis(),
                     0,
                     0,
                     "none",
@@ -472,8 +472,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
-                    startCal,
-                    endCal,
+                    startCal.getTimeInMillis(),
+                    endCal.getTimeInMillis(),
                     eventGeoPoint.getLatitude(),
                     eventGeoPoint.getLongitude(),
                     eventLocation,
@@ -520,7 +520,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                                     userMap.put("email", userEmail);
                                     userMap.put("image", userImage);
                                     userMap.put("rsvp", "going");
-                                    userMap.put("reminder", reminderCal);
+                                    userMap.put("reminder", reminderCal.getTimeInMillis());
 
                                     // Add user to event as going
                                     db.collection("event")
@@ -597,7 +597,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> reminderMap = new HashMap<>();
-        reminderMap.put("reminder", reminderCal);
+        reminderMap.put("reminder", reminderCal.getTimeInMillis());
 
         db.collection("event")
                 .document(event)
@@ -630,11 +630,11 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                     if (eventDoc.exists()) {
                         name.setText(eventDoc.getString(Keys.NAME_KEY));
                         description.setText(eventDoc.getString(Keys.DESCRIPTION_KEY));
-                        long startInMillis = eventDoc.getLong("start.timeInMillis");
+                        long startInMillis = eventDoc.getLong("start");
                         startCal.setTimeInMillis(startInMillis);
                         startDate.setText(dateFormat.format(startCal.getTime()));
                         startTime.setText(timeFormat.format(startCal.getTime()));
-                        long endInMillis = eventDoc.getLong("end.timeInMillis");
+                        long endInMillis = eventDoc.getLong("end");
                         endCal.setTimeInMillis(endInMillis);
                         endDate.setText(dateFormat.format(endCal.getTime()));
                         endTime.setText(timeFormat.format(endCal.getTime()));
@@ -670,8 +670,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
-                    startCal,
-                    endCal,
+                    startCal.getTimeInMillis(),
+                    endCal.getTimeInMillis(),
                     0,
                     0,
                     "none",
@@ -682,8 +682,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             event = new Event(eventName,
                     eventOwnerId,
                     eventDescription,
-                    startCal,
-                    endCal,
+                    startCal.getTimeInMillis(),
+                    endCal.getTimeInMillis(),
                     eventGeoPoint.getLatitude(),
                     eventGeoPoint.getLongitude(),
                     eventLocation,

@@ -248,9 +248,9 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: Owner: " + owner);
 
 
-                            startInMillis = (long) document.get("start.timeInMillis");
+                            startInMillis = (long) document.get("start");
                             Log.d(TAG, "onComplete: startMillis: " + startInMillis);
-                            endInMillies = (long) document.get("end.timeInMillis");
+                            endInMillies = (long) document.get("end");
                             Log.d(TAG, "onComplete: endMillis: " + endInMillies);
                             start.setTimeInMillis(startInMillis);
                             Log.d(TAG, "onComplete: Start: " + start.getTime().toString());
@@ -371,7 +371,7 @@ public class EventActivity extends AppCompatActivity {
                 .collection("invited")
                 .document(currentUser.getUid());
 
-        docRef.update("reminder", reminder).addOnSuccessListener(new OnSuccessListener<Void>() {
+        docRef.update("reminder", reminder.getTimeInMillis()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Saved reminder to event");
@@ -423,7 +423,7 @@ public class EventActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        long reminderInMillis = document.getLong("reminder.timeInMillis");
+                        long reminderInMillis = document.getLong("reminder");
                         Calendar rCal = Calendar.getInstance();
                         rCal.setTimeInMillis(reminderInMillis);
                         if (Calendar.getInstance().before(rCal)) {
