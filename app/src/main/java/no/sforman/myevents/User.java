@@ -23,11 +23,11 @@ public class User implements Parcelable {
         return id;
     }
 
-    private String getFirstname() {
+    public String getFirstname() {
         return firstname;
     }
 
-    private String getSurname() {
+    public String getSurname() {
         return surname;
     }
 

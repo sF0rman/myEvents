@@ -601,7 +601,20 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                                                     Toast.makeText(CreateEventActivity.this, "Event created", Toast.LENGTH_SHORT).show();
 
                                                     Log.d(TAG, "onSuccess: SendEventId" + eventId);
-                                                    addEventToSelf(eventId, event);
+                                                    addEventToSelf(eventId, event, eventOwnerId);
+
+                                                    // Add all invited users to event
+                                                    Log.d(TAG, "onSuccess: Invited users " + !invitedUsers.isEmpty());
+                                                    if(!invitedUsers.isEmpty()){
+                                                        Log.d(TAG, "onSuccess: Invited users exist");
+                                                        for (User u : invitedUsers){
+                                                            Log.d(TAG, "createEvent: Inviting " + u.getId() + " - Name: " + u.getFullname());
+                                                            addEventToSelf(eventId, event, u.getId());
+                                                            addUserToEvent(eventId, u);
+                                                        }
+                                                    } else {
+                                                        Log.d(TAG, "onSuccess: No invited users");
+                                                    }
 
                                                     Intent i = new Intent(CreateEventActivity.this, EventActivity.class);
                                                     i.putExtra("eventId", eventId);
@@ -618,29 +631,46 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                     }
                 });
 
-        // All invited users to event
-        if(!invitedUsers.isEmpty()){
-            for (User u : invitedUsers){
-                Log.d(TAG, "createEvent: Inviting " + u.getId() + "Name: " + u.getFullname());
-            }
-        }
-
 
     }
 
-    private void addEventToSelf(String eventId, Event event) {
+    private void addEventToSelf(String eventId, Event event, final String userId) {
         Log.d(TAG, "addEventToSelf: Recieved eventId " + eventId);
         FirebaseFirestore eDb = FirebaseFirestore.getInstance();
-        eDb.collection("user")
-                .document(eventOwnerId)
-                .collection("event")
+        eDb.collection(Keys.USER_KEY)
+                .document(userId)
+                .collection(Keys.EVENT_KEY)
                 .document(eventId)
                 .set(event)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: Event added to self");
+                            Log.d(TAG, "onComplete: Event added to user: " + userId);
+                        }
+                    }
+                });
+    }
+
+    private void addUserToEvent(String eventId, final User u){
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put(Keys.FIRSTNAME_KEY, u.getFirstname());
+        userMap.put(Keys.SURNAME_KEY, u.getSurname());
+        userMap.put(Keys.EMAIL_KEY, u.getEmail());
+        userMap.put(Keys.IMAGE_KEY, u.getImage());
+        userMap.put(Keys.RSVP_KEY, "invited");
+
+        FirebaseFirestore evDb = FirebaseFirestore.getInstance();
+        evDb.collection(Keys.EVENT_KEY)
+                .document(eventId)
+                .collection(Keys.INVITED_KEY)
+                .add(userMap)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: User added to event: " + u.getId());
                         }
                     }
                 });
@@ -692,6 +722,8 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         reminderError.setVisibility(View.GONE);
         deleteEvent.setVisibility(View.VISIBLE);
         createEvent.setText(R.string.btn_edit_event);
+        peopleTitle.setVisibility(View.GONE);
+        detailsTitle.setVisibility(View.GONE);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final DocumentReference eventRef = db.collection("event").document(id);
@@ -769,7 +801,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Document update. ID: " + eventId);
-                addEventToSelf(eventId, event);
+                addEventToSelf(eventId, event, eventOwnerId);
                 Intent updated = new Intent(CreateEventActivity.this, EventActivity.class);
                 updated.putExtra("eventId", eventId);
                 progressBar.setVisibility(View.INVISIBLE);

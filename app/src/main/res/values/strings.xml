@@ -20,6 +20,7 @@
     <string name="title_all">All</string>
     <string name="title_my_events">My events</string>
     <string name="title_details">Details</string>
+    <string name="title_add_people">Add people</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
