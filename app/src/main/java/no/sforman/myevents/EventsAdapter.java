@@ -90,7 +90,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         private TextView start;
         private CardView cardView;
 
-        public EventViewHolder(@NonNull View itemView){
+        EventViewHolder(@NonNull View itemView){
             super(itemView);
             Log.d(TAG, "EventViewHolder: Lifecycle");
 

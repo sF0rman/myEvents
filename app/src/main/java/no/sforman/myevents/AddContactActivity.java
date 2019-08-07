@@ -15,7 +15,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,16 +48,9 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     private TextView nothingSelected;
     private RecyclerView selectedUsers;
     private RecyclerView searchResult;
-    private Button acceptBtn;
-    private Button cancelBtn;
 
-    // Firebase
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
     private FirebaseFirestore db;
     private String userId;
-    private SearchAdapter searchAdapter;
-    private UserAdapter selectedAdapter;
 
     // users
     private final ArrayList<User> allUsers = new ArrayList<>();
@@ -98,8 +90,6 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         progressBar = findViewById(R.id.add_contact_progressbar);
         selectedUsers = findViewById(R.id.add_contact_selected);
         searchResult = findViewById(R.id.add_contact_search_result);
-        acceptBtn = findViewById(R.id.add_contact_accept);
-        cancelBtn = findViewById(R.id.add_contact_cancel);
 
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -132,8 +122,9 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
 
     private void initFire() {
         Log.d(TAG, "initFire: ");
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
+        // Firebase
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         if (currentUser != null) {
             userId = currentUser.getUid();
@@ -190,46 +181,6 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
         }
     }
 
-    /*
-    Initial search method used, but required exact matching name instead of character by
-    character search. New method handles search in-app. May cause problems if database gets big
-    enough?
-     */
-    private void initSearch(String search) {
-        Log.d(TAG, "initSearch: ");
-        userList.clear();
-
-        Query query = db.collection(Keys.USER_KEY)
-                .orderBy(Keys.FIRSTNAME_KEY)
-                .startAt(search)
-                .endAt(search)
-                .limit(20);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: Got results");
-                    for (QueryDocumentSnapshot doc : task.getResult()) {
-                        String id = doc.getId();
-                        String firstname = doc.getString(Keys.FIRSTNAME_KEY);
-                        String surname = doc.getString(Keys.SURNAME_KEY);
-                        String email = doc.getString(Keys.EMAIL_KEY);
-                        String image = doc.getString(Keys.IMAGE_KEY);
-
-                        Log.d(TAG, "onComplete: Found: " + id);
-
-                        User u = new User(id, firstname, surname, email, image);
-                        userList.add(u);
-                    }
-
-                    progressBar.setVisibility(View.INVISIBLE);
-                    initSearchRecyclerView();
-
-                }
-            }
-        });
-    }
-
     private void hideNothingSelected() {
         Log.d(TAG, "hideNothingSelected: ");
         if (!selectedUserList.isEmpty()) {
@@ -247,7 +198,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     private void initSearchRecyclerView() {
         Log.d(TAG, "initSearchRecyclerView: ");
         hideNothingSelected();
-        searchAdapter = new SearchAdapter(this, userList, selectedUserList, this);
+        SearchAdapter searchAdapter = new SearchAdapter(this, userList, selectedUserList, this);
         searchResult.setAdapter(searchAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         searchResult.setLayoutManager(layoutManager);
@@ -257,7 +208,7 @@ public class AddContactActivity extends AppCompatActivity implements SearchAdapt
     private void initSelectedRecyclerView() {
         Log.d(TAG, "initSelectedRecyclerView: ");
         hideNothingSelected();
-        selectedAdapter = new UserAdapter(this, selectedUserList, "selected", this);
+        UserAdapter selectedAdapter = new UserAdapter(this, selectedUserList, "selected", this);
         selectedUsers.setAdapter(selectedAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         selectedUsers.setLayoutManager(layoutManager);

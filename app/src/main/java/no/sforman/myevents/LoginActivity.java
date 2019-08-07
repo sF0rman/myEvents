@@ -140,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isValidEmail(String e) {
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 

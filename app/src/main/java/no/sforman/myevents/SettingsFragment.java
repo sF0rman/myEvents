@@ -85,7 +85,7 @@ class SettingsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    private SettingsListener settingsListener;
+    private final SettingsListener settingsListener;
 
     public interface SettingsListener {
         void onUserUpdated();
@@ -774,7 +774,7 @@ class SettingsFragment extends Fragment {
 
     private boolean isValidEmail(String e) {
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 

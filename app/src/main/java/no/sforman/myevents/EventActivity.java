@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -631,14 +630,19 @@ public class EventActivity extends AppCompatActivity {
                                 String eventUserRsvp = rsvpQuery.getString(Keys.RSVP_KEY);
 
                                 User u = new User(eventUserId, eventUserFn, eventUserSn, eventUserEm, eventUserIm);
-                                if(eventUserRsvp.equals("going")){
-                                    goingPeople.add(u);
-                                } else if(eventUserRsvp.equals("maybe")){
-                                    maybePeople.add(u);
-                                } else if(eventUserRsvp.equals("invited")){
-                                    invitedPeople.add(u);
-                                } else {
-                                    Log.e(TAG, "onComplete: RSVP not found.");
+                                switch (eventUserRsvp) {
+                                    case "going":
+                                        goingPeople.add(u);
+                                        break;
+                                    case "maybe":
+                                        maybePeople.add(u);
+                                        break;
+                                    case "invited":
+                                        invitedPeople.add(u);
+                                        break;
+                                    default:
+                                        Log.e(TAG, "onComplete: RSVP not found.");
+                                        break;
                                 }
                                 initRecyclerView();
                             }

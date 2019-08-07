@@ -19,7 +19,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:contentDescription="Warning icon"
+                android:contentDescription="@string/description_warning"
                 style="@style/Padding"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -67,7 +67,9 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:importantForAutofill="no"
+            tools:targetApi="o" />
 
 
         <LinearLayout

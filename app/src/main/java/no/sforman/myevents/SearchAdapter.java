@@ -21,8 +21,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     private static final String TAG = "SearchAdapter";
 
-    private Context sCtx;
-    private ArrayList<User> users;
+    private final Context sCtx;
+    private final ArrayList<User> users;
     private ArrayList<User> selected;
 
     public SearchAdapter(Context context, ArrayList<User> users, ArrayList<User> selected, SelectionListener listener){
@@ -93,12 +93,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     public class SearchViewHolder extends RecyclerView.ViewHolder {
 
-        private CardView card;
-        private CircleImageView image;
-        private TextView name;
-        private TextView email;
+        private final CardView card;
+        private final CircleImageView image;
+        private final TextView name;
+        private final TextView email;
 
-        public SearchViewHolder(@NonNull View itemView) {
+        SearchViewHolder(@NonNull View itemView) {
             super(itemView);
             Log.d(TAG, "SearchViewHolder: Lifecycle");
 

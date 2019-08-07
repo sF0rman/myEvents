@@ -23,11 +23,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private static final String TAG = "UserAdapter";
 
-    private Context uCtx;
+    private final Context uCtx;
     private String type = "default";
     private String requestId;
 
-    private ArrayList<User> users;
+    private final ArrayList<User> users;
     private ArrayList<User> selectedUsers = new ArrayList<>();
 
     /**
@@ -172,14 +172,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
 
-        private CircleImageView userImage;
-        private TextView userName;
-        private TextView userEmail;
-        private Button acceptBtn;
-        private Button declineBtn;
-        private CardView cardView;
+        private final CircleImageView userImage;
+        private final TextView userName;
+        private final TextView userEmail;
+        private final Button acceptBtn;
+        private final Button declineBtn;
+        private final CardView cardView;
 
-        public UserViewHolder(@NonNull View itemView) {
+        UserViewHolder(@NonNull View itemView) {
             super(itemView);
             Log.d(TAG, "UserViewHolder: Lifecycle");
 

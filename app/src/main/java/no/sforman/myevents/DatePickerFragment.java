@@ -10,7 +10,7 @@ import android.widget.DatePicker;
 import androidx.fragment.app.DialogFragment;
 
 
-public class DatePickerFragment extends DialogFragment
+class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
     private static final String TAG = "DatePickerFragment";

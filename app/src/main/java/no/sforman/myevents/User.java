@@ -5,11 +5,11 @@ import android.os.Parcelable;
 
 public class User implements Parcelable {
 
-    private String id;
-    private String firstname;
-    private String surname;
-    private String email;
-    private String image;
+    private final String id;
+    private final String firstname;
+    private final String surname;
+    private final String email;
+    private final String image;
 
     public User(String id, String firstname, String surname, String email, String imgUrl){
         this.id = id;

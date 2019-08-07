@@ -20,7 +20,6 @@
     <string name="title_all">All</string>
     <string name="title_my_events">My events</string>
     <string name="title_details">Details</string>
-    <string name="title_add_people">Add people</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
@@ -55,7 +54,6 @@
     <string name="hint_search_contact">Search for contacts</string>
 
     <!-- Temp -->
-    <string name="temp_ppl_going">There are no people going to this event.</string>
 
     <!-- Buttons -->
     <string name="btn_forgot">Forgot password</string>
@@ -135,6 +133,10 @@
     <string name="loading_email">Loading email…</string>
     <string name="loading_event">Loading event…</string>
     <string name="loading_generic">Loading…</string>
+
+    <!-- Description -->
+    <string name="description_placeholder">PlaceholderImage</string>
+    <string name="description_warning">WarningIcon</string>
 
     <!-- AutoStrings from templates -->
 

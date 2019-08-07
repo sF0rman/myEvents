@@ -35,7 +35,7 @@ import java.util.Calendar;
 class EventsFragment extends Fragment {
 
     private static final String TAG = "EventsFragment";
-    private Calendar today = Calendar.getInstance();
+    private final Calendar today = Calendar.getInstance();
 
     //UI
     private FloatingActionButton fab;

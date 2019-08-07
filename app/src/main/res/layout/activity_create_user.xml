@@ -111,7 +111,8 @@
                     android:autofillHints="password"
                     android:ems="10"
                     android:hint="@string/hint_password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    tools:targetApi="o" />
 
                 <TextView
                     android:id="@+id/create_user_password_error"
@@ -128,7 +129,8 @@
                     android:autofillHints="password"
                     android:ems="10"
                     android:hint="@string/hint_repeat_password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    tools:targetApi="o" />
 
                 <TextView
                     android:id="@+id/create_user_repeat_password_error"

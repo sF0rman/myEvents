@@ -1,5 +1,6 @@
 package no.sforman.myevents;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -25,9 +26,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
-public class WarningDialogFragment extends androidx.fragment.app.DialogFragment {
+class WarningDialogFragment extends androidx.fragment.app.DialogFragment {
     
-    public static final String TAG = "WarningDialogFragment";
+    private static final String TAG = "WarningDialogFragment";
 
     private String message;
     private boolean password = false;
@@ -70,6 +71,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
         this.listener = l;
     }
 
+    @SuppressLint("InflateParams")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -170,7 +172,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
         return builder.create();
     }
 
-    public boolean verifyInput(String e, String p){
+    private boolean verifyInput(String e, String p){
         Log.d(TAG, "verifyInput: Verifying input");
 
         boolean result = true;
@@ -190,7 +192,7 @@ public class WarningDialogFragment extends androidx.fragment.app.DialogFragment 
 
     private boolean isValidEmail(String e){
         Log.d(TAG, "isValidEmail: ");
-        String regex = "^[\\w-_\\.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return e.matches(regex);
     }
 }

@@ -5,22 +5,20 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.GeoPoint;
 
-import java.util.Calendar;
-
 public class Event implements Parcelable {
 
     private String id;
-    private String owner;
-    private String name;
-    private String description;
-    private long reminderKey;
-    private long start;
-    private long end;
-    private Double latitude;
-    private Double longitude;
-    private String location;
-    private String address;
-    private boolean isOnline;
+    private final String owner;
+    private final String name;
+    private final String description;
+    private final long reminderKey;
+    private final long start;
+    private final long end;
+    private final Double latitude;
+    private final Double longitude;
+    private final String location;
+    private final String address;
+    private final boolean isOnline;
 
 
     public Event(String name,
@@ -96,7 +94,7 @@ public class Event implements Parcelable {
         return isOnline;
     }
 
-    protected Event(Parcel in) {
+    private Event(Parcel in) {
         id = in.readString();
         name = in.readString();
         owner = in.readString();

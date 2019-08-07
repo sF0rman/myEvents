@@ -46,7 +46,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:layout_gravity="center_vertical"
-                        android:contentDescription="Placeholder for offline events"
+                        android:contentDescription="@string/description_placeholder"
                         android:src="@drawable/ic_icon"
                         android:tint="@color/lightSecondary" />
 
@@ -131,7 +131,8 @@
                             android:importantForAutofill="no"
                             android:inputType="date"
                             android:onClick="setDateTime"
-                            tools:targetApi="o" />
+                            tools:targetApi="o"
+                            tools:ignore="KeyboardInaccessibleWidget" />
 
                         <EditText
                             android:id="@+id/create_event_starttime_text"
@@ -143,7 +144,10 @@
                             android:focusable="false"
                             android:hint="@string/hint_start_time"
                             android:inputType="time"
-                            android:onClick="setDateTime" />
+                            android:onClick="setDateTime"
+                            tools:ignore="KeyboardInaccessibleWidget"
+                            android:importantForAutofill="no"
+                            tools:targetApi="o" />
 
                     </LinearLayout>
 
@@ -164,7 +168,10 @@
                             android:focusable="false"
                             android:hint="@string/hint_end_date"
                             android:inputType="date"
-                            android:onClick="setDateTime" />
+                            android:onClick="setDateTime"
+                            tools:ignore="KeyboardInaccessibleWidget"
+                            android:importantForAutofill="no"
+                            tools:targetApi="o" />
 
 
                         <EditText
@@ -177,7 +184,10 @@
                             android:focusable="false"
                             android:hint="@string/hint_end_time"
                             android:inputType="time"
-                            android:onClick="setDateTime" />
+                            android:onClick="setDateTime"
+                            tools:ignore="KeyboardInaccessibleWidget"
+                            android:importantForAutofill="no"
+                            tools:targetApi="o" />
                     </LinearLayout>
 
 
@@ -215,7 +225,10 @@
                             android:hint="@string/hint_set_reminder_date"
                             android:inputType="datetime"
                             android:onClick="setDateTime"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            tools:ignore="KeyboardInaccessibleWidget"
+                            android:importantForAutofill="no"
+                            tools:targetApi="o" />
 
                         <EditText
                             android:id="@+id/create_event_reminder_time"
@@ -228,7 +241,10 @@
                             android:hint="@string/hint_set_reminder_time"
                             android:inputType="datetime"
                             android:onClick="setDateTime"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            tools:ignore="KeyboardInaccessibleWidget"
+                            android:importantForAutofill="no"
+                            tools:targetApi="o" />
 
                     </LinearLayout>
 
@@ -264,7 +280,10 @@
                         android:focusable="false"
                         android:hint="@string/hint_location"
                         android:inputType="text"
-                        android:onClick="findLocation" />
+                        android:onClick="findLocation"
+                        tools:ignore="KeyboardInaccessibleWidget"
+                        android:importantForAutofill="no"
+                        tools:targetApi="o" />
 
 
                     <TextView
@@ -282,7 +301,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hint_description"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:importantForAutofill="no"
+                        tools:targetApi="o" />
 
                     <TextView
                         android:id="@+id/create_event_description_error"

@@ -36,9 +36,6 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
 
     private static final String TAG = "ContactFragment";
 
-    // Connectivity
-    boolean connected = true;
-
     // UI
     private FloatingActionButton fab;
     private ConstraintLayout layout;

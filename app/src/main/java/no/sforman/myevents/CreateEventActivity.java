@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -30,7 +31,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -120,7 +120,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
     private Calendar today = Calendar.getInstance();
     private GeoPoint eventGeoPoint;
 
-    private ArrayList<User> friendList = new ArrayList<>();
+    private final ArrayList<User> friendList = new ArrayList<>();
     private ArrayList<User> invitedUsers = new ArrayList<>();
 
     // Date formatting
@@ -733,6 +733,7 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final DocumentReference eventRef = db.collection("event").document(id);
         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {

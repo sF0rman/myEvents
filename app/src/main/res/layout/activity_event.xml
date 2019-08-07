@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_gravity="center_vertical"
-                android:contentDescription="Placeholder for offline events"
+                android:contentDescription="@string/description_placeholder"
                 android:src="@drawable/ic_icon"
                 android:tint="@color/lightSecondary" />
 
@@ -146,17 +146,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_reminder" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/event_reminder_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_horizontal"
                         android:text="@string/msg_not_set" />
 
                     <Button
@@ -164,12 +163,11 @@
                         style="@style/SecondaryButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center_horizontal"
                         android:onClick="setReminder"
                         android:text="@string/btn_add_reminder" />
 
-                </RelativeLayout>
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -291,29 +289,29 @@
 
                     <Button
                         android:id="@+id/event_going_view"
-                        android:onClick="showGoing"
                         style="@style/PrimaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
+                        android:onClick="showGoing"
                         android:text="@string/btn_going" />
 
                     <Button
                         android:id="@+id/event_maybe_view"
-                        android:onClick="showMaybe"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
+                        android:onClick="showMaybe"
                         android:text="@string/btn_maybe" />
 
                     <Button
                         android:id="@+id/event_invited_view"
-                        android:onClick="showInvited"
                         style="@style/SecondaryButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.33"
+                        android:onClick="showInvited"
                         android:text="@string/btn_invited" />
 
                 </LinearLayout>

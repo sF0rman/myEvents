@@ -1,6 +1,6 @@
 package no.sforman.myevents;
 
-public class Keys {
+class Keys {
     public static final String FIRSTNAME_KEY = "firstname";
     public static final String SURNAME_KEY = "surname";
     public static final String IMAGE_KEY = "image";
