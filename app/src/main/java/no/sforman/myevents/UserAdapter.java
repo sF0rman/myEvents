@@ -161,6 +161,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         Glide.with(uCtx)
                 .load(users.get(i).getImage())
+                .placeholder(R.drawable.ic_person)
                 .into(holder.userImage);
 
         holder.userName.setText(users.get(i).getFullname());

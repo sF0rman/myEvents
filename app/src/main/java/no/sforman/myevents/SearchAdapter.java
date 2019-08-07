@@ -64,6 +64,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
         Glide.with(sCtx)
                 .load(image)
+                .placeholder(R.drawable.ic_person)
                 .into(holder.image);
         holder.name.setText(name);
         holder.email.setText(email);
