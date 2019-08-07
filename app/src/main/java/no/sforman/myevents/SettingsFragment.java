@@ -412,6 +412,35 @@ class SettingsFragment extends Fragment {
                         }
                     }
                 });
+
+        // Get all requests
+        FirebaseFirestore requestDb = FirebaseFirestore.getInstance();
+
+        requestDb.collection(Keys.REQUEST_KEY)
+                .whereEqualTo(Keys.SENDER_KEY, userId)
+                .whereEqualTo(Keys.RECIEVER_KEY, userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: Got all requests");
+                            for (QueryDocumentSnapshot requestDoc : task.getResult()){
+                                final String requestId = requestDoc.getId();
+                                FirebaseFirestore.getInstance()
+                                        .collection(Keys.REQUEST_KEY)
+                                        .document(requestId)
+                                        .delete()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Log.d(TAG, "onComplete: Delete request: " + requestId);
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                });
     }
 
     private void deleteUser() {
