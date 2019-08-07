@@ -8,8 +8,4 @@
         android:icon="@drawable/ic_edit"
         android:title="@string/menu_edit_event" />
 
-    <item android:id="@+id/event_add_users"
-        android:icon="@drawable/ic_add"
-        android:title="@string/title_add_people"/>
-
 </menu>

@@ -665,10 +665,11 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         evDb.collection(Keys.EVENT_KEY)
                 .document(eventId)
                 .collection(Keys.INVITED_KEY)
-                .add(userMap)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                .document(u.getId())
+                .set(userMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: User added to event: " + u.getId());
                         }
@@ -823,48 +824,50 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         Log.d(TAG, "onCompleted: ");
         if (b) {
             Log.d(TAG, "onDialogPositiveClick: Accepted");
-            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("event")
+
+            // Get all invited users.
+            FirebaseFirestore invitedDb = FirebaseFirestore.getInstance();
+            invitedDb.collection(Keys.EVENT_KEY)
                     .document(eventId)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .collection(Keys.INVITED_KEY)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "onSuccess: Deleted event id: " + eventId);
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "onComplete: Got all invited users.");
+                                for(QueryDocumentSnapshot queryInvited : task.getResult()){
+                                    //Remove event from user
+                                    String invitedId = queryInvited.getId();
+                                    deleteSubCollection(Keys.EVENT_KEY, eventId, Keys.INVITED_KEY, invitedId);
+                                    //Remove user from event
+                                    deleteSubCollection(Keys.USER_KEY, invitedId, Keys.EVENT_KEY, eventId);
+                                }
 
-                            db.collection("event")
-                                    .document(eventId)
-                                    .collection("invited")
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "onComplete: Got sub collection");
-
-                                                for (QueryDocumentSnapshot subDoc : task.getResult()) {
-                                                    String subDocId = subDoc.getId();
-                                                    deleteSubCollection(subDocId);
+                                // Remove event itself
+                                FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                                eventDb.collection(Keys.EVENT_KEY)
+                                        .document(eventId)
+                                        .delete()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    Log.d(TAG, "onComplete: Event deleted");
+                                                    Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
+                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                    Toast.makeText(CreateEventActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
+                                                    startActivity(main);
+                                                    finish();
                                                 }
-
-                                                Intent main = new Intent(CreateEventActivity.this, MainActivity.class);
-                                                progressBar.setVisibility(View.INVISIBLE);
-                                                Toast.makeText(CreateEventActivity.this, "Event deleted", Toast.LENGTH_SHORT).show();
-                                                startActivity(main);
-                                                finish();
                                             }
-                                        }
-                                    });
+                                        });
 
+
+                            }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressBar.setVisibility(View.GONE);
-                    Log.w(TAG, "onFailure: Couldn't delete event", e);
-                }
-            });
+                    });
+
         }
     }
 
@@ -873,18 +876,18 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         Log.d(TAG, "onCompleted: ");
     }
 
-    private void deleteSubCollection(final String id) {
+    private void deleteSubCollection(final String col, final String docId, final String subCol, final String subDocId) {
         Log.d(TAG, "deleteSubCollection: ");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("event")
-                .document(eventId)
-                .collection("invited")
-                .document(id)
+        db.collection(col)
+                .document(docId)
+                .collection(subCol)
+                .document(subDocId)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "onSuccess: deleted subcollection id: " + id);
+                        Log.d(TAG, "onSuccess: deleted sub collection id: " + subDocId);
                     }
                 });
     }

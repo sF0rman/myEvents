@@ -85,7 +85,6 @@ class EventsFragment extends Fragment {
     public void onResume() {
         Log.d(TAG, "onResume: Lifecycle");
         super.onResume();
-        eventList.clear();
         initFire();
     }
 
@@ -125,6 +124,7 @@ class EventsFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            eventList.clear();
                             Log.d(TAG, "onComplete: Got events");
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, "onComplete: event" + document.toString());

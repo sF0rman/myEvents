@@ -439,9 +439,9 @@ public class EventActivity extends AppCompatActivity {
     private void getRsvp() {
         Log.d(TAG, "getRsvp: ");
         final FirebaseFirestore rsvp = FirebaseFirestore.getInstance();
-        rsvp.collection("event")
+        rsvp.collection(Keys.EVENT_KEY)
                 .document(eventId)
-                .collection("invited")
+                .collection(Keys.INVITED_KEY)
                 .document(userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -449,7 +449,7 @@ public class EventActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             DocumentSnapshot doc = task.getResult();
-                            String rsvpStatus = doc.getString("rsvp");
+                            String rsvpStatus = doc.getString(Keys.RSVP_KEY);
                             Log.d(TAG, "onComplete: Got RSVP status: " + rsvpStatus);
                             if (rsvpStatus.equals("going")) {
                                 Log.d(TAG, "onComplete: RSVP status: Going");
@@ -459,6 +459,8 @@ public class EventActivity extends AppCompatActivity {
                                 Log.d(TAG, "onComplete: RSVP status: Maybe");
                                 eventRsvpGoing.setBackgroundResource(R.drawable.btn_light);
                                 eventRsvpMaybe.setBackgroundResource(R.drawable.btn_orange);
+                            } else {
+                                Log.d(TAG, "onComplete: RSVP status Invited");
                             }
                         }
 
