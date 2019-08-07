@@ -493,13 +493,17 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         timePicker.setOnTimeChosenListener(new TimePickerFragment.OnTimeChosenListener() {
             @Override
             public void onTimeChosen(int hour, int min) {
+                cal.getTime();
+                Log.d(TAG, "onTimeChosen before change: " + cal.getTime().toString());
                 cal.set(Calendar.HOUR_OF_DAY, hour);
                 cal.set(Calendar.MINUTE, min);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
+                Log.d(TAG, "onTimeChosen: " + cal.getTime().toString());
                 text.setText(timeFormat.format(cal.getTime()));
 
                 if (text == startTime) {
+                    startCal.setTimeInMillis(cal.getTimeInMillis());
                     endCal.setTimeInMillis(startCal.getTimeInMillis());
                     endCal.add(Calendar.HOUR_OF_DAY, 2);
                     endDate.setText(dateFormat.format(endCal.getTime()));
@@ -798,11 +802,35 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
                     reminderKey);
         }
 
-        db.collection("event").document(eventId).set(event).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("event")
+                .document(eventId)
+                .set(event)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: Document update. ID: " + eventId);
+
                 addEventToSelf(eventId, event, eventOwnerId);
+
+                FirebaseFirestore invitedDb = FirebaseFirestore.getInstance();
+                invitedDb.collection(Keys.EVENT_KEY)
+                        .document(eventId)
+                        .collection(Keys.INVITED_KEY)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if(task.isSuccessful()){
+                                    Log.d(TAG, "onComplete: Got all invited users");
+                                    for(QueryDocumentSnapshot q : task.getResult()){
+                                        String iId = q.getId();
+                                        addEventToSelf(eventId, event, iId);
+                                    }
+                                }
+                            }
+                        });
+
+
                 Intent updated = new Intent(CreateEventActivity.this, EventActivity.class);
                 updated.putExtra("eventId", eventId);
                 progressBar.setVisibility(View.INVISIBLE);
