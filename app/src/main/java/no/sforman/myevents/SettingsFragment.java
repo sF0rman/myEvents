@@ -270,7 +270,8 @@ class SettingsFragment extends Fragment {
         // Get every event that you have created!
         db.collection(Keys.EVENT_KEY)
                 .whereEqualTo(Keys.OWNER_KEY, userId)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -291,11 +292,13 @@ class SettingsFragment extends Fragment {
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             Log.d(TAG, "onComplete: Got subcollection going");
-                                            // Remove everyone invited (regardless of rsvp)
+                                            // Remove everyone invited
                                             for (QueryDocumentSnapshot goingDoc : task.getResult()) {
-                                                // Delete event from everyone who has the event.
+                                                // Delete everyone from event.
                                                 String goingId = goingDoc.getId();
                                                 deleteSubDocs(Keys.EVENT_KEY, documentId, Keys.INVITED_KEY, goingId);
+                                                // Delete event from users
+                                                deleteSubDocs(Keys.USER_KEY, goingId, Keys.EVENT_KEY, documentId);
                                             }
                                         }
                                     }
