@@ -520,41 +520,46 @@ public class EventActivity extends AppCompatActivity {
     public void setNotGoing(View v) {
         if (isOnline()) {
             Log.d(TAG, "setNotGoing: Selected");
-            WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_not_going), new WarningDialogFragment.WarningListener() {
+            final WarningDialogFragment warning = new WarningDialogFragment(getString(R.string.msg_warning_not_going), new WarningDialogFragment.WarningListener() {
                 @Override
                 public void onCompleted(boolean b) {
-                    final FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
-                    eventDb.collection("event")
-                            .document(eventId)
-                            .collection("invited")
-                            .document(userId)
-                            .delete()
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d(TAG, "onComplete: Deleted reference to self in event");
-                                        eventDb.collection("user")
-                                                .document(userId)
-                                                .collection("event")
-                                                .document(eventId)
-                                                .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "onComplete: Removed event from self");
-                                                    Toast.makeText(EventActivity.this, "You have set not going and have removed yourself from the event!", Toast.LENGTH_SHORT).show();
-                                                    Intent notGoing = new Intent(EventActivity.this, MainActivity.class);
-                                                    startActivity(notGoing);
-                                                    finish();
+                    if(b){
+                        final FirebaseFirestore eventDb = FirebaseFirestore.getInstance();
+                        eventDb.collection("event")
+                                .document(eventId)
+                                .collection("invited")
+                                .document(userId)
+                                .delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "onComplete: Deleted reference to self in event");
+                                            eventDb.collection("user")
+                                                    .document(userId)
+                                                    .collection("event")
+                                                    .document(eventId)
+                                                    .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Log.d(TAG, "onComplete: Removed event from self");
+                                                        Toast.makeText(EventActivity.this, "You have set not going and have removed yourself from the event!", Toast.LENGTH_SHORT).show();
+                                                        Intent notGoing = new Intent(EventActivity.this, MainActivity.class);
+                                                        startActivity(notGoing);
+                                                        finish();
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
 
 
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    } else {
+                        Log.d(TAG, "onCompleted: Cancelled");
+                    }
+                    
 
                 }
 
