@@ -137,6 +137,19 @@
     <!-- Description -->
     <string name="description_placeholder">PlaceholderImage</string>
     <string name="description_warning">WarningIcon</string>
+    <string name="link_show_terms">Show terms and conditions</string>
+    <string name="link_hide_terms">Hide terms and conditions</string>
+    <string name="terms_license">myEvents uses Google APIs, Firebase (including FireStore and Firebase Storage), Glide and CircleImageView and follows the terms and conditions for each.
+        \n
+        \n- Google API Terms: https://developers.google.com/terms/
+        \n- Firebase Terms: https://firebase.google.com/terms
+        \n- Glide (Open Source License): https://bumptech.github.io/glide/dev/open-source-licenses.html
+        \n- CircleImageView (Apache License 2.0): http://www.apache.org/licenses/LICENSE-2.0
+        \n
+        \nmyEvents stores your name, email and profile picture as well as an overview of your contacts and events. These details can be visible to other users of the application, but will not be shared by myEvents to any third party.
+        \n
+        \nmyEvents requires an internet connection to work.
+    </string>
 
     <!-- AutoStrings from templates -->
 

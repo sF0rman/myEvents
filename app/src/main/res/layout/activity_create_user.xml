@@ -60,7 +60,7 @@
                     android:ems="10"
                     android:hint="@string/hint_first_name"
                     android:inputType="textPersonName"
-                    tools:targetApi="O"/>
+                    tools:targetApi="O" />
 
                 <TextView
                     android:id="@+id/create_user_firstname_error"
@@ -146,11 +146,25 @@
                     android:text="@string/hint_terms" />
 
                 <TextView
+                    android:id="@+id/create_user_terms_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/terms_license"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:onClick="toggleTerms"
+                    android:id="@+id/create_user_show_terms"
+                    android:textColor="@color/orangePrimary"
+                    android:text="@string/link_show_terms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
                     android:id="@+id/create_user_terms_error"
                     style="@style/ErrorText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
 
                 <Button
                     style="@style/PrimaryButton"

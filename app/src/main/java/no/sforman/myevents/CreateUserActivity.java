@@ -63,6 +63,9 @@ public class CreateUserActivity extends AppCompatActivity {
     private CircleImageView image;
     private ProgressBar progressBar;
 
+    private TextView showTerms;
+    private TextView termsText;
+
     private Uri imageUri;
 
     // Firebase
@@ -113,6 +116,8 @@ public class CreateUserActivity extends AppCompatActivity {
         passwordRepeatError = findViewById(R.id.create_user_repeat_password_error);
         termsError = findViewById(R.id.create_user_terms_error);
         progressBar = findViewById(R.id.create_user_progress);
+        showTerms = findViewById(R.id.create_user_show_terms);
+        termsText = findViewById(R.id.create_user_terms_text);
     }
 
     private void initFirebase() {
@@ -373,6 +378,16 @@ public class CreateUserActivity extends AppCompatActivity {
             } catch (RuntimeException e) {
                 Log.e(TAG, "onActivityResult: No image was selected", e);
             }
+        }
+    }
+
+    public void toggleTerms(View v){
+        if(termsText.getVisibility() == View.GONE){
+            showTerms.setText(R.string.link_hide_terms);
+            termsText.setVisibility(View.VISIBLE);
+        } else {
+            showTerms.setText(R.string.link_show_terms);
+            termsText.setVisibility(View.GONE);
         }
     }
 }
