@@ -668,7 +668,12 @@ class SettingsFragment extends Fragment {
     }
 
 
-    private void editSubDocs(final String col, final String docId, final String subCol, final String subDocId, Map<Object, String> data) {
+    private void editSubDocs(final String col,
+                             final String docId,
+                             final String subCol,
+                             final String subDocId,
+                             Map<Object, String> data) {
+
         Log.d(TAG, "editSubDocs: ");
         FirebaseFirestore esdDb = FirebaseFirestore.getInstance();
         esdDb.collection(col)
@@ -679,9 +684,13 @@ class SettingsFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: Updated information in: " + col + "/" + docId + "/" + subCol + "/" + subDocId);
+                    Log.d(TAG, "onComplete: Updated information in: " +
+                            col + "/" +
+                            docId + "/" +
+                            subCol + "/" +
+                            subDocId);
                 } else {
-                    Log.e(TAG, "onComplete: Could not update unformation", task.getException());
+                    Log.e(TAG, "onComplete: Could not update doc", task.getException());
                 }
             }
         });

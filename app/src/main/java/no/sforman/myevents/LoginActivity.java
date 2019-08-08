@@ -185,11 +185,13 @@ public class LoginActivity extends AppCompatActivity {
             final WarningDialogFragment warning = new WarningDialogFragment(true, new WarningDialogFragment.WarningListener() {
                 @Override
                 public void onCompleted(boolean b) {
+                    Log.d(TAG, "onCompleted: ");
                     // Do nothing
                 }
 
                 @Override
                 public void onCompleted(boolean b, String email) {
+                    Log.d(TAG, "onCompleted: " + b + "- email: " + email);
                     if(b){
                         updateUserData(null);
                         mAuth.sendPasswordResetEmail(email)

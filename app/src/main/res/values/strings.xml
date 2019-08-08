@@ -125,6 +125,7 @@
     <string name="msg_success_user_data_change">Userdata successfully updated!</string>
     <string name="msg_success_new_password">Password updated successfully!</string>
     <string name="msg_nothing_selected">You have not selected any contacts</string>
+    <string name="msg_email_sent">Email sent to: </string>
 
     <!-- Warnings -->
     <string name="msg_warning_default">Are you sure you want to proceed?</string>

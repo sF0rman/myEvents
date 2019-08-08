@@ -106,7 +106,7 @@ class WarningDialogFragment extends androidx.fragment.app.DialogFragment {
                 progressBar.setVisibility(View.VISIBLE);
                 if(password){
                     Log.d(TAG, "onClick: Verifying password!");
-                    final String email = emailField.getText().toString();
+                    final String email = emailField.getText().toString().trim();
                     String password = passwordField.getText().toString();
                     if(verifyInput(email, password)){
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -127,26 +127,43 @@ class WarningDialogFragment extends androidx.fragment.app.DialogFragment {
                                         }
                                     }
                                 });
-                    } else if (emailOnly) {
-                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, "")
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if(!task.isSuccessful()){
-                                            try{
-                                                throw task.getException();
-                                            } catch (FirebaseAuthInvalidUserException invalidEmail){
-                                                Toast.makeText(getContext(), R.string.error_invalid_email, Toast.LENGTH_SHORT).show();
-                                            } catch (FirebaseAuthInvalidCredentialsException invalidPassword){
-                                                listener.onCompleted(true, email);
-                                            } catch (Exception e){
-                                                Log.e(TAG, "onComplete: ", e);
-                                                Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else if (emailOnly) {
+                    Log.d(TAG, "onClick: Email required");
+                    final String email = emailField.getText().toString();
+                    if(!email.isEmpty()){
+                        Log.d(TAG, "onClick: Email: " + email);
+                        if(isValidEmail(email)){
+                            // Default password
+                            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, "mev")
+                                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if(!task.isSuccessful()){
+                                                try{
+                                                    throw task.getException();
+                                                } catch (FirebaseAuthInvalidUserException invalidEmail){
+                                                    Toast.makeText(getContext(), R.string.error_invalid_email, Toast.LENGTH_SHORT).show();
+                                                } catch (FirebaseAuthInvalidCredentialsException invalidPassword){
+                                                    listener.onCompleted(true, email);
+                                                    Toast.makeText(getContext(), getString(R.string.msg_email_sent) + " " + email, Toast.LENGTH_SHORT).show();
+                                                    dismiss();
+                                                } catch (Exception e){
+                                                    Log.e(TAG, "onComplete: ", e);
+                                                    Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                                }
                                             }
                                         }
-                                    }
-                                });
+                                    });
+                        } else {
+                            Toast.makeText(getContext(), R.string.error_invalid_email, Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+
                     } else {
+                        Toast.makeText(getContext(), R.string.error_invalid_input, Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                     }
 

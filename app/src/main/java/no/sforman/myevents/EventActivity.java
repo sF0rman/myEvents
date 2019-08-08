@@ -106,9 +106,9 @@ public class EventActivity extends AppCompatActivity {
     private long startInMillis;
     private long endInMillies;
     private boolean isOnline;
-    private ArrayList goingPeople = new ArrayList();
-    private ArrayList maybePeople = new ArrayList();
-    private ArrayList invitedPeople = new ArrayList();
+    private ArrayList<User> goingPeople = new ArrayList<>();
+    private ArrayList<User> maybePeople = new ArrayList<>();
+    private ArrayList<User> invitedPeople = new ArrayList<>();
 
     private GeoPoint geoPoint;
 
