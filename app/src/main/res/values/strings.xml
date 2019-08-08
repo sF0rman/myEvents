@@ -20,6 +20,11 @@
     <string name="title_all">All</string>
     <string name="title_my_events">My events</string>
     <string name="title_details">Details</string>
+    <string name="title_all_data">All data</string>
+    <string name="title_user_data">Your data</string>
+    <string name="title_user_events">Your events</string>
+    <string name="title_other_events">Events you are invited to</string>
+    <string name="title_user_contacts">Your contacts</string>
 
     <!-- Notification Channels -->
     <string name="channel_event">event</string>
@@ -150,6 +155,12 @@
         \n
         \nmyEvents requires an internet connection to work.
     </string>
+
+    <!-- GDPR -->
+    <string name="tag_user_id">User ID: </string>
+    <string name="tag_name">Name: </string>
+    <string name="tag_email">Email: </string>
+    <string name="tag_image">Image link: </string>
 
     <!-- AutoStrings from templates -->
 

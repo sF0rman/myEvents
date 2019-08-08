@@ -243,8 +243,6 @@ class SettingsFragment extends Fragment {
         userChangeCancel.setVisibility(View.VISIBLE);
     }
 
-    public void getAllData() {
-    }
 
     public void callDeleteAllEvents() {
         Log.d(TAG, "callDeleteAllEvents: ");
@@ -764,12 +762,9 @@ class SettingsFragment extends Fragment {
         return inputOk;
     }
 
-    private void getEventData() {
-
-    }
-
-    private void getContactData() {
-
+    public void getAllData() {
+        Intent gdpr = new Intent(getContext(), GDPR.class);
+        startActivity(gdpr);
     }
 
     private boolean isValidEmail(String e) {
