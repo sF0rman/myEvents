@@ -174,7 +174,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onCreateUser(View v) {
         Log.d(TAG, "onCreateUser: ");
-        progressBar.setVisibility(View.VISIBLE);
         Intent i = new Intent(LoginActivity.this, CreateUserActivity.class);
         startActivity(i);
     }
