@@ -237,7 +237,7 @@ class ContactFragment extends Fragment implements UserAdapter.ResponseListener {
         Log.d(TAG, "getMyContacts: ");
         subContacts.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         subContacts.setTextColor(ContextCompat.getColor(getContext(), R.color.lightPrimary));
-        subRequests.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        subRequests.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         subRequests.setTextColor(ContextCompat.getColor(getContext(), R.color.lightSecondary));
 
         Log.d(TAG, "getMyContacts: Started");

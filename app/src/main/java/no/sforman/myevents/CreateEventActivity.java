@@ -164,6 +164,14 @@ public class CreateEventActivity extends AppCompatActivity implements WarningDia
         super.onResume();
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: Lifecycle");
+        Intent back = new Intent(this, MainActivity.class);
+        startActivity(back);
+        finish();
+    }
+
     private boolean isOnline() {
         Log.d(TAG, "isOnline: ");
         ConnectivityManager connMgr = (ConnectivityManager)
